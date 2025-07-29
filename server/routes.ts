@@ -368,6 +368,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Category routes
+  app.get("/api/categories", async (req, res) => {
+    try {
+      const categories = await storage.getCategories();
+      res.json(categories);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/categories", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const categoryData = insertCategorySchema.parse(req.body);
+      const category = await storage.createCategory(categoryData);
+      res.status(201).json(category);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/categories/:id", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const categoryData = insertCategorySchema.partial().parse(req.body);
+      const category = await storage.updateCategory(req.params.id, categoryData);
+      res.json(category);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/categories/:id", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      await storage.deleteCategory(req.params.id);
+      res.sendStatus(204);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Admin user management routes
+  app.get("/api/admin/users", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/users", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      const user = await storage.createUser(userData);
+      res.status(201).json(user);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/users/:id", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const userData = insertUserSchema.partial().parse(req.body);
+      const user = await storage.updateUser(req.params.id, userData);
+      res.json(user);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/users/:id", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      await storage.deleteUser(req.params.id);
+      res.sendStatus(204);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Statistics for admin dashboard
   app.get("/api/admin/stats", async (req, res) => {
     if (!req.isAuthenticated() || !req.user?.isAdmin) {
@@ -378,8 +484,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const [orders, products, users] = await Promise.all([
         storage.getOrders(),
         storage.getProducts(),
-        // You'd implement getUserCount method
-        // storage.getUserCount()
+        storage.getAllUsers()
       ]);
 
       const totalRevenue = orders.reduce((sum, order) => sum + parseFloat(order.total), 0);
@@ -388,7 +493,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         revenue: totalRevenue.toFixed(2),
         orders: orders.length,
         products: products.length,
-        users: 6, // Predefined user accounts
+        users: users.length,
       };
 
       res.json(stats);

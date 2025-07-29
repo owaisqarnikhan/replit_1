@@ -38,6 +38,9 @@ export const products = pgTable("products", {
   isFeatured: boolean("is_featured").default(false),
   rating: decimal("rating", { precision: 3, scale: 2 }).default("0.00"),
   reviewCount: integer("review_count").default(0),
+  productType: text("product_type").notNull().default("sale"), // sale, rental
+  rentalPeriod: text("rental_period"), // daily, weekly, monthly (for rental products)
+  rentalPrice: decimal("rental_price", { precision: 10, scale: 2 }), // price per rental period
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 

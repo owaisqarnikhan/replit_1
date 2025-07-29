@@ -1,0 +1,375 @@
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { insertUserSchema, type InsertUser, type User } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Plus, Edit, Trash2, Users, Shield, User as UserIcon } from "lucide-react";
+
+export function UserManager() {
+  const { toast } = useToast();
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+
+  const { data: users, isLoading } = useQuery<User[]>({
+    queryKey: ["/api/admin/users"],
+  });
+
+  const form = useForm<InsertUser>({
+    resolver: zodResolver(insertUserSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+      firstName: "",
+      lastName: "",
+      isAdmin: false,
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: InsertUser) => {
+      const response = await apiRequest("POST", "/api/admin/users", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      setIsAddOpen(false);
+      form.reset();
+      toast({
+        title: "Success",
+        description: "User created successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to create user",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<InsertUser> }) => {
+      const response = await apiRequest("PUT", `/api/admin/users/${id}`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      setEditingUser(null);
+      form.reset();
+      toast({
+        title: "Success",
+        description: "User updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update user",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      await apiRequest("DELETE", `/api/admin/users/${userId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: "Success",
+        description: "User deleted successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete user",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const toggleAdminMutation = useMutation({
+    mutationFn: async ({ userId, isAdmin }: { userId: string; isAdmin: boolean }) => {
+      const response = await apiRequest("PUT", `/api/admin/users/${userId}`, { isAdmin });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: "Success",
+        description: "User role updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update user role",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (data: InsertUser) => {
+    if (editingUser) {
+      updateMutation.mutate({ id: editingUser.id, data });
+    } else {
+      createMutation.mutate(data);
+    }
+  };
+
+  const handleEdit = (user: User) => {
+    setEditingUser(user);
+    form.reset({
+      username: user.username,
+      email: user.email,
+      password: "", // Don't pre-fill password for security
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      isAdmin: user.isAdmin || false,
+    });
+  };
+
+  const handleCloseDialog = () => {
+    setIsAddOpen(false);
+    setEditingUser(null);
+    form.reset();
+  };
+
+  const handleToggleAdmin = (user: User) => {
+    toggleAdminMutation.mutate({
+      userId: user.id,
+      isAdmin: !user.isAdmin,
+    });
+  };
+
+  if (isLoading) {
+    return <div>Loading users...</div>;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            User Management
+          </CardTitle>
+          <Dialog open={isAddOpen || !!editingUser} onOpenChange={handleCloseDialog}>
+            <DialogTrigger asChild>
+              <Button onClick={() => setIsAddOpen(true)} className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add User
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingUser ? "Edit User" : "Add New User"}
+                </DialogTitle>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>First Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="John" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Last Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input placeholder="johndoe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="john@example.com" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Password {editingUser && "(leave blank to keep current)"}
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder={editingUser ? "Leave blank to keep current" : "Enter password"}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="isAdmin"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>Admin User</FormLabel>
+                          <p className="text-sm text-muted-foreground">
+                            Grant admin privileges to this user
+                          </p>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="flex justify-end gap-2">
+                    <Button type="button" variant="outline" onClick={handleCloseDialog}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      disabled={createMutation.isPending || updateMutation.isPending}
+                    >
+                      {editingUser ? "Update" : "Create"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4">
+          {users?.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">
+              No users found. Add your first user to get started.
+            </p>
+          ) : (
+            users?.map((user) => (
+              <div
+                key={user.id}
+                className="flex items-center justify-between p-4 border rounded-lg"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full">
+                    {user.isAdmin ? (
+                      <Shield className="h-5 w-5 text-blue-600" />
+                    ) : (
+                      <UserIcon className="h-5 w-5 text-gray-600" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold">
+                        {user.firstName && user.lastName 
+                          ? `${user.firstName} ${user.lastName}` 
+                          : user.username}
+                      </h3>
+                      {user.isAdmin && (
+                        <Badge variant="secondary" className="text-xs">
+                          Admin
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      @{user.username} • {user.email}
+                    </p>
+                    {user.createdAt && (
+                      <p className="text-xs text-muted-foreground">
+                        Joined {new Date(user.createdAt).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleToggleAdmin(user)}
+                    disabled={toggleAdminMutation.isPending}
+                  >
+                    {user.isAdmin ? "Remove Admin" : "Make Admin"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEdit(user)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => deleteMutation.mutate(user.id)}
+                    disabled={deleteMutation.isPending}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
