@@ -53,7 +53,7 @@ export function setupAuth(app: Express) {
   );
 
   passport.serializeUser((user, done) => done(null, user.id));
-  passport.deserializeUser(async (id: number, done) => {
+  passport.deserializeUser(async (id: string, done) => {
     const user = await storage.getUser(id);
     done(null, user);
   });
@@ -66,12 +66,26 @@ export function setupAuth(app: Express) {
   app.post("/api/login", passport.authenticate("local"), (req, res) => {
     res.status(200).json(req.user);
   });
+  
+  // Alternative route for compatibility
+  app.post("/api/auth/login", passport.authenticate("local"), (req, res) => {
+    res.status(200).json(req.user);
+  });
 
   app.post("/api/logout", (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
       res.sendStatus(200);
     });
+  });
+
+  // Get current user route
+  app.get("/api/user", (req, res) => {
+    if (req.isAuthenticated()) {
+      res.json(req.user);
+    } else {
+      res.sendStatus(401);
+    }
   });
 
   app.get("/api/user", (req, res) => {

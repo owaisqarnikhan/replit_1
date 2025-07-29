@@ -245,7 +245,7 @@ export class DatabaseStorage implements IStorage {
       // Update quantity
       const [updated] = await db
         .update(cartItems)
-        .set({ quantity: existing.quantity + item.quantity })
+        .set({ quantity: existing.quantity + (item.quantity || 1) })
         .where(eq(cartItems.id, existing.id))
         .returning();
       return updated;
