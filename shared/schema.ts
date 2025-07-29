@@ -176,6 +176,7 @@ export const siteSettings = pgTable("site_settings", {
   siteName: text("site_name").notNull().default("InnovanceOrbit"),
   headerLogo: text("header_logo"),
   footerLogo: text("footer_logo"),
+  logoUrl: text("logo_url"), // Main site logo
   primaryColor: text("primary_color").default("#2563eb"),
   secondaryColor: text("secondary_color").default("#64748b"),
   accentColor: text("accent_color").default("#0ea5e9"),
@@ -186,6 +187,7 @@ export const siteSettings = pgTable("site_settings", {
   contactPhone: text("contact_phone"),
   contactAddress: text("contact_address"),
   supportEmail: text("support_email"),
+  adminEmail: text("admin_email").default("admin@innovanceorbit.com"), // Admin notifications
   businessHours: text("business_hours"),
   socialFacebook: text("social_facebook"),
   socialTwitter: text("social_twitter"),
@@ -193,6 +195,25 @@ export const siteSettings = pgTable("site_settings", {
   socialLinkedin: text("social_linkedin"),
   copyrightText: text("copyright_text"),
   additionalFooterText: text("additional_footer_text"),
+  // Email templates
+  orderConfirmationTemplate: text("order_confirmation_template").default(`
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2563eb;">Order Confirmation - {{orderNumber}}</h2>
+      <p>Dear {{customerName}},</p>
+      <p>Thank you for your order! We've received your order and it's being processed.</p>
+      <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="margin-top: 0;">Order Details:</h3>
+        <p><strong>Order Number:</strong> {{orderNumber}}</p>
+        <p><strong>Order Date:</strong> {{orderDate}}</p>
+        <p><strong>Total Amount:</strong> {{totalAmount}}</p>
+        <p><strong>Payment Method:</strong> {{paymentMethod}}</p>
+      </div>
+      <h3>Items Ordered:</h3>
+      {{orderItems}}
+      <p>We'll send you another email when your order ships.</p>
+      <p>Best regards,<br>{{siteName}} Team</p>
+    </div>
+  `),
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });

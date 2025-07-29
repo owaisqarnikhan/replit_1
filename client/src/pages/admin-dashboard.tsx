@@ -7,6 +7,7 @@ import { CategoryManager } from "@/components/admin/CategoryManager";
 import { ProductManager } from "@/components/admin/ProductManager";
 import { DataImportExport } from "@/components/admin/DataImportExport";
 import { UserManager } from "@/components/admin/UserManager";
+import { SiteSettings } from "@/components/admin/SiteSettings";
 import { 
   DollarSign, 
   ShoppingCart, 
@@ -131,19 +132,7 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="settings">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Site Settings
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Site settings management will be available soon. For now, you can manage categories, products, users, and data import/export.
-                </p>
-              </CardContent>
-            </Card>
+            <SiteSettings />
           </TabsContent>
         </Tabs>
       </div>

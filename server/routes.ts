@@ -317,9 +317,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Clear cart
       await storage.clearCart(req.user!.id);
 
-      // Send confirmation email
+      // Send confirmation email with order details
       try {
-        await sendOrderConfirmationEmail(req.user!.email, order.id);
+        const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
+        const orderItems = cartItems.map(item => ({
+          name: item.product.name,
+          quantity: item.quantity,
+          price: item.product.price
+        }));
+
+        await sendOrderConfirmationEmail(req.user!.email, {
+          orderNumber: order.id,
+          customerName,
+          items: orderItems,
+          total: order.total,
+          paymentMethod: order.paymentMethod || 'Unknown'
+        });
       } catch (emailError) {
         console.error('Failed to send order confirmation email:', emailError);
       }
