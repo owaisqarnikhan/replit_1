@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
@@ -218,6 +218,9 @@ export function ProductManager() {
                 <DialogTitle>
                   {editingProduct ? "Edit Product" : "Add New Product"}
                 </DialogTitle>
+                <DialogDescription>
+                  {editingProduct ? "Update the product information below." : "Fill in the details to create a new product."}
+                </DialogDescription>  
               </DialogHeader>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -392,10 +395,39 @@ export function ProductManager() {
                     name="imageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Image URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://example.com/image.jpg" {...field} value={field.value || ""} />
-                        </FormControl>
+                        <FormLabel>Product Image</FormLabel>
+                        <div className="space-y-2">
+                          <FormControl>
+                            <Input placeholder="https://example.com/image.jpg" {...field} value={field.value || ""} />
+                          </FormControl>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => document.getElementById('product-image-upload')?.click()}
+                              disabled={isUploading}
+                              className="flex items-center gap-2"
+                            >
+                              <Upload className="h-4 w-4" />
+                              {isUploading ? "Uploading..." : "Upload Image"}
+                            </Button>
+                            <input
+                              id="product-image-upload"
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleImageUpload}
+                            />
+                          </div>
+                          {field.value && (
+                            <img
+                              src={field.value}
+                              alt="Product preview"
+                              className="w-24 h-24 object-cover rounded border"
+                            />
+                          )}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}

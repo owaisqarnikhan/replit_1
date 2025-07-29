@@ -17,11 +17,11 @@ export default function Footer() {
           {/* Company Info */}
           <div className="col-span-1 lg:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              {settings?.footerLogo ? (
+              {settings?.logoUrl ? (
                 <img 
-                  src={settings.footerLogo} 
+                  src={settings.logoUrl} 
                   alt={settings.siteName || "InnovanceOrbit"} 
-                  className="h-8 w-auto"
+                  className="h-8 w-auto brightness-0 invert"
                 />
               ) : (
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
