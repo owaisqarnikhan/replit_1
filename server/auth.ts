@@ -30,7 +30,7 @@ async function comparePasswords(supplied: string, stored: string) {
 
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET!,
+    secret: process.env.SESSION_SECRET || "your-fallback-secret-key-for-development-only-please-change-in-production",
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
