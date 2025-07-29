@@ -204,7 +204,7 @@ export function ProductManager() {
                         <FormItem>
                           <FormLabel>SKU</FormLabel>
                           <FormControl>
-                            <Input placeholder="Product SKU" {...field} />
+                            <Input placeholder="Product SKU" {...field} value={field.value || ""} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -219,7 +219,7 @@ export function ProductManager() {
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="Product description" {...field} />
+                          <Textarea placeholder="Product description" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -254,7 +254,7 @@ export function ProductManager() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Category</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value || ""}>
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select category" />
@@ -300,6 +300,7 @@ export function ProductManager() {
                               placeholder="0" 
                               {...field}
                               onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                              value={field.value ?? 0}
                             />
                           </FormControl>
                           <FormMessage />
@@ -316,7 +317,7 @@ export function ProductManager() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Rental Period</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value || ""}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select rental period" />
@@ -355,7 +356,7 @@ export function ProductManager() {
                       <FormItem>
                         <FormLabel>Image URL</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://example.com/image.jpg" {...field} />
+                          <Input placeholder="https://example.com/image.jpg" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -370,7 +371,7 @@ export function ProductManager() {
                         <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                           <FormControl>
                             <Checkbox
-                              checked={field.value}
+                              checked={field.value || false}
                               onCheckedChange={field.onChange}
                             />
                           </FormControl>
@@ -385,7 +386,7 @@ export function ProductManager() {
                         <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                           <FormControl>
                             <Checkbox
-                              checked={field.value}
+                              checked={field.value || false}
                               onCheckedChange={field.onChange}
                             />
                           </FormControl>

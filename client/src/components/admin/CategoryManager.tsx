@@ -168,7 +168,7 @@ export function CategoryManager() {
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="Category description" {...field} />
+                          <Textarea placeholder="Category description" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -181,7 +181,7 @@ export function CategoryManager() {
                       <FormItem>
                         <FormLabel>Image URL</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://example.com/image.jpg" {...field} />
+                          <Input placeholder="https://example.com/image.jpg" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

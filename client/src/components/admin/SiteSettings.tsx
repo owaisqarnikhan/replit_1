@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -52,24 +52,26 @@ export function SiteSettings() {
     },
   });
 
-  // Update form when settings load
-  if (settings && !form.formState.isDirty) {
-    form.reset({
-      siteName: settings.siteName,
-      logoUrl: settings.logoUrl || "",
-      contactEmail: settings.contactEmail || "",
-      supportEmail: settings.supportEmail || "",
-      adminEmail: settings.adminEmail || "",
-      contactPhone: settings.contactPhone || "",
-      contactAddress: settings.contactAddress || "",
-      primaryColor: settings.primaryColor || "#2563eb",
-      secondaryColor: settings.secondaryColor || "#64748b",
-      accentColor: settings.accentColor || "#0ea5e9",
-      backgroundColor: settings.backgroundColor || "#ffffff",
-      textColor: settings.textColor || "#1e293b",
-      orderConfirmationTemplate: settings.orderConfirmationTemplate || "",
-    });
-  }
+  // Update form when settings load - use useEffect to avoid infinite renders
+  React.useEffect(() => {
+    if (settings) {
+      form.reset({
+        siteName: settings.siteName,
+        logoUrl: settings.logoUrl || "",
+        contactEmail: settings.contactEmail || "",
+        supportEmail: settings.supportEmail || "",
+        adminEmail: settings.adminEmail || "",
+        contactPhone: settings.contactPhone || "",
+        contactAddress: settings.contactAddress || "",
+        primaryColor: settings.primaryColor || "#2563eb",
+        secondaryColor: settings.secondaryColor || "#64748b",
+        accentColor: settings.accentColor || "#0ea5e9",
+        backgroundColor: settings.backgroundColor || "#ffffff",
+        textColor: settings.textColor || "#1e293b",
+        orderConfirmationTemplate: settings.orderConfirmationTemplate || "",
+      });
+    }
+  }, [settings, form]);
 
   const updateMutation = useMutation({
     mutationFn: async (data: InsertSiteSettings) => {
@@ -170,7 +172,7 @@ export function SiteSettings() {
                   <div className="flex items-center gap-4">
                     {form.watch("logoUrl") && (
                       <img
-                        src={form.watch("logoUrl")}
+                        src={form.watch("logoUrl") || ""}
                         alt="Site Logo"
                         className="h-12 w-auto border rounded"
                       />
@@ -202,7 +204,7 @@ export function SiteSettings() {
                       <FormItem>
                         <FormLabel>Logo URL (Alternative)</FormLabel>
                         <FormControl>
-                          <Input placeholder="https://example.com/logo.png" {...field} />
+                          <Input placeholder="https://example.com/logo.png" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -221,7 +223,7 @@ export function SiteSettings() {
                         <FormLabel>Primary Color</FormLabel>
                         <div className="space-y-2">
                           <FormControl>
-                            <Input type="color" {...field} />
+                            <Input type="color" {...field} value={field.value || "#2563eb"} />
                           </FormControl>
                           <div className="grid grid-cols-4 gap-2">
                             {colorOptions.map((color) => (
@@ -251,7 +253,7 @@ export function SiteSettings() {
                       <FormItem>
                         <FormLabel>Secondary Color</FormLabel>
                         <FormControl>
-                          <Input type="color" {...field} />
+                          <Input type="color" {...field} value={field.value || "#64748b"} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -265,7 +267,7 @@ export function SiteSettings() {
                       <FormItem>
                         <FormLabel>Accent Color</FormLabel>
                         <FormControl>
-                          <Input type="color" {...field} />
+                          <Input type="color" {...field} value={field.value || "#0ea5e9"} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -279,7 +281,7 @@ export function SiteSettings() {
                       <FormItem>
                         <FormLabel>Background Color</FormLabel>
                         <FormControl>
-                          <Input type="color" {...field} />
+                          <Input type="color" {...field} value={field.value || "#ffffff"} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -297,7 +299,7 @@ export function SiteSettings() {
                       <FormItem>
                         <FormLabel>Contact Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="info@innovanceorbit.com" {...field} />
+                          <Input type="email" placeholder="info@innovanceorbit.com" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -311,7 +313,7 @@ export function SiteSettings() {
                       <FormItem>
                         <FormLabel>Support Email</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="support@innovanceorbit.com" {...field} />
+                          <Input type="email" placeholder="support@innovanceorbit.com" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -326,7 +328,7 @@ export function SiteSettings() {
                     <FormItem>
                       <FormLabel>Contact Phone</FormLabel>
                       <FormControl>
-                        <Input placeholder="+973 1234 5678" {...field} />
+                        <Input placeholder="+973 1234 5678" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -340,7 +342,7 @@ export function SiteSettings() {
                     <FormItem>
                       <FormLabel>Contact Address</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Business address" {...field} />
+                        <Textarea placeholder="Business address" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -356,7 +358,7 @@ export function SiteSettings() {
                     <FormItem>
                       <FormLabel>Admin Email (Order Notifications)</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="admin@innovanceorbit.com" {...field} />
+                        <Input type="email" placeholder="admin@innovanceorbit.com" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -374,6 +376,7 @@ export function SiteSettings() {
                           rows={15}
                           placeholder="HTML email template..."
                           {...field}
+                          value={field.value || ""}
                           className="font-mono text-sm"
                         />
                       </FormControl>
