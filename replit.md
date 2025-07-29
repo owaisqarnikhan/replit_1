@@ -2,7 +2,7 @@
 
 ## Overview
 
-InnovanceOrbit is a login-only e-commerce platform built with a modern full-stack architecture. The system features a React frontend with TypeScript, an Express.js backend, PostgreSQL database with Drizzle ORM, and integrates with Stripe and PayPal for payment processing. The platform is designed as a private store where only registered users can access products and make purchases.
+InnovanceOrbit is a login-only e-commerce platform built with a modern full-stack architecture. The system features a React frontend with TypeScript, an Express.js backend, PostgreSQL database with Drizzle ORM, and integrates with Benefit Pay and other Bahrain payment methods. The platform is designed as a private store where only predefined users can access products and make purchases - public registration is disabled.
 
 ## User Preferences
 
@@ -34,10 +34,11 @@ Preferred communication style: Simple, everyday language.
 ## Key Components
 
 ### Authentication System
+- Login-only access with predefined user accounts (no public registration)
 - Session-based authentication using Passport.js
 - Secure password hashing with scrypt and salt
 - Protected routes that redirect unauthenticated users to login
-- User registration and login with form validation
+- Admin account and multiple test customer accounts for development
 
 ### E-commerce Features
 - Product catalog with categories and featured products
