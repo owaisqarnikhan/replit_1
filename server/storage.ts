@@ -75,11 +75,11 @@ export interface IStorage {
   getSiteSettings(): Promise<SiteSettings>;
   updateSiteSettings(settingsData: Partial<InsertSiteSettings>): Promise<SiteSettings>;
 
-  sessionStore: session.SessionStore;
+  sessionStore: any;
 }
 
 export class DatabaseStorage implements IStorage {
-  public sessionStore: session.SessionStore;
+  public sessionStore: any;
 
   constructor() {
     this.sessionStore = new PostgresSessionStore({ 

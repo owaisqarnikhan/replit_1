@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema } from "@shared/schema";
+import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema } from "@shared/schema";
 import { sendOrderConfirmationEmail } from "./email";
 // import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { createBenefitPayTransaction, verifyBenefitPayTransaction, handleBenefitPayWebhook } from "./benefit-pay";
@@ -440,6 +440,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const userData = insertUserSchema.parse(req.body);
+      
+      // Hash password if provided
+      if (userData.password) {
+        const { hashPassword } = await import("./auth");
+        userData.password = await hashPassword(userData.password);
+      }
+      
       const user = await storage.createUser(userData);
       res.status(201).json(user);
     } catch (error: any) {
@@ -454,6 +461,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const userData = insertUserSchema.partial().parse(req.body);
+      
+      // Hash password if provided
+      if (userData.password && userData.password.trim() !== "") {
+        const { hashPassword } = await import("./auth");
+        userData.password = await hashPassword(userData.password);
+      } else if (userData.password === "") {
+        // Remove password from update if empty string
+        delete userData.password;
+      }
+      
       const user = await storage.updateUser(req.params.id, userData);
       res.json(user);
     } catch (error: any) {
