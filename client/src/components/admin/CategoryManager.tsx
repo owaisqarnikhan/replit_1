@@ -12,12 +12,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertCategorySchema, type InsertCategory, type Category } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, Edit, Trash2, Package } from "lucide-react";
+import { Plus, Edit, Trash2, Package, Upload } from "lucide-react";
 
 export function CategoryManager() {
   const { toast } = useToast();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const { data: categories, isLoading } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -97,6 +98,43 @@ export function CategoryManager() {
       });
     },
   });
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const data = await response.json();
+      form.setValue("imageUrl", data.imageUrl);
+      
+      toast({
+        title: "Image Uploaded",
+        description: "Category image uploaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const onSubmit = (data: InsertCategory) => {
     if (editingCategory) {
@@ -179,10 +217,39 @@ export function CategoryManager() {
                     name="imageUrl"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Image URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://example.com/image.jpg" {...field} value={field.value || ""} />
-                        </FormControl>
+                        <FormLabel>Image</FormLabel>
+                        <div className="space-y-2">
+                          <FormControl>
+                            <Input placeholder="https://example.com/image.jpg" {...field} value={field.value || ""} />
+                          </FormControl>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => document.getElementById('category-image-upload')?.click()}
+                              disabled={isUploading}
+                              className="flex items-center gap-2"
+                            >
+                              <Upload className="h-4 w-4" />
+                              {isUploading ? "Uploading..." : "Upload Image"}
+                            </Button>
+                            <input
+                              id="category-image-upload"
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={handleImageUpload}
+                            />
+                          </div>
+                          {field.value && (
+                            <img
+                              src={field.value}
+                              alt="Category preview"
+                              className="w-20 h-20 object-cover rounded border"
+                            />
+                          )}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}

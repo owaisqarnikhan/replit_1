@@ -88,6 +88,26 @@ export function NavigationHeader() {
     </>
   );
 
+  const logoComponent = (
+    <div className="flex items-center space-x-2">
+      {siteSettings?.logoUrl ? (
+        <img
+          src={siteSettings.logoUrl}
+          alt={siteSettings.siteName || "InnovanceOrbit"}
+          className="h-8 w-auto"
+          onError={(e) => {
+            // Fallback to text logo if image fails to load
+            e.currentTarget.style.display = 'none';
+            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+          }}
+        />
+      ) : null}
+      <span className={`text-xl font-bold ${siteSettings?.logoUrl ? 'hidden' : ''}`}>
+        {siteSettings?.siteName || "InnovanceOrbit"}
+      </span>
+    </div>
+  );
+
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -99,9 +119,9 @@ export function NavigationHeader() {
                 className="text-2xl font-bold text-primary hover:bg-transparent flex items-center space-x-3"
                 onClick={() => setLocation("/")}
               >
-                {siteSettings?.headerLogo ? (
+                {siteSettings?.logoUrl ? (
                   <img 
-                    src={siteSettings.headerLogo} 
+                    src={siteSettings.logoUrl} 
                     alt={siteSettings.siteName || "InnovanceOrbit"} 
                     className="h-8 w-auto"
                   />

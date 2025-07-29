@@ -98,15 +98,27 @@ export function SiteSettings() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // For now, we'll use a placeholder URL. In production, you'd upload to a service like Cloudinary
     setIsUploading(true);
     try {
-      // Simulate upload - in real app, upload to cloud storage
-      const fakeUrl = `https://via.placeholder.com/200x50?text=${encodeURIComponent(file.name)}`;
-      form.setValue("logoUrl", fakeUrl);
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const data = await response.json();
+      form.setValue("logoUrl", data.imageUrl);
+      
       toast({
         title: "Logo Uploaded",
-        description: "Logo uploaded successfully (demo mode)",
+        description: "Logo uploaded successfully",
       });
     } catch (error) {
       toast({
