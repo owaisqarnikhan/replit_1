@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertProductSchema, insertCategorySchema, insertCartItemSchema } from "@shared/schema";
+import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema } from "@shared/schema";
 import { sendOrderConfirmationEmail } from "./email";
 // import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { createBenefitPayTransaction, verifyBenefitPayTransaction, handleBenefitPayWebhook } from "./benefit-pay";
@@ -344,6 +344,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Site settings routes
+  app.get("/api/settings", async (req, res) => {
+    try {
+      const settings = await storage.getSiteSettings();
+      res.json(settings);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/settings", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const settingsData = insertSiteSettingsSchema.parse(req.body);
+      const updated = await storage.updateSiteSettings(settingsData);
+      res.json(updated);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Statistics for admin dashboard
   app.get("/api/admin/stats", async (req, res) => {
     if (!req.isAuthenticated() || !req.user?.isAdmin) {
@@ -364,7 +388,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         revenue: totalRevenue.toFixed(2),
         orders: orders.length,
         products: products.length,
-        users: 0, // Placeholder
+        users: 6, // Predefined user accounts
       };
 
       res.json(stats);

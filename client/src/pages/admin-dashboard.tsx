@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProductSchema, type InsertProduct } from "@shared/schema";
+import { insertProductSchema, type InsertProduct, insertSiteSettingsSchema, type InsertSiteSettings, type SiteSettings } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { 
@@ -49,6 +49,10 @@ export default function AdminDashboard() {
 
   const { data: categories } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
+  });
+
+  const { data: siteSettings } = useQuery<SiteSettings>({
+    queryKey: ["/api/settings"],
   });
 
   const deleteProductMutation = useMutation({
@@ -111,6 +115,27 @@ export default function AdminDashboard() {
       toast({
         title: "Error",
         description: error.message || "Failed to add product",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (settingsData: Partial<InsertSiteSettings>) => {
+      const res = await apiRequest("PUT", "/api/settings", settingsData);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
+      toast({
+        title: "Success",
+        description: "Site settings updated successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update settings",
         variant: "destructive",
       });
     },
@@ -279,6 +304,12 @@ export default function AdminDashboard() {
                     className="px-6 py-4 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
                   >
                     Users
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="settings" 
+                    className="px-6 py-4 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent"
+                  >
+                    Site Settings
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -463,6 +494,243 @@ export default function AdminDashboard() {
                 <div className="text-center py-8">
                   <Users className="w-16 h-16 text-slate-300 mx-auto mb-4" />
                   <p className="text-slate-600">User management functionality coming soon...</p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="settings" className="p-6">
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold text-slate-900">Site Settings</h2>
+                  <p className="text-slate-600">Manage your site's branding, theme, and contact information</p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Branding Section */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Branding & Logos</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label htmlFor="siteName">Site Name</Label>
+                        <Input
+                          id="siteName"
+                          defaultValue={siteSettings?.siteName}
+                          placeholder="InnovanceOrbit"
+                          onBlur={(e) => updateSettingsMutation.mutate({ siteName: e.target.value })}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="headerLogo">Header Logo URL</Label>
+                        <Input
+                          id="headerLogo"
+                          defaultValue={siteSettings?.headerLogo || ""}
+                          placeholder="https://example.com/logo.png"
+                          onBlur={(e) => updateSettingsMutation.mutate({ headerLogo: e.target.value })}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="footerLogo">Footer Logo URL</Label>
+                        <Input
+                          id="footerLogo"
+                          defaultValue={siteSettings?.footerLogo || ""}
+                          placeholder="https://example.com/footer-logo.png"
+                          onBlur={(e) => updateSettingsMutation.mutate({ footerLogo: e.target.value })}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="footerDescription">Footer Description</Label>
+                        <Textarea
+                          id="footerDescription"
+                          defaultValue={siteSettings?.footerDescription || ""}
+                          placeholder="Your trusted partner for premium products..."
+                          rows={3}
+                          onBlur={(e) => updateSettingsMutation.mutate({ footerDescription: e.target.value })}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Color Theme Section */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Color Theme</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label htmlFor="primaryColor">Primary Color</Label>
+                        <div className="flex space-x-2">
+                          <Input
+                            id="primaryColor"
+                            type="color"
+                            defaultValue={siteSettings?.primaryColor}
+                            className="w-16 h-10"
+                            onChange={(e) => updateSettingsMutation.mutate({ primaryColor: e.target.value })}
+                          />
+                          <Input
+                            defaultValue={siteSettings?.primaryColor}
+                            placeholder="#2563eb"
+                            onBlur={(e) => updateSettingsMutation.mutate({ primaryColor: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="secondaryColor">Secondary Color</Label>
+                        <div className="flex space-x-2">
+                          <Input
+                            id="secondaryColor"
+                            type="color"
+                            defaultValue={siteSettings?.secondaryColor}
+                            className="w-16 h-10"
+                            onChange={(e) => updateSettingsMutation.mutate({ secondaryColor: e.target.value })}
+                          />
+                          <Input
+                            defaultValue={siteSettings?.secondaryColor}
+                            placeholder="#64748b"
+                            onBlur={(e) => updateSettingsMutation.mutate({ secondaryColor: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="accentColor">Accent Color</Label>
+                        <div className="flex space-x-2">
+                          <Input
+                            id="accentColor"
+                            type="color"
+                            defaultValue={siteSettings?.accentColor}
+                            className="w-16 h-10"
+                            onChange={(e) => updateSettingsMutation.mutate({ accentColor: e.target.value })}
+                          />
+                          <Input
+                            defaultValue={siteSettings?.accentColor}
+                            placeholder="#0ea5e9"
+                            onBlur={(e) => updateSettingsMutation.mutate({ accentColor: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="backgroundColor">Background Color</Label>
+                        <div className="flex space-x-2">
+                          <Input
+                            id="backgroundColor"
+                            type="color"
+                            defaultValue={siteSettings?.backgroundColor}
+                            className="w-16 h-10"
+                            onChange={(e) => updateSettingsMutation.mutate({ backgroundColor: e.target.value })}
+                          />
+                          <Input
+                            defaultValue={siteSettings?.backgroundColor}
+                            placeholder="#ffffff"
+                            onBlur={(e) => updateSettingsMutation.mutate({ backgroundColor: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Contact Information */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Contact Information</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label htmlFor="contactEmail">Contact Email</Label>
+                        <Input
+                          id="contactEmail"
+                          type="email"
+                          defaultValue={siteSettings?.contactEmail || ""}
+                          placeholder="info@innovanceorbit.com"
+                          onBlur={(e) => updateSettingsMutation.mutate({ contactEmail: e.target.value })}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="contactPhone">Contact Phone</Label>
+                        <Input
+                          id="contactPhone"
+                          defaultValue={siteSettings?.contactPhone || ""}
+                          placeholder="+973 1234 5678"
+                          onBlur={(e) => updateSettingsMutation.mutate({ contactPhone: e.target.value })}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="contactAddress">Business Address</Label>
+                        <Textarea
+                          id="contactAddress"
+                          defaultValue={siteSettings?.contactAddress || ""}
+                          placeholder="123 Business Street, Manama, Bahrain"
+                          rows={2}
+                          onBlur={(e) => updateSettingsMutation.mutate({ contactAddress: e.target.value })}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="businessHours">Business Hours</Label>
+                        <Input
+                          id="businessHours"
+                          defaultValue={siteSettings?.businessHours || ""}
+                          placeholder="Sun-Thu: 9AM-6PM"
+                          onBlur={(e) => updateSettingsMutation.mutate({ businessHours: e.target.value })}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Social Media & Footer */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Social Media & Footer</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label htmlFor="socialFacebook">Facebook URL</Label>
+                        <Input
+                          id="socialFacebook"
+                          defaultValue={siteSettings?.socialFacebook || ""}
+                          placeholder="https://facebook.com/yourpage"
+                          onBlur={(e) => updateSettingsMutation.mutate({ socialFacebook: e.target.value })}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="socialInstagram">Instagram URL</Label>
+                        <Input
+                          id="socialInstagram"
+                          defaultValue={siteSettings?.socialInstagram || ""}
+                          placeholder="https://instagram.com/yourhandle"
+                          onBlur={(e) => updateSettingsMutation.mutate({ socialInstagram: e.target.value })}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="copyrightText">Copyright Text</Label>
+                        <Input
+                          id="copyrightText"
+                          defaultValue={siteSettings?.copyrightText || ""}
+                          placeholder="© 2025 InnovanceOrbit. All rights reserved."
+                          onBlur={(e) => updateSettingsMutation.mutate({ copyrightText: e.target.value })}
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="additionalFooterText">Additional Footer Text</Label>
+                        <Textarea
+                          id="additionalFooterText"
+                          defaultValue={siteSettings?.additionalFooterText || ""}
+                          placeholder="Additional footer information"
+                          rows={2}
+                          onBlur={(e) => updateSettingsMutation.mutate({ additionalFooterText: e.target.value })}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </TabsContent>
             </Tabs>

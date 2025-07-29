@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { NavigationHeader } from "@/components/navigation-header";
+import Footer from "@/components/footer";
 import { ProductCard } from "@/components/product-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -127,6 +128,8 @@ export default function HomePage() {
           )}
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import {
   cartItems, 
   orders, 
   orderItems,
+  siteSettings,
   type User, 
   type InsertUser,
   type Category,
@@ -16,7 +17,9 @@ import {
   type Order,
   type InsertOrder,
   type OrderItem,
-  type InsertOrderItem
+  type InsertOrderItem,
+  type SiteSettings,
+  type InsertSiteSettings
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -64,6 +67,10 @@ export interface IStorage {
   createOrder(order: InsertOrder): Promise<Order>;
   createOrderItem(item: InsertOrderItem): Promise<OrderItem>;
   updateOrderStatus(id: string, status: string): Promise<Order>;
+
+  // Site settings methods
+  getSiteSettings(): Promise<SiteSettings>;
+  updateSiteSettings(settingsData: Partial<InsertSiteSettings>): Promise<SiteSettings>;
 
   sessionStore: session.SessionStore;
 }
@@ -328,6 +335,26 @@ export class DatabaseStorage implements IStorage {
       .update(orders)
       .set({ status })
       .where(eq(orders.id, id))
+      .returning();
+    return updated;
+  }
+
+  // Site Settings methods
+  async getSiteSettings(): Promise<SiteSettings> {
+    const [settings] = await db.select().from(siteSettings).where(eq(siteSettings.id, "default"));
+    if (!settings) {
+      // Create default settings if none exist
+      const [newSettings] = await db.insert(siteSettings).values({ id: "default" }).returning();
+      return newSettings;
+    }
+    return settings;
+  }
+
+  async updateSiteSettings(settingsData: Partial<InsertSiteSettings>): Promise<SiteSettings> {
+    const [updated] = await db
+      .update(siteSettings)
+      .set({ ...settingsData, updatedAt: new Date() })
+      .where(eq(siteSettings.id, "default"))
       .returning();
     return updated;
   }

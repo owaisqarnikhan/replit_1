@@ -13,6 +13,7 @@ import CheckoutPage from "@/pages/checkout-page";
 import UserDashboard from "@/pages/user-dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
 import { ProtectedRoute } from "./lib/protected-route";
+import Footer from "@/components/footer";
 
 function Router() {
   return (

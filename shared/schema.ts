@@ -167,3 +167,38 @@ export type Order = typeof orders.$inferSelect;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type OrderItem = typeof orderItems.$inferSelect;
 export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
+
+export const siteSettings = pgTable("site_settings", {
+  id: varchar("id").primaryKey().default("default"),
+  siteName: text("site_name").notNull().default("InnovanceOrbit"),
+  headerLogo: text("header_logo"),
+  footerLogo: text("footer_logo"),
+  primaryColor: text("primary_color").default("#2563eb"),
+  secondaryColor: text("secondary_color").default("#64748b"),
+  accentColor: text("accent_color").default("#0ea5e9"),
+  backgroundColor: text("background_color").default("#ffffff"),
+  textColor: text("text_color").default("#1e293b"),
+  footerDescription: text("footer_description"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  contactAddress: text("contact_address"),
+  supportEmail: text("support_email"),
+  businessHours: text("business_hours"),
+  socialFacebook: text("social_facebook"),
+  socialTwitter: text("social_twitter"),
+  socialInstagram: text("social_instagram"),
+  socialLinkedin: text("social_linkedin"),
+  copyrightText: text("copyright_text"),
+  additionalFooterText: text("additional_footer_text"),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
+export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertSiteSettings = z.infer<typeof insertSiteSettingsSchema>;
+export type SiteSettings = typeof siteSettings.$inferSelect;

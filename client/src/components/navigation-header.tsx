@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import type { CartItem, Product } from "@shared/schema";
+import type { CartItem, Product, SiteSettings } from "@shared/schema";
 
 type CartItemWithProduct = CartItem & { product: Product };
 
@@ -36,6 +36,10 @@ export function NavigationHeader() {
   const { data: cartItems } = useQuery<CartItemWithProduct[]>({
     queryKey: ["/api/cart"],
     enabled: !!user,
+  });
+
+  const { data: siteSettings } = useQuery<SiteSettings>({
+    queryKey: ["/api/settings"],
   });
 
   const cartCount = cartItems?.reduce((sum, item) => sum + item.quantity, 0) || 0;
@@ -92,10 +96,19 @@ export function NavigationHeader() {
             <div className="flex-shrink-0">
               <Button
                 variant="ghost"
-                className="text-2xl font-bold text-primary hover:bg-transparent"
+                className="text-2xl font-bold text-primary hover:bg-transparent flex items-center space-x-3"
                 onClick={() => setLocation("/")}
               >
-                InnovanceOrbit
+                {siteSettings?.headerLogo ? (
+                  <img 
+                    src={siteSettings.headerLogo} 
+                    alt={siteSettings.siteName || "InnovanceOrbit"} 
+                    className="h-8 w-auto"
+                  />
+                ) : (
+                  <Store className="w-6 h-6" />
+                )}
+                <span>{siteSettings?.siteName || "InnovanceOrbit"}</span>
               </Button>
             </div>
             
