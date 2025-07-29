@@ -24,9 +24,9 @@ export default function AuthPage() {
     defaultValues: { username: "", password: "" },
   });
 
-  // Redirect if already logged in
+  // Redirect if already logged in (use effect to avoid render issues)
   if (user) {
-    setLocation("/");
+    setTimeout(() => setLocation("/"), 0);
     return null;
   }
 

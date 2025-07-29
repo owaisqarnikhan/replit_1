@@ -8,6 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { insertProductSchema, type InsertProduct } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { 
@@ -27,6 +33,7 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [showAddProduct, setShowAddProduct] = useState(false);
 
   const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/admin/stats"],
@@ -85,6 +92,45 @@ export default function AdminDashboard() {
     },
   });
 
+  const addProductMutation = useMutation({
+    mutationFn: async (productData: InsertProduct) => {
+      const res = await apiRequest("POST", "/api/products", productData);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setShowAddProduct(false);
+      addProductForm.reset();
+      toast({
+        title: "Success",
+        description: "Product added successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add product",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const addProductForm = useForm<InsertProduct>({
+    resolver: zodResolver(insertProductSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      price: "",
+      stock: 0,
+      categoryId: "",
+      sku: "",
+      imageUrl: "",
+      isActive: true,
+      isFeatured: false,
+    },
+  });
+
   const filteredProducts = products?.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.categoryId === selectedCategory;
@@ -114,7 +160,10 @@ export default function AdminDashboard() {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-slate-900">Admin Dashboard</h1>
           <div className="flex space-x-4">
-            <Button className="bg-primary hover:bg-blue-600">
+            <Button 
+              className="bg-primary hover:bg-blue-600"
+              onClick={() => setShowAddProduct(true)}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Add Product
             </Button>
@@ -149,7 +198,7 @@ export default function AdminDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-slate-600 text-sm">Total Revenue</p>
-                      <p className="text-2xl font-bold text-slate-900">${stats?.revenue || "0.00"}</p>
+                      <p className="text-2xl font-bold text-slate-900">{stats?.revenue || "0.00"} BHD</p>
                       <p className="text-green-500 text-sm">↗ +12% from last month</p>
                     </div>
                     <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
@@ -302,7 +351,7 @@ export default function AdminDashboard() {
                         </div>
                         
                         <div className="text-sm font-medium text-slate-900 w-20">
-                          ${product.price}
+                          {product.price} BHD
                         </div>
                         
                         <div className="text-sm text-slate-600 w-16">
@@ -374,7 +423,7 @@ export default function AdminDashboard() {
                         </div>
                         
                         <div className="text-right">
-                          <p className="font-semibold text-slate-900">${order.total}</p>
+                          <p className="font-semibold text-slate-900">{order.total} BHD</p>
                         </div>
                         
                         <div>
@@ -420,6 +469,154 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Add Product Dialog */}
+      <Dialog open={showAddProduct} onOpenChange={setShowAddProduct}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Add New Product</DialogTitle>
+          </DialogHeader>
+          
+          <form onSubmit={addProductForm.handleSubmit((data) => addProductMutation.mutate(data))} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="name">Product Name</Label>
+                <Input
+                  id="name"
+                  {...addProductForm.register("name")}
+                  placeholder="Enter product name"
+                />
+                {addProductForm.formState.errors.name && (
+                  <p className="text-sm text-red-500">{addProductForm.formState.errors.name.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label htmlFor="sku">SKU</Label>
+                <Input
+                  id="sku"
+                  {...addProductForm.register("sku")}
+                  placeholder="Enter SKU"
+                />
+                {addProductForm.formState.errors.sku && (
+                  <p className="text-sm text-red-500">{addProductForm.formState.errors.sku.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                {...addProductForm.register("description")}
+                placeholder="Enter product description"
+                rows={3}
+              />
+              {addProductForm.formState.errors.description && (
+                <p className="text-sm text-red-500">{addProductForm.formState.errors.description.message}</p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="price">Price (BHD)</Label>
+                <Input
+                  id="price"
+                  {...addProductForm.register("price")}
+                  placeholder="0.00"
+                  type="number"
+                  step="0.01"
+                />
+                {addProductForm.formState.errors.price && (
+                  <p className="text-sm text-red-500">{addProductForm.formState.errors.price.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label htmlFor="stock">Stock Quantity</Label>
+                <Input
+                  id="stock"
+                  {...addProductForm.register("stock", { valueAsNumber: true })}
+                  placeholder="0"
+                  type="number"
+                />
+                {addProductForm.formState.errors.stock && (
+                  <p className="text-sm text-red-500">{addProductForm.formState.errors.stock.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="categoryId">Category</Label>
+                <Select onValueChange={(value) => addProductForm.setValue("categoryId", value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="electronics">Electronics</SelectItem>
+                    <SelectItem value="clothing">Clothing</SelectItem>
+                    <SelectItem value="home">Home & Garden</SelectItem>
+                    <SelectItem value="books">Books</SelectItem>
+                    <SelectItem value="sports">Sports</SelectItem>
+                    {categories?.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {addProductForm.formState.errors.categoryId && (
+                  <p className="text-sm text-red-500">{addProductForm.formState.errors.categoryId.message}</p>
+                )}
+              </div>
+              
+              <div>
+                <Label htmlFor="imageUrl">Image URL</Label>
+                <Input
+                  id="imageUrl"
+                  {...addProductForm.register("imageUrl")}
+                  placeholder="https://example.com/image.jpg"
+                />
+                {addProductForm.formState.errors.imageUrl && (
+                  <p className="text-sm text-red-500">{addProductForm.formState.errors.imageUrl.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="isActive"
+                  {...addProductForm.register("isActive")}
+                  className="rounded"
+                />
+                <Label htmlFor="isActive">Active</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="isFeatured"
+                  {...addProductForm.register("isFeatured")}
+                  className="rounded"
+                />
+                <Label htmlFor="isFeatured">Featured</Label>
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button type="button" variant="outline" onClick={() => setShowAddProduct(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={addProductMutation.isPending}>
+                {addProductMutation.isPending ? "Adding..." : "Add Product"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
