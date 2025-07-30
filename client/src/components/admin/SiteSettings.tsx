@@ -1324,19 +1324,38 @@ export function SiteSettings() {
                     )}
                   />
 
-                  {form.watch("loginPageLogo") && (
+                  {form.watch("loginPageLogo") && form.watch("loginPageLogo")?.trim() !== "" && (
                     <div className="mt-4">
                       <Label>Preview:</Label>
-                      <div className="mt-2 p-4 border rounded-lg bg-gray-50">
+                      <div className="mt-2 p-4 border rounded-lg bg-gray-50 text-center">
                         <img 
                           src={form.watch("loginPageLogo") || ""} 
                           alt="Login page logo preview" 
-                          className="w-auto mx-auto"
+                          className="w-auto mx-auto mb-4"
                           style={{ height: `${form.watch("loginPageLogoWidth") || 80}px` }}
                         />
+                        {form.watch("loginPageTitle") && form.watch("loginPageTitle")?.trim() !== "" && (
+                          <h2 className="text-2xl font-bold text-slate-900">
+                            {form.watch("loginPageTitle")}
+                          </h2>
+                        )}
                       </div>
                     </div>
                   )}
+                  
+                  {!form.watch("loginPageLogo") || form.watch("loginPageLogo")?.trim() === "" ? (
+                    <div className="mt-4">
+                      <Label>Preview:</Label>
+                      <div className="mt-2 p-4 border rounded-lg bg-gray-50 text-center">
+                        <p className="text-gray-500 text-sm">No logo configured</p>
+                        {form.watch("loginPageTitle") && form.watch("loginPageTitle")?.trim() !== "" && (
+                          <h2 className="text-2xl font-bold text-slate-900 mt-2">
+                            {form.watch("loginPageTitle")}
+                          </h2>
+                        )}
+                      </div>
+                    </div>
+                  ) : null}
                 </div>
               </TabsContent>
 

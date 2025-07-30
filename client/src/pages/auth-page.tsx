@@ -49,17 +49,19 @@ export default function AuthPage() {
       <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            {settings?.loginPageLogo && (
+            {settings?.loginPageLogo && settings.loginPageLogo.trim() !== "" && (
               <img 
                 src={settings.loginPageLogo} 
-                alt={settings.loginPageTitle || "InnovanceOrbit Store"} 
+                alt={settings.loginPageTitle || "Login"} 
                 className="w-auto mx-auto mb-6"
                 style={{ height: `${settings.loginPageLogoWidth || 80}px` }}
               />
             )}
-            <h1 className="text-3xl font-bold text-slate-900">
-              {settings?.loginPageTitle || "InnovanceOrbit Store"}
-            </h1>
+            {settings?.loginPageTitle && settings.loginPageTitle.trim() !== "" && (
+              <h1 className="text-3xl font-bold text-slate-900">
+                {settings.loginPageTitle}
+              </h1>
+            )}
           </div>
 
           <Card>
