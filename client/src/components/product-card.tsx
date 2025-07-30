@@ -163,7 +163,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
             {product.description || "No description available"}
           </p>
           
-          <div className="flex items-center justify-between mb-0.5">
+          <div className="flex items-center justify-between">
             <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               ${parseFloat(product.price).toFixed(2)}
             </span>
@@ -181,7 +181,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
           </div>
         </div>
         
-        <div className="mt-auto pt-0.5">
+        <div className="mt-auto">
           {showDetailsButton ? (
             <div className="flex gap-1.5">
               <Button 
