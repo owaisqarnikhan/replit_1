@@ -127,9 +127,15 @@ export default function AuthPage() {
           <div>
             <Store className="w-20 h-20 mx-auto mb-6 text-blue-100" />
             <h2 className="text-3xl font-bold mb-4">Welcome to InnovanceOrbit</h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Your exclusive eCommerce destination for premium products
-            </p>
+          </div>
+
+          {/* Separator Image */}
+          <div className="flex justify-center my-8">
+            <img 
+              src="/uploads/login-separator.png" 
+              alt="Separator" 
+              className="h-12 w-auto opacity-80"
+            />
           </div>
 
           <div className="space-y-6">
@@ -137,7 +143,6 @@ export default function AuthPage() {
               <Shield className="w-8 h-8 text-blue-200" />
               <div className="text-left">
                 <h3 className="font-semibold">Secure Shopping</h3>
-                <p className="text-sm text-blue-100">Protected transactions and data</p>
               </div>
             </div>
 
@@ -145,7 +150,6 @@ export default function AuthPage() {
               <Truck className="w-8 h-8 text-blue-200" />
               <div className="text-left">
                 <h3 className="font-semibold">Fast Delivery</h3>
-                <p className="text-sm text-blue-100">Quick and reliable shipping</p>
               </div>
             </div>
 
@@ -153,7 +157,6 @@ export default function AuthPage() {
               <CreditCard className="w-8 h-8 text-blue-200" />
               <div className="text-left">
                 <h3 className="font-semibold">Bahrain Payment Options</h3>
-                <p className="text-sm text-blue-100">Benefit Pay, Cash on Delivery</p>
               </div>
             </div>
           </div>
