@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { NavigationHeader } from "@/components/navigation-header";
+import Footer from "@/components/footer";
 import { ProductCard } from "@/components/product-card";
 import { ProductDetailModal } from "@/components/ProductDetailModal";
 import { Card, CardContent } from "@/components/ui/card";
@@ -131,6 +132,8 @@ export default function ProductsPage() {
           setSelectedProduct(null);
         }}
       />
+      
+      <Footer />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { NavigationHeader } from "@/components/navigation-header";
+import Footer from "@/components/footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "wouter";
@@ -101,6 +102,8 @@ export default function CategoriesPage() {
           </div>
         )}
       </div>
+      
+      <Footer />
     </div>
   );
 }
