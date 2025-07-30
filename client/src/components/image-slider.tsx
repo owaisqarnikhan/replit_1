@@ -1,13 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface SliderImage {
-  id: string;
-  url: string;
-  title?: string;
-  description?: string;
-}
+import type { SliderImage } from "@shared/schema";
 
 interface ImageSliderProps {
   images: SliderImage[];
@@ -93,7 +87,7 @@ export function ImageSlider({
             }`}
           >
             <img
-              src={image.url}
+              src={image.imageUrl}
               alt={image.title || `Slide ${index + 1}`}
               className="w-full h-full object-cover"
             />
