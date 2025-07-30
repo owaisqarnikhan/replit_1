@@ -111,56 +111,16 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {/* Right side - Hero */}
-      <div className="flex-1 relative bg-gradient-to-br from-primary to-blue-600 text-white p-8 flex items-center justify-center overflow-hidden">
-        <div 
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: `url('/src/assets/geometric-design.png')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/80 to-primary/80" />
-        <div className="max-w-md text-center space-y-8 relative z-10">
-          <div>
-            <Store className="w-20 h-20 mx-auto mb-6 text-blue-100" />
-            <h2 className="text-3xl font-bold mb-4">Welcome to InnovanceOrbit</h2>
-          </div>
-
-          {/* Separator Image */}
-          <div className="flex justify-center my-8">
-            <img 
-              src="/uploads/login-separator.png" 
-              alt="Separator" 
-              className="h-12 w-auto opacity-80"
-            />
-          </div>
-
-          <div className="space-y-6">
-            <div className="flex items-center space-x-4">
-              <Shield className="w-8 h-8 text-blue-200" />
-              <div className="text-left">
-                <h3 className="font-semibold">Secure Shopping</h3>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <Truck className="w-8 h-8 text-blue-200" />
-              <div className="text-left">
-                <h3 className="font-semibold">Fast Delivery</h3>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-4">
-              <CreditCard className="w-8 h-8 text-blue-200" />
-              <div className="text-left">
-                <h3 className="font-semibold">Bahrain Payment Options</h3>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Right side - Full Image */}
+      <div 
+        className="flex-1 relative overflow-hidden"
+        style={{
+          backgroundImage: `url('/uploads/login-separator.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
       </div>
     </div>
   );
