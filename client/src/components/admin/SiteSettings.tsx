@@ -420,6 +420,7 @@ export function SiteSettings() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
+                                <SelectItem value="#ffffff">White</SelectItem>
                                 <SelectItem value="#000000">Black</SelectItem>
                                 <SelectItem value="#374151">Dark Gray</SelectItem>
                                 <SelectItem value="#64748b">Medium Gray</SelectItem>
@@ -451,6 +452,7 @@ export function SiteSettings() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
+                                <SelectItem value="#ffffff">White</SelectItem>
                                 <SelectItem value="#000000">Black</SelectItem>
                                 <SelectItem value="#374151">Dark Gray</SelectItem>
                                 <SelectItem value="#64748b">Medium Gray</SelectItem>
@@ -482,6 +484,7 @@ export function SiteSettings() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
+                                <SelectItem value="#ffffff">White</SelectItem>
                                 <SelectItem value="#000000">Black</SelectItem>
                                 <SelectItem value="#374151">Dark Gray</SelectItem>
                                 <SelectItem value="#64748b">Medium Gray</SelectItem>
