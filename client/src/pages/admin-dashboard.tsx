@@ -10,6 +10,7 @@ import { UserManager } from "@/components/admin/UserManager";
 import { OrderManager } from "@/components/admin/OrderManager";
 import { SiteSettings } from "@/components/admin/SiteSettings";
 import DatabaseManager from "@/components/admin/DatabaseManager";
+import ExcelManager from "@/components/admin/ExcelManager";
 import { 
   DollarSign, 
   ShoppingCart, 
@@ -128,7 +129,7 @@ export default function AdminDashboard() {
 
         {/* Management Tabs */}
         <Tabs defaultValue="orders" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7">
+          <TabsList className="grid w-full grid-cols-8">
             <TabsTrigger value="orders" className="flex items-center gap-2">
               <ShoppingBag className="h-4 w-4" />
               Orders
@@ -148,6 +149,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Users
+            </TabsTrigger>
+            <TabsTrigger value="excel" className="flex items-center gap-2">
+              <FileSpreadsheet className="h-4 w-4" />
+              Excel
             </TabsTrigger>
             <TabsTrigger value="database" className="flex items-center gap-2">
               <FileSpreadsheet className="h-4 w-4" />
@@ -177,6 +182,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="users">
             <UserManager />
+          </TabsContent>
+
+          <TabsContent value="excel">
+            <ExcelManager />
           </TabsContent>
 
           <TabsContent value="database">

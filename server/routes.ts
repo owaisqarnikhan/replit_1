@@ -776,6 +776,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Excel import/export routes
+  app.get("/api/admin/export/excel", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { exportDataToExcel } = await import('./excelUtils');
+      const excelBuffer = await exportDataToExcel();
+      
+      const filename = `data-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+      
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(excelBuffer);
+    } catch (error) {
+      console.error('Excel export error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to export Excel file" 
+      });
+    }
+  });
+
+  // Configure multer for Excel import
+  const excelUpload = multer({ 
+    storage: storage_config,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for Excel files
+    fileFilter: (req, file, cb) => {
+      const allowedMimeTypes = [
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel'
+      ];
+      const allowedExtensions = ['.xlsx', '.xls'];
+      
+      if (allowedMimeTypes.includes(file.mimetype) || 
+          allowedExtensions.includes(path.extname(file.originalname).toLowerCase())) {
+        return cb(null, true);
+      } else {
+        cb(new Error('Only Excel files (.xlsx, .xls) are allowed'));
+      }
+    }
+  });
+
+  app.post("/api/admin/import/excel", excelUpload.single('excel'), async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "No Excel file uploaded" 
+      });
+    }
+
+    try {
+      const { parseExcelFile } = await import('./excelUtils');
+      const fileBuffer = await fs.promises.readFile(req.file.path);
+      const parsedData = parseExcelFile(fileBuffer);
+      
+      // Import data in order: categories first, then products, then users
+      if (parsedData.categories.length > 0) {
+        await storage.importCategories(parsedData.categories);
+      }
+      
+      if (parsedData.products.length > 0) {
+        await storage.importProducts(parsedData.products);
+      }
+      
+      if (parsedData.users.length > 0) {
+        await storage.importUsers(parsedData.users);
+      }
+      
+      // Clean up uploaded file
+      await fs.promises.unlink(req.file.path);
+      
+      res.json({ 
+        success: true, 
+        message: `Successfully imported ${parsedData.categories.length} categories, ${parsedData.products.length} products, and ${parsedData.users.length} users`,
+        imported: {
+          categories: parsedData.categories.length,
+          products: parsedData.products.length,
+          users: parsedData.users.length
+        }
+      });
+    } catch (error) {
+      console.error('Excel import error:', error);
+      
+      // Clean up uploaded file on error
+      if (req.file) {
+        try {
+          await fs.promises.unlink(req.file.path);
+        } catch (cleanupError) {
+          console.error('Failed to cleanup upload file:', cleanupError);
+        }
+      }
+      
+      res.status(500).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : "Failed to import Excel file" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

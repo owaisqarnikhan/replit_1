@@ -29,6 +29,7 @@ import { eq, and, desc } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { pool } from "./db";
+import * as crypto from "crypto";
 
 const PostgresSessionStore = connectPg(session);
 
@@ -93,6 +94,11 @@ export interface IStorage {
   getCartItems(): Promise<CartItem[]>;
   clearProductsAndCategories(): Promise<void>;
   executeSQLImport(sqlContent: string): Promise<void>;
+  
+  // Excel import methods
+  importCategories(categoriesData: any[]): Promise<void>;
+  importProducts(productsData: any[]): Promise<void>;
+  importUsers(usersData: any[]): Promise<void>;
 
   sessionStore: any;
 }
@@ -254,6 +260,115 @@ export class DatabaseStorage implements IStorage {
 
   async getAllCartItems(): Promise<CartItem[]> {
     return await db.select().from(cartItems);
+  }
+
+  // Excel import methods
+  async importCategories(categoriesData: any[]): Promise<void> {
+    if (categoriesData.length === 0) return;
+    
+    // Clear existing categories
+    await db.delete(categories);
+    
+    // Insert new categories
+    for (const category of categoriesData) {
+      await db.insert(categories).values({
+        id: category.id,
+        name: category.name,
+        description: category.description,
+        imageUrl: category.imageUrl
+      }).onConflictDoUpdate({
+        target: categories.id,
+        set: {
+          name: category.name,
+          description: category.description,
+          imageUrl: category.imageUrl
+        }
+      });
+    }
+  }
+
+  async importProducts(productsData: any[]): Promise<void> {
+    if (productsData.length === 0) return;
+    
+    // Clear existing products
+    await db.delete(products);
+    
+    // Insert new products
+    for (const product of productsData) {
+      await db.insert(products).values({
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        price: product.price.toString(),
+        stock: product.stock,
+        sku: product.sku,
+        categoryId: product.categoryId,
+        imageUrl: product.imageUrl,
+        isActive: product.isActive,
+        isFeatured: product.isFeatured,
+        rating: product.rating.toString(),
+        reviewCount: product.reviewCount,
+        productType: product.productType,
+        rentalPeriod: product.rentalPeriod,
+        rentalPrice: product.rentalPrice?.toString()
+      }).onConflictDoUpdate({
+        target: products.id,
+        set: {
+          name: product.name,
+          description: product.description,
+          price: product.price.toString(),
+          stock: product.stock,
+          sku: product.sku,
+          categoryId: product.categoryId,
+          imageUrl: product.imageUrl,
+          isActive: product.isActive,
+          isFeatured: product.isFeatured,
+          rating: product.rating.toString(),
+          reviewCount: product.reviewCount,
+          productType: product.productType,
+          rentalPeriod: product.rentalPeriod,
+          rentalPrice: product.rentalPrice?.toString()
+        }
+      });
+    }
+  }
+
+  async importUsers(usersData: any[]): Promise<void> {
+    if (usersData.length === 0) return;
+    
+    // Note: We don't clear existing users for security reasons
+    // Instead, we only update existing users or create new ones
+    
+    for (const user of usersData) {
+      const existingUser = await db.select().from(users).where(eq(users.id, user.id)).limit(1);
+      
+      if (existingUser.length > 0) {
+        // Update existing user (excluding password for security)
+        await db.update(users).set({
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isAdmin: user.isAdmin
+        }).where(eq(users.id, user.id));
+      } else {
+        // Create new user with default password (they'll need to reset)
+        const defaultPassword = crypto.randomBytes(16).toString('hex');
+        const salt = crypto.randomBytes(16).toString('hex');
+        const hashedPassword = crypto.scryptSync(defaultPassword, salt, 64).toString('hex');
+        
+        await db.insert(users).values({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isAdmin: user.isAdmin,
+          password: hashedPassword,
+          salt: salt
+        });
+      }
+    }
   }
 
   async clearProductsAndCategories(): Promise<void> {
