@@ -853,16 +853,28 @@ export function SiteSettings() {
                     />
                   </div>
 
-                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <h4 className="font-semibold text-blue-900 mb-2">SendGrid Setup Instructions:</h4>
-                    <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
-                      <li>Sign up for a SendGrid account at <a href="https://sendgrid.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-600">sendgrid.com</a></li>
-                      <li>Verify your sender identity (domain or single sender)</li>
-                      <li>Generate an API Key in Settings → API Keys</li>
-                      <li>Enter "apikey" as SMTP Username and your API Key as SMTP Password</li>
-                      <li>Use smtp.sendgrid.net as SMTP Host and port 587</li>
-                      <li>Enable email notifications above to start sending emails</li>
-                    </ol>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                      <h4 className="font-semibold text-blue-900 mb-2">SendGrid Setup:</h4>
+                      <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
+                        <li>Sign up at <a href="https://sendgrid.com" target="_blank" rel="noopener noreferrer" className="underline">sendgrid.com</a></li>
+                        <li>Verify your sender identity</li>
+                        <li>Generate API Key in Settings → API Keys</li>
+                        <li>Username: "apikey", Password: Your API Key</li>
+                        <li>Host: smtp.sendgrid.net, Port: 587</li>
+                      </ol>
+                    </div>
+                    
+                    <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                      <h4 className="font-semibold text-green-900 mb-2">Hostinger Email Setup:</h4>
+                      <ol className="list-decimal list-inside space-y-1 text-sm text-green-800">
+                        <li>Create email account in Hostinger panel</li>
+                        <li>Use your domain email as username</li>
+                        <li>Enter your email password</li>
+                        <li>Host: smtp.hostinger.com, Port: 587</li>
+                        <li>Enable STARTTLS encryption</li>
+                      </ol>
+                    </div>
                   </div>
                 </div>
 

@@ -7,18 +7,21 @@ if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 }
 
-// Create transporter function for fallback or custom SMTP
+// Create transporter function for Hostinger SMTP
 async function createTransporter() {
   const settings = await storage.getSiteSettings();
   
   return nodemailer.createTransport({
-    host: settings.smtpHost || 'smtp.sendgrid.net',
+    host: settings.smtpHost || 'smtp.hostinger.com',
     port: settings.smtpPort || 587,
-    secure: false,
+    secure: false, // STARTTLS
     auth: {
-      user: settings.smtpUser || 'apikey',
-      pass: settings.smtpPassword || process.env.SENDGRID_API_KEY || '',
+      user: settings.smtpUser || settings.smtpFromEmail,
+      pass: settings.smtpPassword,
     },
+    tls: {
+      rejectUnauthorized: false // Accept self-signed certificates
+    }
   });
 }
 
@@ -105,99 +108,48 @@ export async function sendOrderConfirmationEmail(
     const fromEmail = settings.smtpFromEmail || settings.contactEmail || 'noreply@innovanceorbit.com';
     const fromName = settings.smtpFromName || settings.siteName || 'InnovanceOrbit';
 
-    // Use SendGrid if available and API key is set
-    if (process.env.SENDGRID_API_KEY && settings.emailEnabled) {
-      console.log('Sending emails via SendGrid...');
-      
-      // Send to customer via SendGrid
-      await sgMail.send({
-        to: customerEmail,
-        from: {
-          email: fromEmail,
-          name: fromName
-        },
-        subject: `Order Confirmation - ${orderDetails.orderNumber}`,
-        html: html
-      });
+    // Use Hostinger SMTP for sending emails
+    console.log('Sending emails via Hostinger SMTP...');
+    const smtpTransporter = await createTransporter();
+    
+    // Send to customer
+    await smtpTransporter.sendMail({
+      from: `${fromName} <${fromEmail}>`,
+      to: customerEmail,
+      subject: `Order Confirmation - ${orderDetails.orderNumber}`,
+      html: html
+    });
 
-      // Send notification to admin via SendGrid
-      if (settings.adminEmail) {
-        const adminHtml = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #dc2626;">New Order Received - ${orderDetails.orderNumber}</h2>
-            <p>A new order has been placed on ${settings.siteName}.</p>
-            
-            <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
-              <h3>Order Details:</h3>
-              <p><strong>Order Number:</strong> ${orderDetails.orderNumber}</p>
-              <p><strong>Customer:</strong> ${orderDetails.customerName}</p>
-              <p><strong>Customer Email:</strong> ${customerEmail}</p>
-              <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod}</p>
-              <p><strong>Total Amount:</strong> $${orderDetails.total}</p>
-              <p><strong>Order Date:</strong> ${new Date().toLocaleString()}</p>
-            </div>
-
-            <h3>Items Ordered:</h3>
-            ${orderItemsTable}
-
-            <p>Please process this order in the admin dashboard.</p>
+    // Send notification to admin
+    if (settings.adminEmail) {
+      const adminHtml = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #dc2626;">New Order Received - ${orderDetails.orderNumber}</h2>
+          <p>A new order has been placed on ${settings.siteName}.</p>
+          
+          <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
+            <h3>Order Details:</h3>
+            <p><strong>Order Number:</strong> ${orderDetails.orderNumber}</p>
+            <p><strong>Customer:</strong> ${orderDetails.customerName}</p>
+            <p><strong>Customer Email:</strong> ${customerEmail}</p>
+            <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod}</p>
+            <p><strong>Total Amount:</strong> $${orderDetails.total}</p>
+            <p><strong>Order Date:</strong> ${new Date().toLocaleString()}</p>
           </div>
-        `;
 
-        await sgMail.send({
-          to: settings.adminEmail,
-          from: {
-            email: fromEmail,
-            name: fromName
-          },
-          subject: `New Order Alert - ${orderDetails.orderNumber}`,
-          html: adminHtml
-        });
-      }
-    } else {
-      // Fallback to SMTP transporter
-      console.log('Sending emails via SMTP...');
-      const smtpTransporter = await createTransporter();
-      
-      // Send to customer
+          <h3>Items Ordered:</h3>
+          ${orderItemsTable}
+
+          <p>Please process this order in the admin dashboard.</p>
+        </div>
+      `;
+
       await smtpTransporter.sendMail({
         from: `${fromName} <${fromEmail}>`,
-        to: customerEmail,
-        subject: `Order Confirmation - ${orderDetails.orderNumber}`,
-        html: html
+        to: settings.adminEmail,
+        subject: `New Order Alert - ${orderDetails.orderNumber}`,
+        html: adminHtml
       });
-
-      // Send notification to admin
-      if (settings.adminEmail) {
-        const adminHtml = `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #dc2626;">New Order Received - ${orderDetails.orderNumber}</h2>
-            <p>A new order has been placed on ${settings.siteName}.</p>
-            
-            <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
-              <h3>Order Details:</h3>
-              <p><strong>Order Number:</strong> ${orderDetails.orderNumber}</p>
-              <p><strong>Customer:</strong> ${orderDetails.customerName}</p>
-              <p><strong>Customer Email:</strong> ${customerEmail}</p>
-              <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod}</p>
-              <p><strong>Total Amount:</strong> $${orderDetails.total}</p>
-              <p><strong>Order Date:</strong> ${new Date().toLocaleString()}</p>
-            </div>
-
-            <h3>Items Ordered:</h3>
-            ${orderItemsTable}
-
-            <p>Please process this order in the admin dashboard.</p>
-          </div>
-        `;
-
-        await smtpTransporter.sendMail({
-          from: `${fromName} <${fromEmail}>`,
-          to: settings.adminEmail,
-          subject: `New Order Alert - ${orderDetails.orderNumber}`,
-          html: adminHtml
-        });
-      }
     }
 
     console.log('Order confirmation emails sent successfully');
