@@ -93,7 +93,7 @@ export function ImageSlider({
   }
 
   return (
-    <div className={`relative ${height} overflow-hidden group`}>
+    <div className={`relative ${height} overflow-hidden group bg-gray-100 dark:bg-gray-800`}>
       {/* Prominent Geometric Corner Designs */}
       <div 
         className="absolute top-0 right-0 w-80 h-80 opacity-100 z-10 pointer-events-none"
@@ -132,7 +132,7 @@ export function ImageSlider({
             <img
               src={image.imageUrl}
               alt={image.title || `Slide ${index + 1}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
             
