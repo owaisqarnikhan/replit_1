@@ -37,6 +37,7 @@ export function SiteSettings() {
       contactPhone: settings?.contactPhone || "",
       contactAddress: settings?.contactAddress || "",
       businessHours: settings?.businessHours || "",
+      officeHoursTitle: settings?.officeHoursTitle || "Office Hours",
       theme: settings?.theme || "default",
       primaryColor: settings?.primaryColor || "#2563eb",
       secondaryColor: settings?.secondaryColor || "#64748b",
@@ -77,6 +78,7 @@ export function SiteSettings() {
         contactPhone: settings.contactPhone || "",
         contactAddress: settings.contactAddress || "",
         businessHours: settings.businessHours || "",
+        officeHoursTitle: settings.officeHoursTitle || "Office Hours",
         theme: settings.theme || "default",
         primaryColor: settings.primaryColor || "#2563eb",
         secondaryColor: settings.secondaryColor || "#64748b",
@@ -725,19 +727,35 @@ export function SiteSettings() {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="businessHours"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Office Timing / Business Hours</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Mon-Fri: 9:00 AM - 6:00 PM, Sat: 10:00 AM - 4:00 PM" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="officeHoursTitle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Office Hours Section Title</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Office Hours" {...field} value={field.value || ""} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="businessHours"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Office Timing / Business Hours</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Mon-Fri: 9:00 AM - 6:00 PM, Sat: 10:00 AM - 4:00 PM" {...field} value={field.value || ""} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </TabsContent>
 
               <TabsContent value="footer" className="space-y-6">
