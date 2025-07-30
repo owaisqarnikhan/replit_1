@@ -53,11 +53,7 @@ export function SiteSettings() {
       quickLinkProducts: settings?.quickLinkProducts || "Products",
       quickLinkAbout: settings?.quickLinkAbout || "About",
       quickLinkContact: settings?.quickLinkContact || "Contact",
-      servicesTitle: settings?.servicesTitle || "Services",
-      serviceLink1: settings?.serviceLink1 || "Customer Support",
-      serviceLink2: settings?.serviceLink2 || "Shipping Info",
-      serviceLink3: settings?.serviceLink3 || "Returns",
-      serviceLink4: settings?.serviceLink4 || "FAQ",
+
       socialTitle: settings?.socialTitle || "Follow Us",
       socialFacebook: settings?.socialFacebook || "",
       socialTwitter: settings?.socialTwitter || "",
@@ -96,11 +92,7 @@ export function SiteSettings() {
         quickLinkProducts: settings.quickLinkProducts || "Products",
         quickLinkAbout: settings.quickLinkAbout || "About",
         quickLinkContact: settings.quickLinkContact || "Contact",
-        servicesTitle: settings.servicesTitle || "Services",
-        serviceLink1: settings.serviceLink1 || "Customer Support",
-        serviceLink2: settings.serviceLink2 || "Shipping Info",
-        serviceLink3: settings.serviceLink3 || "Returns",
-        serviceLink4: settings.serviceLink4 || "FAQ",
+
         socialTitle: settings.socialTitle || "Follow Us",
         socialFacebook: settings.socialFacebook || "",
         socialTwitter: settings.socialTwitter || "",
@@ -870,82 +862,7 @@ export function SiteSettings() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Services Section</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="servicesTitle"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Section Title</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Services" {...field} value={field.value || ""} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
 
-                      <div></div>
-
-                      <FormField
-                        control={form.control}
-                        name="serviceLink1"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Service Link 1</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Customer Support" {...field} value={field.value || ""} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="serviceLink2"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Service Link 2</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Shipping Info" {...field} value={field.value || ""} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="serviceLink3"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Service Link 3</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Returns" {...field} value={field.value || ""} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="serviceLink4"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Service Link 4</FormLabel>
-                            <FormControl>
-                              <Input placeholder="FAQ" {...field} value={field.value || ""} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
 
                   <div>
                     <h3 className="text-lg font-semibold mb-4">Social Media</h3>

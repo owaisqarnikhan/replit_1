@@ -19,9 +19,9 @@ export default function Footer() {
     >
       <div className="absolute inset-0 bg-slate-900/85"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Company Info */}
-          <div className="col-span-1 lg:col-span-2">
+          <div className="col-span-1 lg:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
               {settings?.logoUrl ? (
                 <img 
@@ -82,36 +82,11 @@ export default function Footer() {
             </nav>
           </div>
 
-          {/* Services */}
+          {/* Social Media */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">{settings?.servicesTitle || "Services"}</h4>
-            <nav className="space-y-2">
-              {settings?.serviceLink1 && (
-                <div className="block text-slate-300">
-                  {settings.serviceLink1}
-                </div>
-              )}
-              {settings?.serviceLink2 && (
-                <div className="block text-slate-300">
-                  {settings.serviceLink2}
-                </div>
-              )}
-              {settings?.serviceLink3 && (
-                <div className="block text-slate-300">
-                  {settings.serviceLink3}
-                </div>
-              )}
-              {settings?.serviceLink4 && (
-                <div className="block text-slate-300">
-                  {settings.serviceLink4}
-                </div>
-              )}
-            </nav>
-
-            {/* Social Media */}
             {(settings?.socialFacebook || settings?.socialTwitter || settings?.socialInstagram || settings?.socialLinkedin) && (
-              <div className="mt-6">
-                <h5 className="text-sm font-semibold mb-3">{settings?.socialTitle || "Follow Us"}</h5>
+              <>
+                <h4 className="text-lg font-semibold mb-4">{settings?.socialTitle || "Follow Us"}</h4>
                 <div className="flex space-x-4">
                   {settings?.socialFacebook && (
                     <a href={settings.socialFacebook} target="_blank" rel="noopener noreferrer" 
@@ -138,7 +113,7 @@ export default function Footer() {
                     </a>
                   )}
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>
