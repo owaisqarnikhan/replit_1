@@ -42,6 +42,7 @@ export function SiteSettings() {
       footerLeftImage: settings?.footerLeftImage || "",
       footerLeftImageWidth: settings?.footerLeftImageWidth || 200,
       paymentMethodsImageWidth: settings?.paymentMethodsImageWidth || 250,
+      loginPageLogoWidth: settings?.loginPageLogoWidth || 80,
       theme: settings?.theme || "default",
       primaryColor: settings?.primaryColor || "#2563eb",
       secondaryColor: settings?.secondaryColor || "#64748b",
@@ -134,6 +135,7 @@ export function SiteSettings() {
         // Login Page Settings
         loginPageLogo: settings.loginPageLogo || "",
         loginPageTitle: settings.loginPageTitle || "InnovanceOrbit Store",
+        loginPageLogoWidth: settings.loginPageLogoWidth || 80,
       });
       
       // Apply the current theme on load
@@ -1302,6 +1304,26 @@ export function SiteSettings() {
                     )}
                   />
 
+                  <FormField
+                    control={form.control}
+                    name="loginPageLogoWidth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Login Page Logo Height (px)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            placeholder="80" 
+                            {...field} 
+                            value={field.value || 80}
+                            onChange={(e) => field.onChange(parseInt(e.target.value) || 80)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   {form.watch("loginPageLogo") && (
                     <div className="mt-4">
                       <Label>Preview:</Label>
@@ -1309,7 +1331,8 @@ export function SiteSettings() {
                         <img 
                           src={form.watch("loginPageLogo") || ""} 
                           alt="Login page logo preview" 
-                          className="h-20 w-auto mx-auto"
+                          className="w-auto mx-auto"
+                          style={{ height: `${form.watch("loginPageLogoWidth") || 80}px` }}
                         />
                       </div>
                     </div>

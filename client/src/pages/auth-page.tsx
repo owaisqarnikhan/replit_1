@@ -53,7 +53,8 @@ export default function AuthPage() {
               <img 
                 src={settings.loginPageLogo} 
                 alt={settings.loginPageTitle || "InnovanceOrbit Store"} 
-                className="h-20 w-auto mx-auto mb-6"
+                className="w-auto mx-auto mb-6"
+                style={{ height: `${settings.loginPageLogoWidth || 80}px` }}
               />
             )}
             <h1 className="text-3xl font-bold text-slate-900">
