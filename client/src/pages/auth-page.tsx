@@ -112,8 +112,18 @@ export default function AuthPage() {
       </div>
 
       {/* Right side - Hero */}
-      <div className="flex-1 bg-gradient-to-br from-primary to-blue-600 text-white p-8 flex items-center justify-center">
-        <div className="max-w-md text-center space-y-8">
+      <div className="flex-1 relative bg-gradient-to-br from-primary to-blue-600 text-white p-8 flex items-center justify-center overflow-hidden">
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url('/src/assets/geometric-design.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/80 to-primary/80" />
+        <div className="max-w-md text-center space-y-8 relative z-10">
           <div>
             <Store className="w-20 h-20 mx-auto mb-6 text-blue-100" />
             <h2 className="text-3xl font-bold mb-4">Welcome to InnovanceOrbit</h2>

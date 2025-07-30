@@ -29,9 +29,21 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-50">
       <NavigationHeader />
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-2">Manage your e-commerce platform</p>
+        <div className="relative mb-8 p-6 bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl overflow-hidden">
+          <div 
+            className="absolute inset-0 opacity-15"
+            style={{
+              backgroundImage: `url('/src/assets/geometric-design.png')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-blue-600/80" />
+          <div className="relative z-10">
+            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+            <p className="mt-2 opacity-90">Manage your e-commerce platform</p>
+          </div>
         </div>
 
         {/* Stats Overview */}

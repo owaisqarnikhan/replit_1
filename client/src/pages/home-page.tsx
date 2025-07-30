@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { NavigationHeader } from "@/components/navigation-header";
 import Footer from "@/components/footer";
 import { ProductCard } from "@/components/product-card";
+import { PromotionalBanner } from "@/components/promotional-banner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,14 +25,24 @@ export default function HomePage() {
       <NavigationHeader />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary to-blue-600 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-r from-primary to-blue-600 text-white py-16 overflow-hidden">
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url('/src/assets/geometric-design.png')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-blue-600/90" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">Welcome Back!</h1>
             <p className="text-xl opacity-90 mb-8">Discover our exclusive product collection</p>
             <Button 
               size="lg"
-              className="bg-accent hover:bg-yellow-500 text-slate-900 font-semibold transform hover:scale-105 transition-all duration-200"
+              className="bg-accent hover:bg-yellow-500 text-slate-900 font-semibold transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
               onClick={() => setLocation("/products")}
             >
               Shop Now
@@ -97,8 +108,17 @@ export default function HomePage() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-16 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-16 bg-slate-50 overflow-hidden">
+        <div 
+          className="absolute top-0 right-0 w-1/3 h-full opacity-5"
+          style={{
+            backgroundImage: `url('/src/assets/geometric-design.png')`,
+            backgroundSize: 'contain',
+            backgroundPosition: 'top right',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <h2 className="text-3xl font-bold text-slate-900 text-center mb-12">Featured Products</h2>
           
           {productsLoading ? (
@@ -126,6 +146,20 @@ export default function HomePage() {
               <p className="text-slate-600">No featured products available at the moment.</p>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Promotional Banner */}
+      <section className="py-8 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <PromotionalBanner
+            title="Exclusive Member Benefits"
+            description="Enjoy premium products, priority support, and special pricing as a valued member"
+            buttonText="Learn More"
+            variant="gradient"
+            icon="gift"
+            onButtonClick={() => setLocation("/products")}
+          />
         </div>
       </section>
       
