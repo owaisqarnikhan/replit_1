@@ -16,16 +16,7 @@ import { Settings, Palette, Mail, Upload, Save } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { themes, applyTheme, type ThemeName } from "@/lib/themes";
 
-const colorOptions = [
-  { name: "Blue", value: "#2563eb" },
-  { name: "Green", value: "#059669" },
-  { name: "Purple", value: "#7c3aed" },
-  { name: "Red", value: "#dc2626" },
-  { name: "Orange", value: "#ea580c" },
-  { name: "Pink", value: "#db2777" },
-  { name: "Indigo", value: "#4f46e5" },
-  { name: "Teal", value: "#0d9488" },
-];
+
 
 export function SiteSettings() {
   const { toast } = useToast();
@@ -322,26 +313,37 @@ export function SiteSettings() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Primary Color</FormLabel>
-                        <div className="space-y-2">
+                        <Select onValueChange={field.onChange} value={field.value || "#2563eb"}>
                           <FormControl>
-                            <Input type="color" {...field} value={field.value || "#2563eb"} />
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select primary color" />
+                            </SelectTrigger>
                           </FormControl>
-                          <div className="grid grid-cols-4 gap-2">
-                            {colorOptions.map((color) => (
-                              <Button
-                                key={color.value}
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => field.onChange(color.value)}
-                                className="h-8"
-                                style={{ backgroundColor: color.value, color: "white" }}
-                              >
-                                {color.name}
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
+                          <SelectContent>
+                            <SelectItem value="#ffffff">White</SelectItem>
+                            <SelectItem value="#000000">Black</SelectItem>
+                            <SelectItem value="#374151">Dark Gray</SelectItem>
+                            <SelectItem value="#64748b">Medium Gray</SelectItem>
+                            <SelectItem value="#94a3b8">Light Gray</SelectItem>
+                            <SelectItem value="#2563eb">Blue</SelectItem>
+                            <SelectItem value="#1e40af">Dark Blue</SelectItem>
+                            <SelectItem value="#3b82f6">Light Blue</SelectItem>
+                            <SelectItem value="#06b6d4">Cyan</SelectItem>
+                            <SelectItem value="#0891b2">Teal</SelectItem>
+                            <SelectItem value="#059669">Green</SelectItem>
+                            <SelectItem value="#16a34a">Light Green</SelectItem>
+                            <SelectItem value="#eab308">Yellow</SelectItem>
+                            <SelectItem value="#f59e0b">Amber</SelectItem>
+                            <SelectItem value="#ea580c">Orange</SelectItem>
+                            <SelectItem value="#dc2626">Red</SelectItem>
+                            <SelectItem value="#e11d48">Rose</SelectItem>
+                            <SelectItem value="#c2410c">Dark Orange</SelectItem>
+                            <SelectItem value="#7c3aed">Purple</SelectItem>
+                            <SelectItem value="#8b5cf6">Violet</SelectItem>
+                            <SelectItem value="#a855f7">Light Purple</SelectItem>
+                            <SelectItem value="#ec4899">Pink</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -353,9 +355,37 @@ export function SiteSettings() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Secondary Color</FormLabel>
-                        <FormControl>
-                          <Input type="color" {...field} value={field.value || "#64748b"} />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} value={field.value || "#64748b"}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select secondary color" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="#ffffff">White</SelectItem>
+                            <SelectItem value="#000000">Black</SelectItem>
+                            <SelectItem value="#374151">Dark Gray</SelectItem>
+                            <SelectItem value="#64748b">Medium Gray</SelectItem>
+                            <SelectItem value="#94a3b8">Light Gray</SelectItem>
+                            <SelectItem value="#2563eb">Blue</SelectItem>
+                            <SelectItem value="#1e40af">Dark Blue</SelectItem>
+                            <SelectItem value="#3b82f6">Light Blue</SelectItem>
+                            <SelectItem value="#06b6d4">Cyan</SelectItem>
+                            <SelectItem value="#0891b2">Teal</SelectItem>
+                            <SelectItem value="#059669">Green</SelectItem>
+                            <SelectItem value="#16a34a">Light Green</SelectItem>
+                            <SelectItem value="#eab308">Yellow</SelectItem>
+                            <SelectItem value="#f59e0b">Amber</SelectItem>
+                            <SelectItem value="#ea580c">Orange</SelectItem>
+                            <SelectItem value="#dc2626">Red</SelectItem>
+                            <SelectItem value="#e11d48">Rose</SelectItem>
+                            <SelectItem value="#c2410c">Dark Orange</SelectItem>
+                            <SelectItem value="#7c3aed">Purple</SelectItem>
+                            <SelectItem value="#8b5cf6">Violet</SelectItem>
+                            <SelectItem value="#a855f7">Light Purple</SelectItem>
+                            <SelectItem value="#ec4899">Pink</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -367,9 +397,37 @@ export function SiteSettings() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Accent Color</FormLabel>
-                        <FormControl>
-                          <Input type="color" {...field} value={field.value || "#0ea5e9"} />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} value={field.value || "#0ea5e9"}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select accent color" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="#ffffff">White</SelectItem>
+                            <SelectItem value="#000000">Black</SelectItem>
+                            <SelectItem value="#374151">Dark Gray</SelectItem>
+                            <SelectItem value="#64748b">Medium Gray</SelectItem>
+                            <SelectItem value="#94a3b8">Light Gray</SelectItem>
+                            <SelectItem value="#2563eb">Blue</SelectItem>
+                            <SelectItem value="#1e40af">Dark Blue</SelectItem>
+                            <SelectItem value="#3b82f6">Light Blue</SelectItem>
+                            <SelectItem value="#06b6d4">Cyan</SelectItem>
+                            <SelectItem value="#0891b2">Teal</SelectItem>
+                            <SelectItem value="#059669">Green</SelectItem>
+                            <SelectItem value="#16a34a">Light Green</SelectItem>
+                            <SelectItem value="#eab308">Yellow</SelectItem>
+                            <SelectItem value="#f59e0b">Amber</SelectItem>
+                            <SelectItem value="#ea580c">Orange</SelectItem>
+                            <SelectItem value="#dc2626">Red</SelectItem>
+                            <SelectItem value="#e11d48">Rose</SelectItem>
+                            <SelectItem value="#c2410c">Dark Orange</SelectItem>
+                            <SelectItem value="#7c3aed">Purple</SelectItem>
+                            <SelectItem value="#8b5cf6">Violet</SelectItem>
+                            <SelectItem value="#a855f7">Light Purple</SelectItem>
+                            <SelectItem value="#ec4899">Pink</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -381,9 +439,25 @@ export function SiteSettings() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Background Color</FormLabel>
-                        <FormControl>
-                          <Input type="color" {...field} value={field.value || "#ffffff"} />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} value={field.value || "#ffffff"}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select background color" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="#ffffff">White</SelectItem>
+                            <SelectItem value="#f8fafc">Off White</SelectItem>
+                            <SelectItem value="#f1f5f9">Light Gray</SelectItem>
+                            <SelectItem value="#e2e8f0">Medium Light Gray</SelectItem>
+                            <SelectItem value="#cbd5e1">Medium Gray</SelectItem>
+                            <SelectItem value="#94a3b8">Dark Gray</SelectItem>
+                            <SelectItem value="#64748b">Darker Gray</SelectItem>
+                            <SelectItem value="#475569">Very Dark Gray</SelectItem>
+                            <SelectItem value="#334155">Almost Black</SelectItem>
+                            <SelectItem value="#000000">Black</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -395,9 +469,24 @@ export function SiteSettings() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Main Text Color</FormLabel>
-                        <FormControl>
-                          <Input type="color" {...field} value={field.value || "#1e293b"} />
-                        </FormControl>
+                        <Select onValueChange={field.onChange} value={field.value || "#1e293b"}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select text color" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="#ffffff">White</SelectItem>
+                            <SelectItem value="#f8fafc">Off White</SelectItem>
+                            <SelectItem value="#e2e8f0">Light Gray</SelectItem>
+                            <SelectItem value="#94a3b8">Medium Gray</SelectItem>
+                            <SelectItem value="#64748b">Dark Gray</SelectItem>
+                            <SelectItem value="#475569">Darker Gray</SelectItem>
+                            <SelectItem value="#334155">Very Dark Gray</SelectItem>
+                            <SelectItem value="#1e293b">Almost Black</SelectItem>
+                            <SelectItem value="#000000">Black</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -426,11 +515,22 @@ export function SiteSettings() {
                                 <SelectItem value="#64748b">Medium Gray</SelectItem>
                                 <SelectItem value="#94a3b8">Light Gray</SelectItem>
                                 <SelectItem value="#2563eb">Blue</SelectItem>
-                                <SelectItem value="#dc2626">Red</SelectItem>
+                                <SelectItem value="#1e40af">Dark Blue</SelectItem>
+                                <SelectItem value="#3b82f6">Light Blue</SelectItem>
+                                <SelectItem value="#06b6d4">Cyan</SelectItem>
+                                <SelectItem value="#0891b2">Teal</SelectItem>
                                 <SelectItem value="#059669">Green</SelectItem>
-                                <SelectItem value="#7c3aed">Purple</SelectItem>
+                                <SelectItem value="#16a34a">Light Green</SelectItem>
+                                <SelectItem value="#eab308">Yellow</SelectItem>
+                                <SelectItem value="#f59e0b">Amber</SelectItem>
                                 <SelectItem value="#ea580c">Orange</SelectItem>
-                                <SelectItem value="#0891b2">Cyan</SelectItem>
+                                <SelectItem value="#dc2626">Red</SelectItem>
+                                <SelectItem value="#e11d48">Rose</SelectItem>
+                                <SelectItem value="#c2410c">Dark Orange</SelectItem>
+                                <SelectItem value="#7c3aed">Purple</SelectItem>
+                                <SelectItem value="#8b5cf6">Violet</SelectItem>
+                                <SelectItem value="#a855f7">Light Purple</SelectItem>
+                                <SelectItem value="#ec4899">Pink</SelectItem>
                               </SelectContent>
                             </Select>
                             <p className="text-xs text-muted-foreground">Default color for navigation items</p>
@@ -458,11 +558,22 @@ export function SiteSettings() {
                                 <SelectItem value="#64748b">Medium Gray</SelectItem>
                                 <SelectItem value="#94a3b8">Light Gray</SelectItem>
                                 <SelectItem value="#2563eb">Blue</SelectItem>
-                                <SelectItem value="#dc2626">Red</SelectItem>
+                                <SelectItem value="#1e40af">Dark Blue</SelectItem>
+                                <SelectItem value="#3b82f6">Light Blue</SelectItem>
+                                <SelectItem value="#06b6d4">Cyan</SelectItem>
+                                <SelectItem value="#0891b2">Teal</SelectItem>
                                 <SelectItem value="#059669">Green</SelectItem>
-                                <SelectItem value="#7c3aed">Purple</SelectItem>
+                                <SelectItem value="#16a34a">Light Green</SelectItem>
+                                <SelectItem value="#eab308">Yellow</SelectItem>
+                                <SelectItem value="#f59e0b">Amber</SelectItem>
                                 <SelectItem value="#ea580c">Orange</SelectItem>
-                                <SelectItem value="#0891b2">Cyan</SelectItem>
+                                <SelectItem value="#dc2626">Red</SelectItem>
+                                <SelectItem value="#e11d48">Rose</SelectItem>
+                                <SelectItem value="#c2410c">Dark Orange</SelectItem>
+                                <SelectItem value="#7c3aed">Purple</SelectItem>
+                                <SelectItem value="#8b5cf6">Violet</SelectItem>
+                                <SelectItem value="#a855f7">Light Purple</SelectItem>
+                                <SelectItem value="#ec4899">Pink</SelectItem>
                               </SelectContent>
                             </Select>
                             <p className="text-xs text-muted-foreground">Color when hovering over navigation items</p>
@@ -490,11 +601,22 @@ export function SiteSettings() {
                                 <SelectItem value="#64748b">Medium Gray</SelectItem>
                                 <SelectItem value="#94a3b8">Light Gray</SelectItem>
                                 <SelectItem value="#2563eb">Blue</SelectItem>
-                                <SelectItem value="#dc2626">Red</SelectItem>
+                                <SelectItem value="#1e40af">Dark Blue</SelectItem>
+                                <SelectItem value="#3b82f6">Light Blue</SelectItem>
+                                <SelectItem value="#06b6d4">Cyan</SelectItem>
+                                <SelectItem value="#0891b2">Teal</SelectItem>
                                 <SelectItem value="#059669">Green</SelectItem>
-                                <SelectItem value="#7c3aed">Purple</SelectItem>
+                                <SelectItem value="#16a34a">Light Green</SelectItem>
+                                <SelectItem value="#eab308">Yellow</SelectItem>
+                                <SelectItem value="#f59e0b">Amber</SelectItem>
                                 <SelectItem value="#ea580c">Orange</SelectItem>
-                                <SelectItem value="#0891b2">Cyan</SelectItem>
+                                <SelectItem value="#dc2626">Red</SelectItem>
+                                <SelectItem value="#e11d48">Rose</SelectItem>
+                                <SelectItem value="#c2410c">Dark Orange</SelectItem>
+                                <SelectItem value="#7c3aed">Purple</SelectItem>
+                                <SelectItem value="#8b5cf6">Violet</SelectItem>
+                                <SelectItem value="#a855f7">Light Purple</SelectItem>
+                                <SelectItem value="#ec4899">Pink</SelectItem>
                               </SelectContent>
                             </Select>
                             <p className="text-xs text-muted-foreground">Color for currently active page/tab</p>
