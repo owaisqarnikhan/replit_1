@@ -74,7 +74,8 @@ export function NavigationHeader() {
           <Button
             key={item.href}
             variant="ghost"
-            className={`${mobile ? 'justify-start w-full' : ''} text-slate-600 hover:text-primary transition-colors duration-200 font-medium`}
+            className={`${mobile ? 'justify-start w-full' : ''} transition-colors duration-200 font-medium hover:opacity-80`}
+            style={{ color: siteSettings?.headerTextColor || '#64748b' }}
             onClick={() => {
               setLocation(item.href);
               if (mobile) setIsMobileMenuOpen(false);
@@ -109,14 +110,21 @@ export function NavigationHeader() {
   );
 
   return (
-    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+    <header 
+      className="shadow-sm border-b sticky top-0 z-50 nav-header"
+      style={{
+        backgroundColor: siteSettings?.primaryColor || '#ffffff',
+        borderBottomColor: siteSettings?.primaryColor ? `${siteSettings.primaryColor}20` : '#e5e7eb'
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
             <div className="flex-shrink-0">
               <Button
                 variant="ghost"
-                className="text-2xl font-bold text-primary hover:bg-transparent flex items-center space-x-3"
+                className="text-2xl font-bold hover:bg-transparent flex items-center space-x-3"
+                style={{ color: siteSettings?.headerTextColor || '#2563eb' }}
                 onClick={() => setLocation("/")}
               >
                 {siteSettings?.logoUrl ? (
@@ -142,12 +150,19 @@ export function NavigationHeader() {
             {/* Shopping Cart */}
             <Button
               variant="ghost"
-              className="relative text-slate-600 hover:text-primary transition-colors duration-200"
+              className="relative transition-colors duration-200 hover:opacity-80"
+              style={{ color: siteSettings?.headerTextColor || '#64748b' }}
               onClick={() => setLocation("/cart")}
             >
               <ShoppingCart className="h-5 w-5" />
               {cartCount > 0 && (
-                <Badge className="absolute -top-2 -right-2 bg-accent text-slate-900 text-xs px-1.5 py-0.5 min-w-[1.25rem] h-5 flex items-center justify-center">
+                <Badge 
+                  className="absolute -top-2 -right-2 text-xs px-1.5 py-0.5 min-w-[1.25rem] h-5 flex items-center justify-center"
+                  style={{ 
+                    backgroundColor: siteSettings?.accentColor || '#0ea5e9',
+                    color: '#ffffff'
+                  }}
+                >
                   {cartCount > 99 ? "99+" : cartCount}
                 </Badge>
               )}
@@ -158,11 +173,17 @@ export function NavigationHeader() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center space-x-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-primary text-white text-sm">
+                    <AvatarFallback 
+                      className="text-white text-sm"
+                      style={{ backgroundColor: siteSettings?.primaryColor || '#2563eb' }}
+                    >
                       {user?.username.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
-                  <span className="hidden sm:block text-slate-700 font-medium">
+                  <span 
+                    className="hidden sm:block font-medium"
+                    style={{ color: siteSettings?.headerTextColor || '#374151' }}
+                  >
                     {user?.username || "User"}
                   </span>
                 </Button>
@@ -196,7 +217,12 @@ export function NavigationHeader() {
             {/* Mobile Menu */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="md:hidden"
+                  style={{ color: siteSettings?.headerTextColor || '#374151' }}
+                >
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>

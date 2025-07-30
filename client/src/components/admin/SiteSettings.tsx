@@ -275,9 +275,9 @@ export function SiteSettings() {
                             
                             // Apply theme preview with current text colors
                             applyTheme(value as ThemeName, {
-                              headerTextColor: form.getValues("headerTextColor"),
-                              tabTextColor: form.getValues("tabTextColor"),
-                              tabActiveTextColor: form.getValues("tabActiveTextColor"),
+                              headerTextColor: form.getValues("headerTextColor") || "#ffffff",
+                              tabTextColor: form.getValues("tabTextColor") || "#64748b", 
+                              tabActiveTextColor: form.getValues("tabActiveTextColor") || "#2563eb",
                             });
                           }
                         }} 
