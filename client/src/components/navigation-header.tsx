@@ -63,10 +63,6 @@ export function NavigationHeader() {
     { label: "My Orders", href: "/dashboard", icon: Package },
   ];
 
-  if (user?.isAdmin) {
-    navItems.push({ label: "Admin", href: "/admin", icon: Settings });
-  }
-
   const NavigationItems = ({ mobile = false }) => (
     <>
       {navItems.map((item) => {
