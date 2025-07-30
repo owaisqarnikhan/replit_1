@@ -689,20 +689,182 @@ export function SiteSettings() {
                 />
               </TabsContent>
 
-              <TabsContent value="email" className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="adminEmail"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Admin Email (Order Notifications)</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="admin@innovanceorbit.com" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <TabsContent value="email" className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Mail className="h-5 w-5 text-blue-600" />
+                    <h3 className="text-lg font-semibold text-slate-900">Email Configuration</h3>
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="emailEnabled"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                        <div className="space-y-0.5">
+                          <FormLabel>Enable Email Notifications</FormLabel>
+                          <div className="text-sm text-muted-foreground">
+                            Send order confirmation emails to customers and admin
+                          </div>
+                        </div>
+                        <FormControl>
+                          <input
+                            type="checkbox"
+                            checked={field.value || false}
+                            onChange={field.onChange}
+                            className="rounded border-gray-300"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="adminEmail"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Admin Email (Order Notifications)</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="admin@innovanceorbit.com" {...field} value={field.value || ""} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Settings className="h-5 w-5 text-green-600" />
+                    <h3 className="text-lg font-semibold text-slate-900">SMTP Configuration</h3>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="smtpHost"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SMTP Host</FormLabel>
+                          <FormControl>
+                            <Input placeholder="smtp.sendgrid.net" {...field} value={field.value || "smtp.sendgrid.net"} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="smtpPort"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SMTP Port</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              placeholder="587" 
+                              {...field} 
+                              value={field.value || 587}
+                              onChange={(e) => field.onChange(parseInt(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="smtpUser"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SMTP Username</FormLabel>
+                          <FormControl>
+                            <Input placeholder="apikey" {...field} value={field.value || "apikey"} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="smtpPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SMTP Password / API Key</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="password" 
+                              placeholder="Your SendGrid API Key" 
+                              {...field} 
+                              value={field.value || ""} 
+                            />
+                          </FormControl>
+                          <div className="text-xs text-muted-foreground">
+                            For SendGrid, use your API Key here
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="smtpFromEmail"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>From Email Address</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="email" 
+                              placeholder="noreply@yourstore.com" 
+                              {...field} 
+                              value={field.value || ""} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="smtpFromName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>From Name</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Your Store Name" 
+                              {...field} 
+                              value={field.value || ""} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h4 className="font-semibold text-blue-900 mb-2">SendGrid Setup Instructions:</h4>
+                    <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
+                      <li>Sign up for a SendGrid account at <a href="https://sendgrid.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-600">sendgrid.com</a></li>
+                      <li>Verify your sender identity (domain or single sender)</li>
+                      <li>Generate an API Key in Settings → API Keys</li>
+                      <li>Enter "apikey" as SMTP Username and your API Key as SMTP Password</li>
+                      <li>Use smtp.sendgrid.net as SMTP Host and port 587</li>
+                      <li>Enable email notifications above to start sending emails</li>
+                    </ol>
+                  </div>
+                </div>
 
                 <FormField
                   control={form.control}

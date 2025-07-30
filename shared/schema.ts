@@ -199,7 +199,7 @@ export const siteSettings = pgTable("site_settings", {
   socialLinkedin: text("social_linkedin"),
   copyrightText: text("copyright_text"),
   additionalFooterText: text("additional_footer_text"),
-  // Email templates
+  // Email templates and SMTP Configuration
   orderConfirmationTemplate: text("order_confirmation_template").default(`
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2563eb;">Order Confirmation - {{orderNumber}}</h2>
@@ -218,6 +218,14 @@ export const siteSettings = pgTable("site_settings", {
       <p>Best regards,<br>{{siteName}} Team</p>
     </div>
   `),
+  // SMTP Configuration for SendGrid
+  smtpHost: text("smtp_host").default("smtp.sendgrid.net"),
+  smtpPort: integer("smtp_port").default(587),
+  smtpUser: text("smtp_user").default("apikey"),
+  smtpPassword: text("smtp_password").default(""), // SendGrid API Key
+  smtpFromEmail: text("smtp_from_email").default("noreply@innovanceorbit.com"),
+  smtpFromName: text("smtp_from_name").default("InnovanceOrbit"),
+  emailEnabled: boolean("email_enabled").default(false),
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });
