@@ -3,7 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema } from "@shared/schema";
+import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertWishlistItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema } from "@shared/schema";
 import { sendOrderConfirmationEmail } from "./email";
 import { testSMTP } from "./test-smtp";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
@@ -296,6 +296,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       await storage.removeFromCart(req.user!.id, req.params.productId);
+      res.sendStatus(204);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Wishlist routes
+  app.get("/api/wishlist", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const wishlistItems = await storage.getWishlistItems(req.user!.id);
+      res.json(wishlistItems);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/wishlist", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const wishlistItemData = insertWishlistItemSchema.parse({
+        ...req.body,
+        userId: req.user!.id,
+      });
+      const wishlistItem = await storage.addToWishlist(wishlistItemData);
+      res.status(201).json(wishlistItem);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/wishlist/:productId", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      await storage.removeFromWishlist(req.user!.id, req.params.productId);
       res.sendStatus(204);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
