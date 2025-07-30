@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { NavigationHeader } from "@/components/navigation-header";
 import { ProductCard } from "@/components/product-card";
+import { ProductDetailModal } from "@/components/ProductDetailModal";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,8 @@ import type { Product, Category } from "@shared/schema";
 export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -80,7 +83,14 @@ export default function ProductsPage() {
         ) : filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard 
+                key={product.id} 
+                product={product}
+                onViewDetails={(product) => {
+                  setSelectedProduct(product);
+                  setIsModalOpen(true);
+                }}
+              />
             ))}
           </div>
         ) : (
@@ -93,6 +103,16 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedProduct(null);
+        }}
+      />
     </div>
   );
 }

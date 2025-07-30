@@ -4,15 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Star, Heart, ShoppingCart } from "lucide-react";
+import { Star, Heart, ShoppingCart, Eye } from "lucide-react";
 import { useState } from "react";
 import type { Product } from "@shared/schema";
 
 interface ProductCardProps {
   product: Product;
+  onViewDetails?: (product: Product) => void;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, onViewDetails }: ProductCardProps) {
   const { toast } = useToast();
   const [isWishlisted, setIsWishlisted] = useState(false);
 
@@ -167,25 +168,36 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
         
-        <Button 
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
-          onClick={handleAddToCart}
-          disabled={addToCartMutation.isPending || product.stock === 0}
-        >
-          {addToCartMutation.isPending ? (
-            <div className="flex items-center">
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
-              Adding...
-            </div>
-          ) : product.stock === 0 ? (
-            "Out of Stock"
-          ) : (
-            <>
-              <ShoppingCart className="mr-2 h-5 w-5 group-hover:animate-bounce" />
-              Add to Cart
-            </>
-          )}
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            className="flex-1 border-2 border-blue-200 hover:border-blue-400 text-blue-600 hover:text-blue-700 font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+            onClick={() => onViewDetails?.(product)}
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            Details
+          </Button>
+          
+          <Button 
+            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
+            onClick={handleAddToCart}
+            disabled={addToCartMutation.isPending || product.stock === 0}
+          >
+            {addToCartMutation.isPending ? (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-1"></div>
+                Adding...
+              </div>
+            ) : product.stock === 0 ? (
+              "Out of Stock"
+            ) : (
+              <>
+                <ShoppingCart className="mr-1 h-4 w-4 group-hover:animate-bounce" />
+                Add to Cart
+              </>
+            )}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
