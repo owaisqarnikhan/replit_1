@@ -150,7 +150,7 @@ export function ImageSlider({
             
             {/* Image Text Overlay with Enhanced Styling */}
             {(image.title || image.description) && (
-              <div className="absolute bottom-0 left-0 right-0 p-8 text-white z-20 text-center">
+              <div className="absolute bottom-16 left-0 right-0 p-8 text-white z-20 text-center">
                 <div className="max-w-2xl mx-auto">
                   {image.title && (
                     <h3 className="text-4xl font-bold mb-3 drop-shadow-lg">{image.title}</h3>
