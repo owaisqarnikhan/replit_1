@@ -102,10 +102,10 @@ export default function DatabaseManager() {
       return;
     }
 
-    if (!importFile.name.endsWith('.json')) {
+    if (!importFile.name.endsWith('.sql')) {
       toast({
         title: "Invalid File Type",
-        description: "Please select a valid JSON database export file.",
+        description: "Please select a valid SQL database export file.",
         variant: "destructive",
       });
       return;
@@ -144,12 +144,12 @@ export default function DatabaseManager() {
           <CardContent>
             <div className="space-y-4">
               <div className="text-sm text-muted-foreground">
-                <p>The export will include:</p>
+                <p>The SQL export will include:</p>
                 <ul className="list-disc ml-4 mt-2 space-y-1">
-                  <li>All products and categories</li>
-                  <li>Order history and customer data</li>
-                  <li>Site settings (passwords excluded)</li>
-                  <li>Shopping cart data</li>
+                  <li>All products and categories with proper SQL INSERT statements</li>
+                  <li>Site settings with UPDATE statements (passwords excluded)</li>
+                  <li>Compatible with PostgreSQL database format</li>
+                  <li>Timestamped backup with version information</li>
                 </ul>
               </div>
               
@@ -173,7 +173,7 @@ export default function DatabaseManager() {
               <span>Import Database</span>
             </CardTitle>
             <CardDescription>
-              Restore your store data from a previous export file. This will replace existing data.
+              Restore your store data from a previous SQL export file. This will replace existing data.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -183,12 +183,12 @@ export default function DatabaseManager() {
                 <Input
                   id="database-file"
                   type="file"
-                  accept=".json"
+                  accept=".sql"
                   onChange={(e) => setImportFile(e.target.files?.[0] || null)}
                   className="cursor-pointer"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Only JSON export files are accepted
+                  Only SQL export files are accepted
                 </p>
               </div>
 

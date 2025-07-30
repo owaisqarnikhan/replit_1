@@ -64,10 +64,12 @@ export async function exportDatabase(): Promise<DatabaseExport> {
 export async function saveExportToFile(exportData: DatabaseExport): Promise<string> {
   try {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `database-export-${timestamp}.json`;
+    const filename = `database-export-${timestamp}.sql`;
     const filepath = path.join(process.cwd(), 'uploads', filename);
     
-    await fs.writeFile(filepath, JSON.stringify(exportData, null, 2));
+    // Convert JSON data to SQL format
+    const sqlContent = generateSQLExport(exportData);
+    await fs.writeFile(filepath, sqlContent);
     return filename;
   } catch (error) {
     console.error('Export file save error:', error);
@@ -75,42 +77,59 @@ export async function saveExportToFile(exportData: DatabaseExport): Promise<stri
   }
 }
 
-export async function importDatabase(importData: DatabaseExport): Promise<void> {
+function generateSQLExport(exportData: DatabaseExport): string {
+  let sqlContent = `-- Database Export Generated on ${exportData.timestamp}\n`;
+  sqlContent += `-- InnovanceOrbit E-commerce Platform Database Backup\n`;
+  sqlContent += `-- Version: ${exportData.version}\n\n`;
+  
+  // Add categories
+  if (exportData.data.categories.length > 0) {
+    sqlContent += `-- Categories\n`;
+    sqlContent += `DELETE FROM categories;\n`;
+    for (const category of exportData.data.categories) {
+      sqlContent += `INSERT INTO categories (id, name, description, image_url, created_at) VALUES ('${category.id}', '${escapeSQL(category.name)}', '${escapeSQL(category.description || '')}', '${escapeSQL(category.imageUrl || '')}', '${category.createdAt}');\n`;
+    }
+    sqlContent += `\n`;
+  }
+  
+  // Add products
+  if (exportData.data.products.length > 0) {
+    sqlContent += `-- Products\n`;
+    sqlContent += `DELETE FROM products;\n`;
+    for (const product of exportData.data.products) {
+      sqlContent += `INSERT INTO products (id, name, description, price, category_id, image_url, is_featured, stock_quantity, created_at) VALUES ('${product.id}', '${escapeSQL(product.name)}', '${escapeSQL(product.description || '')}', '${product.price}', '${product.categoryId}', '${escapeSQL(product.imageUrl || '')}', ${product.isFeatured}, ${product.stockQuantity || 0}, '${product.createdAt}');\n`;
+    }
+    sqlContent += `\n`;
+  }
+  
+  // Add site settings
+  if (exportData.data.siteSettings.length > 0) {
+    sqlContent += `-- Site Settings\n`;
+    const settings = exportData.data.siteSettings[0];
+    sqlContent += `UPDATE site_settings SET `;
+    sqlContent += `site_name = '${escapeSQL(settings.siteName || '')}', `;
+    sqlContent += `header_text = '${escapeSQL(settings.headerText || '')}', `;
+    sqlContent += `footer_description = '${escapeSQL(settings.footerDescription || '')}', `;
+    sqlContent += `contact_email = '${escapeSQL(settings.contactEmail || '')}', `;
+    sqlContent += `contact_phone = '${escapeSQL(settings.contactPhone || '')}', `;
+    sqlContent += `contact_address = '${escapeSQL(settings.contactAddress || '')}', `;
+    sqlContent += `logo_url = '${escapeSQL(settings.logoUrl || '')}' `;
+    sqlContent += `WHERE id = 'default';\n\n`;
+  }
+  
+  sqlContent += `-- Export completed successfully\n`;
+  return sqlContent;
+}
+
+function escapeSQL(str: string): string {
+  if (!str) return '';
+  return str.replace(/'/g, "''").replace(/\\/g, '\\\\');
+}
+
+export async function importDatabase(sqlContent: string): Promise<void> {
   try {
-    // Validate import data structure
-    if (!importData.data || typeof importData.data !== 'object') {
-      throw new Error('Invalid import data structure');
-    }
-
-    // Clear existing data (except users for security)
-    await storage.clearProductsAndCategories();
-
-    // Import categories first (as products depend on them)
-    if (importData.data.categories && importData.data.categories.length > 0) {
-      for (const category of importData.data.categories) {
-        await storage.createCategory(category);
-      }
-    }
-
-    // Import products
-    if (importData.data.products && importData.data.products.length > 0) {
-      for (const product of importData.data.products) {
-        await storage.createProduct(product);
-      }
-    }
-
-    // Import site settings (excluding sensitive data)
-    if (importData.data.siteSettings && importData.data.siteSettings.length > 0) {
-      const settings = importData.data.siteSettings[0];
-      if (settings) {
-        const sanitizedSettings = {
-          ...settings,
-          smtpPassword: null // Don't import passwords
-        };
-        await storage.updateSiteSettings(sanitizedSettings);
-      }
-    }
-
+    // Import via direct SQL execution
+    await storage.executeSQLImport(sqlContent);
     console.log('Database import completed successfully');
   } catch (error) {
     console.error('Database import error:', error);
@@ -118,17 +137,16 @@ export async function importDatabase(importData: DatabaseExport): Promise<void> 
   }
 }
 
-export async function validateImportFile(filePath: string): Promise<DatabaseExport> {
+export async function validateImportFile(filePath: string): Promise<string> {
   try {
     const fileContent = await fs.readFile(filePath, 'utf-8');
-    const importData = JSON.parse(fileContent);
-
-    // Basic validation
-    if (!importData.data || !importData.timestamp) {
-      throw new Error('Invalid export file format');
+    
+    // Basic validation for SQL content
+    if (!fileContent.includes('-- InnovanceOrbit E-commerce Platform Database Backup')) {
+      throw new Error('Invalid SQL export file format');
     }
 
-    return importData as DatabaseExport;
+    return fileContent;
   } catch (error) {
     console.error('Import file validation error:', error);
     throw new Error('Invalid import file: ' + (error as Error).message);

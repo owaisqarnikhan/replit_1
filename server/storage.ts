@@ -81,6 +81,7 @@ export interface IStorage {
   getOrderItems(): Promise<OrderItem[]>;
   getCartItems(): Promise<CartItem[]>;
   clearProductsAndCategories(): Promise<void>;
+  executeSQLImport(sqlContent: string): Promise<void>;
 
   sessionStore: any;
 }
@@ -250,6 +251,26 @@ export class DatabaseStorage implements IStorage {
     await db.delete(orders);
     await db.delete(products);
     await db.delete(categories);
+  }
+
+  async executeSQLImport(sqlContent: string): Promise<void> {
+    try {
+      // Split SQL content into individual statements
+      const statements = sqlContent
+        .split(';')
+        .map(stmt => stmt.trim())
+        .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
+
+      // Execute each statement
+      for (const statement of statements) {
+        if (statement.trim()) {
+          await db.execute(statement);
+        }
+      }
+    } catch (error) {
+      console.error('SQL import execution error:', error);
+      throw new Error('Failed to execute SQL import');
+    }
   }
 
   // Cart methods

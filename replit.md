@@ -52,7 +52,7 @@ Preferred communication style: Simple, everyday language.
 - `POST /api/admin/database/import` - Database import ✅
 
 ### Latest Updates (January 30, 2025):
-- ✅ **Database Export/Import System**: Complete database backup and restore functionality for admin users
+- ✅ **Database Export/Import System**: Complete PostgreSQL database backup and restore functionality using native SQL format
 - ✅ **Microsoft 365 Email Integration**: Migrated from SendGrid/Hostinger to Microsoft 365 SMTP for professional email delivery
 - ✅ **Admin SMTP Configuration**: Updated SMTP settings panel with Microsoft 365 configuration and setup instructions
 - ✅ **Custom Footer Background**: Applied user's geometric artwork as footer background with professional overlay

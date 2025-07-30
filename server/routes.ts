@@ -653,10 +653,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     storage: storage_config,
     limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for database files
     fileFilter: (req, file, cb) => {
-      if (file.mimetype === 'application/json' || path.extname(file.originalname).toLowerCase() === '.json') {
+      if (file.mimetype === 'application/sql' || path.extname(file.originalname).toLowerCase() === '.sql') {
         return cb(null, true);
       } else {
-        cb(new Error('Only JSON files are allowed for database import'));
+        cb(new Error('Only SQL files are allowed for database import'));
       }
     }
   });
@@ -674,8 +674,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const importData = await validateImportFile(req.file.path);
-      await importDatabase(importData);
+      const sqlContent = await validateImportFile(req.file.path);
+      await importDatabase(sqlContent);
       
       // Clean up uploaded file
       await fs.promises.unlink(req.file.path);
