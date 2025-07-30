@@ -80,7 +80,7 @@ export default function HomePage() {
                   <Card 
                     key={category.id} 
                     className="group cursor-pointer overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] bg-gradient-to-br from-white to-slate-50/80 backdrop-blur-sm"
-                    onClick={() => setLocation(`/products?category=${category.id}`)}
+                    onClick={() => setLocation("/categories")}
                   >
                     <div className="relative overflow-hidden">
                       {category.imageUrl ? (
