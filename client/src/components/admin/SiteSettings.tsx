@@ -38,6 +38,7 @@ export function SiteSettings() {
       contactAddress: settings?.contactAddress || "",
       businessHours: settings?.businessHours || "",
       officeHoursTitle: settings?.officeHoursTitle || "Office Hours",
+      paymentMethodsImage: settings?.paymentMethodsImage || "",
       theme: settings?.theme || "default",
       primaryColor: settings?.primaryColor || "#2563eb",
       secondaryColor: settings?.secondaryColor || "#64748b",
@@ -90,6 +91,7 @@ export function SiteSettings() {
         contactAddress: settings.contactAddress || "",
         businessHours: settings.businessHours || "",
         officeHoursTitle: settings.officeHoursTitle || "Office Hours",
+        paymentMethodsImage: settings.paymentMethodsImage || "",
         theme: settings.theme || "default",
         primaryColor: settings.primaryColor || "#2563eb",
         secondaryColor: settings.secondaryColor || "#64748b",
@@ -200,6 +202,43 @@ export function SiteSettings() {
       toast({
         title: "Upload Failed",
         description: "Failed to upload logo",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handlePaymentMethodsUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const data = await response.json();
+      form.setValue("paymentMethodsImage", data.imageUrl);
+      
+      toast({
+        title: "Payment Methods Image Uploaded",
+        description: "Payment methods image uploaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload payment methods image",
         variant: "destructive",
       });
     } finally {
@@ -772,6 +811,51 @@ export function SiteSettings() {
                         <FormLabel>Office Timing / Business Hours</FormLabel>
                         <FormControl>
                           <Input placeholder="Mon-Fri: 9:00 AM - 6:00 PM, Sat: 10:00 AM - 4:00 PM" {...field} value={field.value || ""} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="payment-methods-upload">Payment Methods Image</Label>
+                  <div className="flex items-center gap-4">
+                    {form.watch("paymentMethodsImage") && (
+                      <img
+                        src={form.watch("paymentMethodsImage") || ""}
+                        alt="Payment methods preview"
+                        className="h-16 w-auto border rounded"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <input
+                        id="payment-methods-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePaymentMethodsUpload}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => document.getElementById("payment-methods-upload")?.click()}
+                        disabled={isUploading}
+                        className="flex items-center gap-2"
+                      >
+                        <Upload className="h-4 w-4" />
+                        {isUploading ? "Uploading..." : "Upload Payment Methods Image"}
+                      </Button>
+                    </div>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="paymentMethodsImage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Payment Methods Image URL (Alternative)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://example.com/payment-methods.png" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

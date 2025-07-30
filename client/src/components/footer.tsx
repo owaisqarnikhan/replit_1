@@ -98,6 +98,18 @@ export default function Footer() {
               </div>
             )}
 
+            {/* Payment Methods */}
+            {settings?.paymentMethodsImage && (
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold mb-4">Payment Methods</h4>
+                <img 
+                  src={settings.paymentMethodsImage} 
+                  alt="Accepted payment methods" 
+                  className="max-w-full h-auto rounded border border-slate-600"
+                />
+              </div>
+            )}
+
             {/* Social Media */}
             {(settings?.socialFacebook || settings?.socialTwitter || settings?.socialInstagram || settings?.socialLinkedin) && (
               <>

@@ -201,6 +201,7 @@ export const siteSettings = pgTable("site_settings", {
   adminEmail: text("admin_email").default("admin@innovanceorbit.com"), // Admin notifications
   businessHours: text("business_hours"),
   officeHoursTitle: text("office_hours_title").default("Office Hours"),
+  paymentMethodsImage: text("payment_methods_image"),
   socialFacebook: text("social_facebook"),
   socialTwitter: text("social_twitter"),
   socialInstagram: text("social_instagram"),
