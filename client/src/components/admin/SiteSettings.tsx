@@ -63,6 +63,17 @@ export function SiteSettings() {
       socialLinkedin: settings?.socialLinkedin || "",
       copyrightText: settings?.copyrightText || "",
       additionalFooterText: settings?.additionalFooterText || "",
+      // SMTP Configuration
+      smtpHost: settings?.smtpHost || "smtp.office365.com",
+      smtpPort: settings?.smtpPort || 587,
+      smtpUser: settings?.smtpUser || "",
+      smtpPassword: settings?.smtpPassword || "",
+      smtpFromEmail: settings?.smtpFromEmail || "",
+      smtpFromName: settings?.smtpFromName || "InnovanceOrbit",
+      emailEnabled: settings?.emailEnabled || false,
+      // Login Page Settings
+      loginPageLogo: settings?.loginPageLogo || "",
+      loginPageTitle: settings?.loginPageTitle || "InnovanceOrbit Store",
     },
   });
 
@@ -104,6 +115,17 @@ export function SiteSettings() {
         socialLinkedin: settings.socialLinkedin || "",
         copyrightText: settings.copyrightText || "",
         additionalFooterText: settings.additionalFooterText || "",
+        // SMTP Configuration
+        smtpHost: settings.smtpHost || "smtp.office365.com",
+        smtpPort: settings.smtpPort || 587,
+        smtpUser: settings.smtpUser || "",
+        smtpPassword: settings.smtpPassword || "",
+        smtpFromEmail: settings.smtpFromEmail || "",
+        smtpFromName: settings.smtpFromName || "InnovanceOrbit",
+        emailEnabled: settings.emailEnabled || false,
+        // Login Page Settings
+        loginPageLogo: settings.loginPageLogo || "",
+        loginPageTitle: settings.loginPageTitle || "InnovanceOrbit Store",
       });
       
       // Apply the current theme on load
