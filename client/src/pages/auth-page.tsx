@@ -45,7 +45,6 @@ export default function AuthPage() {
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-slate-900">InnovanceOrbit Store</h1>
-            <p className="mt-2 text-slate-600">Sign in to access our exclusive products</p>
           </div>
 
           <Card>
