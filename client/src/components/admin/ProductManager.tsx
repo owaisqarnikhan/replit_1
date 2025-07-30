@@ -163,6 +163,9 @@ export function ProductManager() {
   });
 
   const onSubmit = (data: EnhancedInsertProduct) => {
+    console.log("Product form submitted with data:", data);
+    console.log("Product form errors:", form.formState.errors);
+    
     if (editingProduct) {
       updateMutation.mutate({ id: editingProduct.id, data });
     } else {
@@ -208,7 +211,10 @@ export function ProductManager() {
           </CardTitle>
           <Dialog open={isAddOpen || !!editingProduct} onOpenChange={handleCloseDialog}>
             <DialogTrigger asChild>
-              <Button onClick={() => setIsAddOpen(true)} className="flex items-center gap-2">
+              <Button onClick={() => {
+                console.log("Add Product button clicked");
+                setIsAddOpen(true);
+              }} className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 Add Product
               </Button>

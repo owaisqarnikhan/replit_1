@@ -123,6 +123,9 @@ export function UserManager() {
   });
 
   const onSubmit = (data: InsertUser) => {
+    console.log("User form submitted with data:", data);
+    console.log("User form errors:", form.formState.errors);
+    
     if (editingUser) {
       updateMutation.mutate({ id: editingUser.id, data });
     } else {
@@ -169,7 +172,10 @@ export function UserManager() {
           </CardTitle>
           <Dialog open={isAddOpen || !!editingUser} onOpenChange={handleCloseDialog}>
             <DialogTrigger asChild>
-              <Button onClick={() => setIsAddOpen(true)} className="flex items-center gap-2">
+              <Button onClick={() => {
+                console.log("Add User button clicked");
+                setIsAddOpen(true);
+              }} className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 Add User
               </Button>

@@ -137,6 +137,9 @@ export function CategoryManager() {
   };
 
   const onSubmit = (data: InsertCategory) => {
+    console.log("Form submitted with data:", data);
+    console.log("Form errors:", form.formState.errors);
+    
     if (editingCategory) {
       updateMutation.mutate({ id: editingCategory.id, data });
     } else {
@@ -173,7 +176,10 @@ export function CategoryManager() {
           </CardTitle>
           <Dialog open={isAddOpen || !!editingCategory} onOpenChange={handleCloseDialog}>
             <DialogTrigger asChild>
-              <Button onClick={() => setIsAddOpen(true)} className="flex items-center gap-2">
+              <Button onClick={() => {
+                console.log("Add Category button clicked");
+                setIsAddOpen(true);
+              }} className="flex items-center gap-2">
                 <Plus className="h-4 w-4" />
                 Add Category
               </Button>
