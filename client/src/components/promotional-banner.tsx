@@ -42,13 +42,37 @@ export function PromotionalBanner({
     <Card className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
       <CardContent className="p-0">
         <div className={`relative ${getBackgroundClass()} text-white overflow-hidden`}>
+          {/* Prominent Corner Geometric Designs */}
           <div 
-            className="absolute inset-0 opacity-20"
+            className="absolute top-0 right-0 w-24 h-24 opacity-60 pointer-events-none"
             style={{
-              backgroundImage: `url('/src/assets/geometric-design.png')`,
-              backgroundSize: 'cover',
+              backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
+              backgroundSize: 'contain',
+              backgroundPosition: 'top right',
+              backgroundRepeat: 'no-repeat',
+              transform: 'scale(1.4)'
+            }}
+          />
+          <div 
+            className="absolute bottom-0 left-0 w-24 h-24 opacity-50 pointer-events-none"
+            style={{
+              backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
+              backgroundSize: 'contain',
+              backgroundPosition: 'bottom left',
+              backgroundRepeat: 'no-repeat',
+              transform: 'scale(1.3) rotate(180deg)'
+            }}
+          />
+          
+          {/* Enhanced Center Geometric Background */}
+          <div 
+            className="absolute inset-0 opacity-25"
+            style={{
+              backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
+              backgroundSize: '25%',
               backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
+              backgroundRepeat: 'no-repeat',
+              mixBlendMode: 'overlay'
             }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />

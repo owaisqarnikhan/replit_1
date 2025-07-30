@@ -53,26 +53,69 @@ export function ImageSlider({
 
   if (!images || images.length === 0) {
     return (
-      <div className={`relative ${height} bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center overflow-hidden rounded-lg`}>
+      <div className={`relative ${height} bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center overflow-hidden`}>
+        {/* Prominent Corner Geometric Designs for Empty State */}
         <div 
-          className="absolute inset-0 opacity-10"
+          className="absolute top-0 right-0 w-64 h-64 opacity-40"
           style={{
-            backgroundImage: `url('/src/assets/geometric-design.png')`,
-            backgroundSize: 'cover',
+            backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
+            backgroundSize: 'contain',
+            backgroundPosition: 'top right',
+            backgroundRepeat: 'no-repeat',
+            transform: 'scale(1.3)'
+          }}
+        />
+        <div 
+          className="absolute bottom-0 left-0 w-64 h-64 opacity-30"
+          style={{
+            backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
+            backgroundSize: 'contain',
+            backgroundPosition: 'bottom left',
+            backgroundRepeat: 'no-repeat',
+            transform: 'scale(1.2) rotate(180deg)'
+          }}
+        />
+        <div 
+          className="absolute inset-0 opacity-15"
+          style={{
+            backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
+            backgroundSize: '40%',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat'
           }}
         />
-        <div className="text-center text-slate-500 relative z-10">
-          <h3 className="text-xl font-medium mb-2">No Images Available</h3>
-          <p className="text-sm">Upload images from the admin panel to display them here</p>
+        <div className="text-center text-slate-600 relative z-10">
+          <h3 className="text-2xl font-semibold mb-3">No Images Available</h3>
+          <p className="text-lg">Upload images from the admin panel to display them here</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`relative ${height} overflow-hidden rounded-lg group`}>
+    <div className={`relative ${height} overflow-hidden group`}>
+      {/* Prominent Geometric Corner Designs */}
+      <div 
+        className="absolute top-0 right-0 w-80 h-80 opacity-70 z-10 pointer-events-none"
+        style={{
+          backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'top right',
+          backgroundRepeat: 'no-repeat',
+          transform: 'scale(1.2)'
+        }}
+      />
+      <div 
+        className="absolute bottom-0 left-0 w-80 h-80 opacity-60 z-10 pointer-events-none"
+        style={{
+          backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
+          backgroundSize: 'contain',
+          backgroundPosition: 'bottom left',
+          backgroundRepeat: 'no-repeat',
+          transform: 'scale(1.1) rotate(180deg)'
+        }}
+      />
+      
       {/* Main Image Display */}
       <div className="relative w-full h-full">
         {images.map((image, index) => (
@@ -91,17 +134,31 @@ export function ImageSlider({
               alt={image.title || `Slide ${index + 1}`}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
             
-            {/* Image Text Overlay */}
+            {/* Enhanced Geometric Background Overlay */}
+            <div 
+              className="absolute inset-0 opacity-20"
+              style={{
+                backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
+                backgroundSize: '50%',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                mixBlendMode: 'overlay'
+              }}
+            />
+            
+            {/* Image Text Overlay with Enhanced Styling */}
             {(image.title || image.description) && (
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                {image.title && (
-                  <h3 className="text-2xl font-bold mb-2">{image.title}</h3>
-                )}
-                {image.description && (
-                  <p className="text-lg opacity-90">{image.description}</p>
-                )}
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-white z-20">
+                <div className="max-w-2xl">
+                  {image.title && (
+                    <h3 className="text-4xl font-bold mb-3 drop-shadow-lg">{image.title}</h3>
+                  )}
+                  {image.description && (
+                    <p className="text-xl opacity-90 drop-shadow-md">{image.description}</p>
+                  )}
+                </div>
               </div>
             )}
           </div>
