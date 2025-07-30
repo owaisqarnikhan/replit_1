@@ -155,15 +155,15 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
       
       <CardContent className="p-3 bg-gradient-to-b from-transparent to-slate-50/30 flex flex-col h-full">
         <div className="flex-1">
-          <h3 className="text-base font-bold text-slate-900 mb-1 line-clamp-2 group-hover:text-blue-700 transition-colors duration-300 min-h-[2.5rem]">
+          <h3 className="text-base font-bold text-slate-900 mb-0.5 line-clamp-2 group-hover:text-blue-700 transition-colors duration-300 min-h-[2.5rem]">
             {product.name}
           </h3>
           
-          <p className="text-slate-600 text-xs mb-2 line-clamp-2 leading-relaxed min-h-[2rem]">
+          <p className="text-slate-600 text-xs mb-1 line-clamp-2 leading-relaxed min-h-[2rem]">
             {product.description || "No description available"}
           </p>
           
-          <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center justify-between mb-0.5">
             <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               ${parseFloat(product.price).toFixed(2)}
             </span>
@@ -181,7 +181,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
           </div>
         </div>
         
-        <div className="mt-auto pt-1">
+        <div className="mt-auto pt-0.5">
           {showDetailsButton ? (
             <div className="flex gap-1.5">
               <Button 
