@@ -616,13 +616,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ]);
 
       const totalRevenue = orders.reduce((sum, order) => sum + parseFloat(order.total), 0);
-      const totalStock = products.reduce((sum, product) => sum + (product.stock || 0), 0);
       
       const stats = {
         revenue: totalRevenue.toFixed(2),
         orders: orders.length,
         products: products.length,
-        totalStock: totalStock,
         users: users.length,
       };
 

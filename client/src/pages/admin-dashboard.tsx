@@ -24,7 +24,6 @@ interface AdminStats {
   revenue: string;
   orders: number;
   products: number;
-  totalStock: number;
   users: number;
 }
 
@@ -55,7 +54,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="bg-gradient-to-br from-green-50 to-emerald-100 border-green-200 hover:shadow-2xl">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-semibold text-green-800">Total Revenue</CardTitle>
@@ -103,26 +102,11 @@ export default function AdminDashboard() {
               ) : (
                 <div className="text-3xl font-bold text-purple-700">{stats?.products || 0}</div>
               )}
-              <p className="text-xs text-purple-600 mt-1">unique products</p>
+              <p className="text-xs text-purple-600 mt-1">in inventory</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-teal-50 to-cyan-100 border-teal-200 hover:shadow-2xl">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-semibold text-teal-800">Items in Stock</CardTitle>
-              <div className="p-2 bg-teal-500 rounded-full">
-                <ShoppingCart className="h-5 w-5 text-white" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              {statsLoading ? (
-                <Skeleton className="h-8 w-20" />
-              ) : (
-                <div className="text-3xl font-bold text-teal-700">{stats?.totalStock || 0}</div>
-              )}
-              <p className="text-xs text-teal-600 mt-1">total inventory</p>
-            </CardContent>
-          </Card>
+
 
           <Card className="bg-gradient-to-br from-orange-50 to-amber-100 border-orange-200 hover:shadow-2xl">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
