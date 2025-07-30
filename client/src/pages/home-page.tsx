@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { NavigationHeader } from "@/components/navigation-header";
 import Footer from "@/components/footer";
 import { ProductCard } from "@/components/product-card";
-import { PromotionalBanner } from "@/components/promotional-banner";
+
 import { ImageSlider } from "@/components/image-slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -235,19 +235,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Promotional Banner */}
-      <section className="py-8 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <PromotionalBanner
-            title="Exclusive Member Benefits"
-            description="Enjoy premium products, priority support, and special pricing as a valued member"
-            buttonText="Learn More"
-            variant="gradient"
-            icon="gift"
-            onButtonClick={() => setLocation("/products")}
-          />
-        </div>
-      </section>
       
       <Footer />
     </div>
