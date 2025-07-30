@@ -56,7 +56,7 @@ export function ImageSlider({
       <div className={`relative ${height} bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center overflow-hidden`}>
         {/* Prominent Corner Geometric Designs for Empty State */}
         <div 
-          className="absolute top-0 right-0 w-64 h-64 opacity-40"
+          className="absolute top-0 right-0 w-64 h-64 opacity-90"
           style={{
             backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
             backgroundSize: 'contain',
@@ -66,7 +66,7 @@ export function ImageSlider({
           }}
         />
         <div 
-          className="absolute bottom-0 left-0 w-64 h-64 opacity-30"
+          className="absolute bottom-0 left-0 w-64 h-64 opacity-80"
           style={{
             backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
             backgroundSize: 'contain',
@@ -76,7 +76,7 @@ export function ImageSlider({
           }}
         />
         <div 
-          className="absolute inset-0 opacity-15"
+          className="absolute inset-0 opacity-50"
           style={{
             backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
             backgroundSize: '40%',
@@ -96,7 +96,7 @@ export function ImageSlider({
     <div className={`relative ${height} overflow-hidden group`}>
       {/* Prominent Geometric Corner Designs */}
       <div 
-        className="absolute top-0 right-0 w-80 h-80 opacity-70 z-10 pointer-events-none"
+        className="absolute top-0 right-0 w-80 h-80 opacity-100 z-10 pointer-events-none"
         style={{
           backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
           backgroundSize: 'contain',
@@ -106,7 +106,7 @@ export function ImageSlider({
         }}
       />
       <div 
-        className="absolute bottom-0 left-0 w-80 h-80 opacity-60 z-10 pointer-events-none"
+        className="absolute bottom-0 left-0 w-80 h-80 opacity-100 z-10 pointer-events-none"
         style={{
           backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
           backgroundSize: 'contain',
@@ -138,7 +138,7 @@ export function ImageSlider({
             
             {/* Enhanced Geometric Background Overlay */}
             <div 
-              className="absolute inset-0 opacity-20"
+              className="absolute inset-0 opacity-60"
               style={{
                 backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
                 backgroundSize: '50%',

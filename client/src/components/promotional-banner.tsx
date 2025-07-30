@@ -44,7 +44,7 @@ export function PromotionalBanner({
         <div className={`relative ${getBackgroundClass()} text-white overflow-hidden`}>
           {/* Prominent Corner Geometric Designs */}
           <div 
-            className="absolute top-0 right-0 w-24 h-24 opacity-60 pointer-events-none"
+            className="absolute top-0 right-0 w-24 h-24 opacity-100 pointer-events-none"
             style={{
               backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
               backgroundSize: 'contain',
@@ -54,7 +54,7 @@ export function PromotionalBanner({
             }}
           />
           <div 
-            className="absolute bottom-0 left-0 w-24 h-24 opacity-50 pointer-events-none"
+            className="absolute bottom-0 left-0 w-24 h-24 opacity-90 pointer-events-none"
             style={{
               backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
               backgroundSize: 'contain',
@@ -66,7 +66,7 @@ export function PromotionalBanner({
           
           {/* Enhanced Center Geometric Background */}
           <div 
-            className="absolute inset-0 opacity-25"
+            className="absolute inset-0 opacity-60"
             style={{
               backgroundImage: `url('/attached_assets/Artboard-1_1753876937461.png')`,
               backgroundSize: '25%',
