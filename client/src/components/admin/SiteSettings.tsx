@@ -36,6 +36,7 @@ export function SiteSettings() {
       adminEmail: settings?.adminEmail || "",
       contactPhone: settings?.contactPhone || "",
       contactAddress: settings?.contactAddress || "",
+      businessHours: settings?.businessHours || "",
       theme: settings?.theme || "default",
       primaryColor: settings?.primaryColor || "#2563eb",
       secondaryColor: settings?.secondaryColor || "#64748b",
@@ -75,6 +76,7 @@ export function SiteSettings() {
         adminEmail: settings.adminEmail || "",
         contactPhone: settings.contactPhone || "",
         contactAddress: settings.contactAddress || "",
+        businessHours: settings.businessHours || "",
         theme: settings.theme || "default",
         primaryColor: settings.primaryColor || "#2563eb",
         secondaryColor: settings.secondaryColor || "#64748b",
@@ -717,6 +719,20 @@ export function SiteSettings() {
                       <FormLabel>Contact Address</FormLabel>
                       <FormControl>
                         <Textarea placeholder="Business address" {...field} value={field.value || ""} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="businessHours"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Office Timing / Business Hours</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Mon-Fri: 9:00 AM - 6:00 PM, Sat: 10:00 AM - 4:00 PM" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
