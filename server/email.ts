@@ -207,27 +207,13 @@ export async function sendOrderConfirmationEmail(
   }
 }
 
-export async function sendNewOrderNotification(orderId: string): Promise<void> {
-  const mailOptions = {
-    from: 'info@innovanceorbit.com',
-    to: 'info@innovanceorbit.com',
-    subject: `New Order Received - Order #${orderId}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #3B82F6;">New Order Notification</h1>
-        <p>A new order has been placed on your store.</p>
-        
-        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h2 style="color: #333; margin-top: 0;">Order Information</h2>
-          <p><strong>Order ID:</strong> ${orderId}</p>
-          <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
-          <p><strong>Status:</strong> Processing</p>
-        </div>
-
-        <p>Please log in to your admin dashboard to view the full order details and process the order.</p>
-      </div>
-    `,
-  };
-
-  await transporter.sendMail(mailOptions);
+export async function testEmailConnection(): Promise<boolean> {
+  try {
+    const emailTransporter = await createTransporter();
+    await emailTransporter.verify();
+    return true;
+  } catch (error) {
+    console.error('Email connection test failed:', error);
+    return false;
+  }
 }
