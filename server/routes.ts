@@ -3,7 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema } from "@shared/schema";
+import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema } from "@shared/schema";
 import { sendOrderConfirmationEmail } from "./email";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
 // import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
@@ -620,6 +620,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(stats);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Slider images routes
+  app.get("/api/slider-images", async (req, res) => {
+    try {
+      const images = await storage.getSliderImages();
+      res.json(images);
+    } catch (error: any) {
+      console.error("Error getting slider images:", error);
+      res.status(500).json({ message: "Failed to get slider images" });
+    }
+  });
+
+  app.get("/api/slider-images/active", async (req, res) => {
+    try {
+      const images = await storage.getActiveSliderImages();
+      res.json(images);
+    } catch (error: any) {
+      console.error("Error getting active slider images:", error);
+      res.status(500).json({ message: "Failed to get active slider images" });
+    }
+  });
+
+  app.post("/api/slider-images", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const validation = insertSliderImageSchema.parse(req.body);
+      const image = await storage.createSliderImage(validation);
+      res.json(image);
+    } catch (error: any) {
+      console.error("Error creating slider image:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.patch("/api/slider-images/:id", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { id } = req.params;
+      const image = await storage.updateSliderImage(id, req.body);
+      res.json(image);
+    } catch (error: any) {
+      console.error("Error updating slider image:", error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/slider-images/:id", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { id } = req.params;
+      await storage.deleteSliderImage(id);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error deleting slider image:", error);
+      res.status(400).json({ message: error.message });
     }
   });
 

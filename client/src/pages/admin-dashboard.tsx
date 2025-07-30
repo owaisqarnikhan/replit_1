@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 import { ProductManager } from "@/components/admin/ProductManager";
-
+import { SliderManager } from "@/components/admin/SliderManager";
 import { UserManager } from "@/components/admin/UserManager";
 import { OrderManager } from "@/components/admin/OrderManager";
 import { SiteSettings } from "@/components/admin/SiteSettings";
@@ -119,7 +119,7 @@ export default function AdminDashboard() {
 
         {/* Management Tabs */}
         <Tabs defaultValue="orders" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="orders" className="flex items-center gap-2">
               <ShoppingBag className="h-4 w-4" />
               Orders
@@ -131,6 +131,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="products" className="flex items-center gap-2">
               <Package className="h-4 w-4" />
               Products
+            </TabsTrigger>
+            <TabsTrigger value="slider" className="flex items-center gap-2">
+              <FileSpreadsheet className="h-4 w-4" />
+              Slider
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
@@ -156,6 +160,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="products">
             <ProductManager />
+          </TabsContent>
+
+          <TabsContent value="slider">
+            <SliderManager />
           </TabsContent>
 
           <TabsContent value="users">

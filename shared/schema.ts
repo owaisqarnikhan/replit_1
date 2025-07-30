@@ -230,7 +230,24 @@ export const siteSettings = pgTable("site_settings", {
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });
 
+export const sliderImages = pgTable("slider_images", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").default(""),
+  description: text("description").default(""),
+  imageUrl: text("image_url").notNull(),
+  isActive: boolean("is_active").default(true),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
 export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSliderImageSchema = createInsertSchema(sliderImages).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -238,3 +255,5 @@ export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({
 
 export type InsertSiteSettings = z.infer<typeof insertSiteSettingsSchema>;
 export type SiteSettings = typeof siteSettings.$inferSelect;
+export type SliderImage = typeof sliderImages.$inferSelect;
+export type InsertSliderImage = z.infer<typeof insertSliderImageSchema>;

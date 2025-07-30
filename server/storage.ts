@@ -6,6 +6,7 @@ import {
   orders, 
   orderItems,
   siteSettings,
+  sliderImages,
   type User, 
   type InsertUser,
   type Category,
@@ -19,7 +20,9 @@ import {
   type OrderItem,
   type InsertOrderItem,
   type SiteSettings,
-  type InsertSiteSettings
+  type InsertSiteSettings,
+  type SliderImage,
+  type InsertSliderImage
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -74,6 +77,14 @@ export interface IStorage {
   // Site settings methods
   getSiteSettings(): Promise<SiteSettings>;
   updateSiteSettings(settingsData: Partial<InsertSiteSettings>): Promise<SiteSettings>;
+
+  // Slider images methods
+  getSliderImages(): Promise<SliderImage[]>;
+  getActiveSliderImages(): Promise<SliderImage[]>;
+  getSliderImageById(id: string): Promise<SliderImage | undefined>;
+  createSliderImage(image: InsertSliderImage): Promise<SliderImage>;
+  updateSliderImage(id: string, image: Partial<InsertSliderImage>): Promise<SliderImage>;
+  deleteSliderImage(id: string): Promise<void>;
 
   // Database export/import methods
   getUsers(): Promise<User[]>;
@@ -489,6 +500,45 @@ export class DatabaseStorage implements IStorage {
       .where(eq(siteSettings.id, "default"))
       .returning();
     return updated;
+  }
+
+  // Slider images methods
+  async getSliderImages(): Promise<SliderImage[]> {
+    return await db.select().from(sliderImages).orderBy(sliderImages.sortOrder, sliderImages.createdAt);
+  }
+
+  async getActiveSliderImages(): Promise<SliderImage[]> {
+    return await db
+      .select()
+      .from(sliderImages)
+      .where(eq(sliderImages.isActive, true))
+      .orderBy(sliderImages.sortOrder, sliderImages.createdAt);
+  }
+
+  async getSliderImageById(id: string): Promise<SliderImage | undefined> {
+    const [image] = await db.select().from(sliderImages).where(eq(sliderImages.id, id));
+    return image || undefined;
+  }
+
+  async createSliderImage(image: InsertSliderImage): Promise<SliderImage> {
+    const [newImage] = await db
+      .insert(sliderImages)
+      .values(image)
+      .returning();
+    return newImage;
+  }
+
+  async updateSliderImage(id: string, imageData: Partial<InsertSliderImage>): Promise<SliderImage> {
+    const [updatedImage] = await db
+      .update(sliderImages)
+      .set({ ...imageData, updatedAt: new Date() })
+      .where(eq(sliderImages.id, id))
+      .returning();
+    return updatedImage;
+  }
+
+  async deleteSliderImage(id: string): Promise<void> {
+    await db.delete(sliderImages).where(eq(sliderImages.id, id));
   }
 }
 

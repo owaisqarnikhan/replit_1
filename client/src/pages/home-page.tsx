@@ -3,11 +3,12 @@ import { NavigationHeader } from "@/components/navigation-header";
 import Footer from "@/components/footer";
 import { ProductCard } from "@/components/product-card";
 import { PromotionalBanner } from "@/components/promotional-banner";
+import { ImageSlider } from "@/components/image-slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "wouter";
-import type { Category, Product } from "@shared/schema";
+import type { Category, Product, SliderImage } from "@shared/schema";
 
 export default function HomePage() {
   const [, setLocation] = useLocation();
@@ -20,35 +21,24 @@ export default function HomePage() {
     queryKey: ["/api/products/featured"],
   });
 
+  const { data: sliderImages } = useQuery<SliderImage[]>({
+    queryKey: ["/api/slider-images/active"],
+  });
+
   return (
     <div className="min-h-screen bg-slate-50">
       <NavigationHeader />
       
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-primary to-blue-600 text-white py-16 overflow-hidden">
-        <div 
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: `url('/src/assets/geometric-design.png')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
+      {/* Image Slider Section */}
+      <section className="w-full">
+        <ImageSlider 
+          images={sliderImages || []} 
+          height="h-96 md:h-[500px]"
+          autoplay={true}
+          autoplayInterval={5000}
+          showControls={true}
+          showIndicators={true}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-blue-600/90" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Welcome Back!</h1>
-            <p className="text-xl opacity-90 mb-8">Discover our exclusive product collection</p>
-            <Button 
-              size="lg"
-              className="bg-accent hover:bg-yellow-500 text-slate-900 font-semibold transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
-              onClick={() => setLocation("/products")}
-            >
-              Shop Now
-            </Button>
-          </div>
-        </div>
       </section>
 
       {/* Product Categories */}
