@@ -100,7 +100,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
 
   return (
     <Card 
-      className="group cursor-pointer overflow-hidden border-none shadow-md hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] bg-gradient-to-br from-white to-slate-50"
+      className="group cursor-pointer overflow-hidden border-none shadow-md hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] bg-gradient-to-br from-white to-slate-50 h-full flex flex-col"
       onClick={handleCardClick}
     >
       <div className="relative overflow-hidden rounded-t-xl">
@@ -108,11 +108,11 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
           <img 
             src={product.imageUrl} 
             alt={product.name}
-            className="w-full h-52 object-cover group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-52 bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-            <span className="text-slate-600 text-2xl font-bold">
+          <div className="w-full h-48 bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+            <span className="text-slate-600 text-xl font-bold">
               {product.name.charAt(0)}
             </span>
           </div>
@@ -153,48 +153,78 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
         )}
       </div>
       
-      <CardContent className="p-6 bg-gradient-to-b from-transparent to-slate-50/30">
-        <h3 className="text-xl font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-blue-700 transition-colors duration-300">
-          {product.name}
-        </h3>
-        
-        <p className="text-slate-600 text-sm mb-4 line-clamp-2 leading-relaxed">
-          {product.description || "No description available"}
-        </p>
-        
-        <div className="flex items-center justify-between mb-6">
-          <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            ${parseFloat(product.price).toFixed(2)}
-          </span>
+      <CardContent className="p-4 bg-gradient-to-b from-transparent to-slate-50/30 flex flex-col h-full">
+        <div className="flex-1">
+          <h3 className="text-lg font-bold text-slate-900 mb-2 line-clamp-2 group-hover:text-blue-700 transition-colors duration-300 min-h-[3.5rem]">
+            {product.name}
+          </h3>
           
-          {rating > 0 && (
-            <div className="flex items-center space-x-2 bg-yellow-50 px-3 py-1.5 rounded-full border border-yellow-200">
-              <div className="flex">
-                {renderStars(rating)}
+          <p className="text-slate-600 text-sm mb-3 line-clamp-2 leading-relaxed min-h-[2.5rem]">
+            {product.description || "No description available"}
+          </p>
+          
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              ${parseFloat(product.price).toFixed(2)}
+            </span>
+            
+            {rating > 0 && (
+              <div className="flex items-center space-x-1 bg-yellow-50 px-2 py-1 rounded-full border border-yellow-200">
+                <div className="flex">
+                  {renderStars(rating)}
+                </div>
+                <span className="text-slate-600 text-xs font-medium">
+                  ({reviewCount > 0 ? reviewCount : rating.toFixed(1)})
+                </span>
               </div>
-              <span className="text-slate-600 text-sm font-medium">
-                ({reviewCount > 0 ? reviewCount : rating.toFixed(1)})
-              </span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
         
-        {showDetailsButton ? (
-          <div className="flex gap-2">
+        <div className="mt-auto">
+          {showDetailsButton ? (
+            <div className="flex gap-2">
+              <Button 
+                variant="outline"
+                size="sm"
+                className="flex-1 border-2 border-blue-200 hover:border-blue-400 text-blue-600 hover:text-blue-700 font-semibold py-2 px-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onViewDetails?.(product);
+                }}
+              >
+                <Eye className="mr-1 h-3 w-3" />
+                <span className="text-xs">Details</span>
+              </Button>
+              
+              <Button 
+                size="sm"
+                className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2 px-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addToCartMutation.mutate();
+                }}
+                disabled={addToCartMutation.isPending || product.stock === 0}
+              >
+                {addToCartMutation.isPending ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent mr-1"></div>
+                    <span className="text-xs">Adding...</span>
+                  </div>
+                ) : product.stock === 0 ? (
+                  <span className="text-xs">Out of Stock</span>
+                ) : (
+                  <>
+                    <ShoppingCart className="mr-1 h-3 w-3 group-hover:animate-bounce" />
+                    <span className="text-xs">Add to Cart</span>
+                  </>
+                )}
+              </Button>
+            </div>
+          ) : (
             <Button 
-              variant="outline"
-              className="flex-1 border-2 border-blue-200 hover:border-blue-400 text-blue-600 hover:text-blue-700 font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewDetails?.(product);
-              }}
-            >
-              <Eye className="mr-2 h-4 w-4" />
-              Details
-            </Button>
-            
-            <Button 
-              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
+              size="sm"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2 px-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
               onClick={(e) => {
                 e.stopPropagation();
                 addToCartMutation.mutate();
@@ -203,43 +233,20 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
             >
               {addToCartMutation.isPending ? (
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-1"></div>
-                  Adding...
+                  <div className="animate-spin rounded-full h-3 w-3 border-2 border-white border-t-transparent mr-1"></div>
+                  <span className="text-xs">Adding...</span>
                 </div>
               ) : product.stock === 0 ? (
-                "Out of Stock"
+                <span className="text-xs">Out of Stock</span>
               ) : (
                 <>
                   <ShoppingCart className="mr-1 h-4 w-4 group-hover:animate-bounce" />
-                  Add to Cart
+                  <span className="text-sm">Add to Cart</span>
                 </>
               )}
             </Button>
-          </div>
-        ) : (
-          <Button 
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
-            onClick={(e) => {
-              e.stopPropagation();
-              addToCartMutation.mutate();
-            }}
-            disabled={addToCartMutation.isPending || product.stock === 0}
-          >
-            {addToCartMutation.isPending ? (
-              <div className="flex items-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-1"></div>
-                Adding...
-              </div>
-            ) : product.stock === 0 ? (
-              "Out of Stock"
-            ) : (
-              <>
-                <ShoppingCart className="mr-2 h-5 w-5 group-hover:animate-bounce" />
-                Add to Cart
-              </>
-            )}
-          </Button>
-        )}
+          )}
+        </div>
       </CardContent>
     </Card>
   );
