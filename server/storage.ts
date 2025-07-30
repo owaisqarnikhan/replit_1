@@ -279,11 +279,43 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Order methods
-  async getOrders(): Promise<Order[]> {
-    return await db.select().from(orders).orderBy(desc(orders.createdAt));
+  async getOrders(): Promise<any[]> {
+    const ordersData = await db
+      .select()
+      .from(orders)
+      .orderBy(desc(orders.createdAt));
+    
+    return Promise.all(ordersData.map(async (order) => {
+      // Get user data separately
+      const [userData] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, order.userId));
+        
+      // Get order items
+      const items = await db
+        .select({
+          id: orderItems.id,
+          orderId: orderItems.orderId,
+          productId: orderItems.productId,
+          quantity: orderItems.quantity,
+          price: orderItems.price,
+          createdAt: orderItems.createdAt,
+          product: products,
+        })
+        .from(orderItems)
+        .innerJoin(products, eq(orderItems.productId, products.id))
+        .where(eq(orderItems.orderId, order.id));
+
+      return {
+        ...order,
+        user: userData || null,
+        items
+      };
+    }));
   }
 
-  async getUserOrders(userId: string): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]> {
+  async getUserOrders(userId: string): Promise<any[]> {
     const userOrders = await db
       .select()
       .from(orders)
@@ -315,8 +347,6 @@ export class DatabaseStorage implements IStorage {
 
   async getOrderById(id: string): Promise<any> {
     try {
-      console.log('Getting order by ID:', id);
-      
       // Get the basic order first
       const [orderData] = await db
         .select()
@@ -324,19 +354,14 @@ export class DatabaseStorage implements IStorage {
         .where(eq(orders.id, id));
         
       if (!orderData) {
-        console.log('Order not found');
         return null;
       }
-      
-      console.log('Found order:', orderData);
 
       // Get the user separately
       const [userData] = await db
         .select()
         .from(users)
         .where(eq(users.id, orderData.userId));
-        
-      console.log('Found user:', userData);
 
       // Get order items
       const items = await db
@@ -352,8 +377,6 @@ export class DatabaseStorage implements IStorage {
         .from(orderItems)
         .innerJoin(products, eq(orderItems.productId, products.id))
         .where(eq(orderItems.orderId, orderData.id));
-
-      console.log('Found items:', items);
 
       return {
         ...orderData,

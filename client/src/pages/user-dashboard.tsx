@@ -224,12 +224,12 @@ export default function UserDashboard() {
                             </div>
                             <div className="text-right">
                               <p className="text-2xl font-bold text-slate-900">${order.total}</p>
-                              <p className="text-sm text-slate-600">{order.items.length} items</p>
+                              <p className="text-sm text-slate-600">{order.items?.length || 0} items</p>
                             </div>
                           </div>
                           
                           <div className="space-y-2">
-                            {order.items.map((item) => (
+                            {order.items?.map((item) => (
                               <div key={item.id} className="flex justify-between items-center text-sm">
                                 <span className="text-slate-700">
                                   {item.product.name} × {item.quantity}
@@ -238,7 +238,9 @@ export default function UserDashboard() {
                                   ${(parseFloat(item.price) * item.quantity).toFixed(2)}
                                 </span>
                               </div>
-                            ))}
+                            )) || (
+                              <div className="text-sm text-slate-500">Loading order items...</div>
+                            )}
                           </div>
                         </div>
                       ))}

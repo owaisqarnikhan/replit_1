@@ -325,9 +325,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      console.log('Fetching order with ID:', req.params.id);
       const order = await storage.getOrderById(req.params.id);
-      console.log('Order result:', order);
       
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
