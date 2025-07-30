@@ -149,7 +149,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-slate-700 mt-8 pt-8 text-center">
+        <div className="border-t-2 border-slate-600 mt-8 pt-8 text-center">
           <p className="text-slate-400">
             {settings?.copyrightText || `© ${currentYear} InnovanceOrbit. All rights reserved.`}
           </p>
