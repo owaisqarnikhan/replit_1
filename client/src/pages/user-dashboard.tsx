@@ -164,7 +164,7 @@ export default function UserDashboard() {
                             </div>
                             <div className="text-right">
                               <p className="font-semibold text-slate-900">${order.total}</p>
-                              <p className="text-sm text-slate-600">{order.items.length} items</p>
+                              <p className="text-sm text-slate-600">{order.items?.length || 0} items</p>
                             </div>
                           </div>
                         ))}
