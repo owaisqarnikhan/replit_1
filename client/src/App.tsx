@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import ProductsPage from "@/pages/products-page";
+import CategoriesPage from "@/pages/categories-page";
 import ProductDetailPage from "@/pages/product-detail-page";
 import CartPage from "@/pages/cart-page";
 import CheckoutPage from "@/pages/checkout-page";
@@ -26,6 +27,7 @@ function Router() {
   return (
     <Switch>
       <ProtectedRoute path="/" component={HomePage} />
+      <ProtectedRoute path="/categories" component={CategoriesPage} />
       <ProtectedRoute path="/products" component={ProductsPage} />
       <ProtectedRoute path="/products/:id" component={ProductDetailPage} />
       <ProtectedRoute path="/cart" component={CartPage} />

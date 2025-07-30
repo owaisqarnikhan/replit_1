@@ -83,7 +83,7 @@ export default function HomePage() {
                   <Card 
                     key={category.id} 
                     className="group cursor-pointer overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] bg-gradient-to-br from-white to-slate-50/80 backdrop-blur-sm"
-                    onClick={() => setLocation(`/products?category=${category.id}`)}
+                    onClick={() => setLocation("/categories")}
                   >
                     <div className="relative overflow-hidden">
                       {category.imageUrl ? (
@@ -133,7 +133,7 @@ export default function HomePage() {
               <div className="text-center">
                 <Button
                   size="lg"
-                  onClick={() => setLocation("/products")}
+                  onClick={() => setLocation("/categories")}
                   className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   View All Categories
