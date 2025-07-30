@@ -748,7 +748,7 @@ export function SiteSettings() {
                         <FormItem>
                           <FormLabel>SMTP Host</FormLabel>
                           <FormControl>
-                            <Input placeholder="smtp.sendgrid.net" {...field} value={field.value || "smtp.sendgrid.net"} />
+                            <Input placeholder="smtp.office365.com" {...field} value={field.value || "smtp.office365.com"} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -784,7 +784,7 @@ export function SiteSettings() {
                         <FormItem>
                           <FormLabel>SMTP Username</FormLabel>
                           <FormControl>
-                            <Input placeholder="apikey" {...field} value={field.value || "apikey"} />
+                            <Input placeholder="your-email@yourdomain.com" {...field} value={field.value || ""} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -800,13 +800,13 @@ export function SiteSettings() {
                           <FormControl>
                             <Input 
                               type="password" 
-                              placeholder="Your SendGrid API Key" 
+                              placeholder="Your Microsoft 365 Password" 
                               {...field} 
                               value={field.value || ""} 
                             />
                           </FormControl>
                           <div className="text-xs text-muted-foreground">
-                            For SendGrid, use your API Key here
+                            Use your Microsoft 365 password or app password if MFA is enabled
                           </div>
                           <FormMessage />
                         </FormItem>
@@ -855,24 +855,25 @@ export function SiteSettings() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                      <h4 className="font-semibold text-blue-900 mb-2">SendGrid Setup:</h4>
+                      <h4 className="font-semibold text-blue-900 mb-2">Microsoft 365 Setup:</h4>
                       <ol className="list-decimal list-inside space-y-1 text-sm text-blue-800">
-                        <li>Sign up at <a href="https://sendgrid.com" target="_blank" rel="noopener noreferrer" className="underline">sendgrid.com</a></li>
-                        <li>Verify your sender identity</li>
-                        <li>Generate API Key in Settings → API Keys</li>
-                        <li>Username: "apikey", Password: Your API Key</li>
-                        <li>Host: smtp.sendgrid.net, Port: 587</li>
+                        <li>Use your full Microsoft 365 email address as username</li>
+                        <li>Enter your account password or app password</li>
+                        <li>Host: smtp.office365.com, Port: 587</li>
+                        <li>STARTTLS encryption (enabled automatically)</li>
+                        <li>If MFA is enabled, create an app password in your Microsoft 365 settings</li>
                       </ol>
                     </div>
                     
-                    <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                      <h4 className="font-semibold text-green-900 mb-2">Hostinger Email Setup:</h4>
-                      <ol className="list-decimal list-inside space-y-1 text-sm text-green-800">
-                        <li>Create email account in Hostinger panel</li>
-                        <li>Use your domain email as username</li>
-                        <li>Enter your email password</li>
-                        <li>Host: smtp.hostinger.com, Port: 587</li>
-                        <li>Enable STARTTLS encryption</li>
+                    <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                      <h4 className="font-semibold text-amber-900 mb-2">Important Notes:</h4>
+                      <ul className="list-disc list-inside space-y-1 text-sm text-amber-800">
+                        <li>Make sure SMTP authentication is enabled for your account</li>
+                        <li>If using multi-factor authentication, you'll need an app password</li>
+                        <li>Some organizations may require additional security settings</li>
+                        <li>Contact your IT administrator if you encounter issues</li>
+                      </ul>
+                    </div>
                       </ol>
                     </div>
                   </div>

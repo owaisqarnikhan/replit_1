@@ -1,26 +1,21 @@
 import nodemailer from 'nodemailer';
-import sgMail from '@sendgrid/mail';
 import { storage } from './storage';
 
-// Configure SendGrid if API key is available
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-}
-
-// Create transporter function for Hostinger SMTP
+// Create transporter function for Microsoft 365 SMTP
 async function createTransporter() {
   const settings = await storage.getSiteSettings();
   
   return nodemailer.createTransport({
-    host: settings.smtpHost || 'smtp.hostinger.com',
+    host: settings.smtpHost || 'smtp.office365.com',
     port: settings.smtpPort || 587,
     secure: false, // STARTTLS
     auth: {
       user: settings.smtpUser || settings.smtpFromEmail,
-      pass: settings.smtpPassword || process.env.HOSTINGER_EMAIL_PASSWORD,
+      pass: settings.smtpPassword || process.env.MICROSOFT365_EMAIL_PASSWORD,
     },
     tls: {
-      rejectUnauthorized: false // Accept self-signed certificates
+      ciphers: 'SSLv3',
+      rejectUnauthorized: false
     }
   });
 }
@@ -44,8 +39,8 @@ export async function sendOrderConfirmationEmail(
     const settings = await storage.getSiteSettings();
     
     // Skip if email is not enabled or no password configured
-    if (!settings.emailEnabled || (!settings.smtpPassword && !process.env.HOSTINGER_EMAIL_PASSWORD)) {
-      console.log('Email notifications disabled - no SMTP password configured');
+    if (!settings.emailEnabled || (!settings.smtpPassword && !process.env.MICROSOFT365_EMAIL_PASSWORD)) {
+      console.log('Email notifications disabled - no Microsoft 365 password configured');
       return;
     }
     
