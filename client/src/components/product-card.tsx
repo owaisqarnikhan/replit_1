@@ -165,7 +165,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
           
           <div className="flex items-center justify-between mb-4">
             <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              ${parseFloat(product.price).toFixed(2)}
+              ${parseFloat(product.price).toFixed(2)} USD
             </span>
             
             {rating > 0 && (
