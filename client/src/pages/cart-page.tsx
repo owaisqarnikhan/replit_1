@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { NavigationHeader } from "@/components/navigation-header";
+import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -85,6 +86,8 @@ export default function CartPage() {
             </CardContent>
           </Card>
         </div>
+        
+        <Footer />
       </div>
     );
   }
@@ -103,6 +106,8 @@ export default function CartPage() {
             </Button>
           </div>
         </div>
+        
+        <Footer />
       </div>
     );
   }
@@ -234,6 +239,8 @@ export default function CartPage() {
           </CardContent>
         </Card>
       </div>
+      
+      <Footer />
     </div>
   );
 }

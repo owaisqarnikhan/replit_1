@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { NavigationHeader } from "@/components/navigation-header";
+import Footer from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -269,6 +270,8 @@ export default function UserDashboard() {
           </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 }
