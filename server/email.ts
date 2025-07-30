@@ -104,7 +104,7 @@ export async function sendOrderConfirmationEmail(
     const fromName = settings.smtpFromName || settings.siteName || 'InnovanceOrbit';
 
     // Use Hostinger SMTP for sending emails
-    console.log('Sending emails via Hostinger SMTP...');
+    console.log('Sending emails via Microsoft 365 SMTP...');
     const smtpTransporter = await createTransporter();
     
     // Send to customer

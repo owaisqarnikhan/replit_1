@@ -5,10 +5,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CategoryManager } from "@/components/admin/CategoryManager";
 import { ProductManager } from "@/components/admin/ProductManager";
-import { DataImportExport } from "@/components/admin/DataImportExport";
+
 import { UserManager } from "@/components/admin/UserManager";
 import { OrderManager } from "@/components/admin/OrderManager";
 import { SiteSettings } from "@/components/admin/SiteSettings";
+import DatabaseManager from "@/components/admin/DatabaseManager";
 import { 
   DollarSign, 
   ShoppingCart, 
@@ -123,9 +124,9 @@ export default function AdminDashboard() {
               <Users className="h-4 w-4" />
               Users
             </TabsTrigger>
-            <TabsTrigger value="import-export" className="flex items-center gap-2">
+            <TabsTrigger value="database" className="flex items-center gap-2">
               <FileSpreadsheet className="h-4 w-4" />
-              Data
+              Database
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
@@ -149,8 +150,8 @@ export default function AdminDashboard() {
             <UserManager />
           </TabsContent>
 
-          <TabsContent value="import-export">
-            <DataImportExport />
+          <TabsContent value="database">
+            <DatabaseManager />
           </TabsContent>
 
           <TabsContent value="settings">

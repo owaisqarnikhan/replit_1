@@ -75,6 +75,13 @@ export interface IStorage {
   getSiteSettings(): Promise<SiteSettings>;
   updateSiteSettings(settingsData: Partial<InsertSiteSettings>): Promise<SiteSettings>;
 
+  // Database export/import methods
+  getUsers(): Promise<User[]>;
+  getOrders(): Promise<Order[]>;
+  getOrderItems(): Promise<OrderItem[]>;
+  getCartItems(): Promise<CartItem[]>;
+  clearProductsAndCategories(): Promise<void>;
+
   sessionStore: any;
 }
 
@@ -218,6 +225,33 @@ export class DatabaseStorage implements IStorage {
     await db.delete(products).where(eq(products.id, id));
   }
 
+
+
+  // Additional methods for database export/import
+  async getUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async getOrders(): Promise<Order[]> {
+    return await db.select().from(orders);
+  }
+
+  async getOrderItems(): Promise<OrderItem[]> {
+    return await db.select().from(orderItems);
+  }
+
+  async getCartItems(): Promise<CartItem[]> {
+    return await db.select().from(cartItems);
+  }
+
+  async clearProductsAndCategories(): Promise<void> {
+    await db.delete(cartItems);
+    await db.delete(orderItems);
+    await db.delete(orders);
+    await db.delete(products);
+    await db.delete(categories);
+  }
+
   // Cart methods
   async getCartItems(userId: string): Promise<(CartItem & { product: Product })[]> {
     return await db
@@ -278,8 +312,8 @@ export class DatabaseStorage implements IStorage {
     await db.delete(cartItems).where(eq(cartItems.userId, userId));
   }
 
-  // Order methods
-  async getOrders(): Promise<any[]> {
+  // Order methods  
+  async getOrdersWithDetails(): Promise<any[]> {
     const ordersData = await db
       .select()
       .from(orders)

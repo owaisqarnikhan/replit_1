@@ -5,6 +5,7 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema } from "@shared/schema";
 import { sendOrderConfirmationEmail } from "./email";
+import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
 // import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { createBenefitPayTransaction, verifyBenefitPayTransaction, handleBenefitPayWebhook } from "./benefit-pay";
 import Stripe from "stripe";
@@ -602,7 +603,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const [orders, products, users] = await Promise.all([
-        storage.getOrders(),
+        storage.getOrdersWithDetails(),
         storage.getProducts(),
         storage.getAllUsers()
       ]);
@@ -619,6 +620,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(stats);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Database export/import routes
+  app.get("/api/admin/database/export", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const exportData = await exportDatabase();
+      const filename = await saveExportToFile(exportData);
+      
+      res.json({ 
+        success: true, 
+        filename,
+        downloadUrl: `/uploads/${filename}`,
+        message: "Database exported successfully" 
+      });
+    } catch (error) {
+      console.error('Database export error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to export database" 
+      });
+    }
+  });
+
+  // Configure multer for database import
+  const importUpload = multer({ 
+    storage: storage_config,
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for database files
+    fileFilter: (req, file, cb) => {
+      if (file.mimetype === 'application/json' || path.extname(file.originalname).toLowerCase() === '.json') {
+        return cb(null, true);
+      } else {
+        cb(new Error('Only JSON files are allowed for database import'));
+      }
+    }
+  });
+
+  app.post("/api/admin/database/import", importUpload.single('database'), async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "No database file uploaded" 
+      });
+    }
+
+    try {
+      const importData = await validateImportFile(req.file.path);
+      await importDatabase(importData);
+      
+      // Clean up uploaded file
+      await fs.promises.unlink(req.file.path);
+      
+      res.json({ 
+        success: true, 
+        message: "Database imported successfully" 
+      });
+    } catch (error) {
+      console.error('Database import error:', error);
+      
+      // Clean up uploaded file on error
+      if (req.file) {
+        try {
+          await fs.promises.unlink(req.file.path);
+        } catch (cleanupError) {
+          console.error('Failed to cleanup upload file:', cleanupError);
+        }
+      }
+      
+      res.status(500).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : "Failed to import database" 
+      });
     }
   });
 
