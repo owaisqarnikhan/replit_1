@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertSiteSettingsSchema, type InsertSiteSettings, type SiteSettings } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Settings, Palette, Mail, Upload, Save } from "lucide-react";
+import { Settings, Palette, Mail, Upload, Save, Monitor } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { themes, applyTheme, type ThemeName } from "@/lib/themes";
 
@@ -209,7 +209,7 @@ export function SiteSettings() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <Tabs defaultValue="general" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="general">General</TabsTrigger>
                 <TabsTrigger value="branding">
                   <Palette className="h-4 w-4 mr-2" />
@@ -217,6 +217,10 @@ export function SiteSettings() {
                 </TabsTrigger>
                 <TabsTrigger value="contact">Contact</TabsTrigger>
                 <TabsTrigger value="footer">Footer</TabsTrigger>
+                <TabsTrigger value="login">
+                  <Monitor className="h-4 w-4 mr-2" />
+                  Login Page
+                </TabsTrigger>
                 <TabsTrigger value="email">
                   <Mail className="h-4 w-4 mr-2" />
                   Email
@@ -1019,6 +1023,110 @@ export function SiteSettings() {
                       />
                     </div>
                   </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="login" className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <Monitor className="h-5 w-5 text-blue-600" />
+                    <h3 className="text-lg font-semibold text-slate-900">Login Page Settings</h3>
+                  </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="loginPageTitle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Login Page Title</FormLabel>
+                        <FormControl>
+                          <Input placeholder="InnovanceOrbit Store" {...field} value={field.value || ""} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="loginPageLogo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Login Page Logo</FormLabel>
+                        <div className="flex gap-2">
+                          <FormControl>
+                            <Input placeholder="Logo URL for login page" {...field} value={field.value || ""} />
+                          </FormControl>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              const input = document.createElement('input');
+                              input.type = 'file';
+                              input.accept = 'image/*';
+                              input.onchange = async (e) => {
+                                const file = (e.target as HTMLInputElement).files?.[0];
+                                if (file) {
+                                  setIsUploading(true);
+                                  try {
+                                    const formData = new FormData();
+                                    formData.append('image', file);
+                                    
+                                    const response = await fetch('/api/upload-image', {
+                                      method: 'POST',
+                                      credentials: 'include',
+                                      body: formData,
+                                    });
+                                    
+                                    if (!response.ok) {
+                                      throw new Error('Failed to upload image');
+                                    }
+                                    
+                                    const data = await response.json();
+                                    field.onChange(data.imageUrl);
+                                    
+                                    toast({
+                                      title: "Image Uploaded",
+                                      description: "Login page logo has been uploaded successfully.",
+                                    });
+                                  } catch (error) {
+                                    toast({
+                                      title: "Upload Failed",
+                                      description: error instanceof Error ? error.message : "Failed to upload image",
+                                      variant: "destructive",
+                                    });
+                                  } finally {
+                                    setIsUploading(false);
+                                  }
+                                }
+                              };
+                              input.click();
+                            }}
+                            disabled={isUploading}
+                          >
+                            <Upload className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Upload a logo specifically for the login page (separate from header/footer logos)
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {form.watch("loginPageLogo") && (
+                    <div className="mt-4">
+                      <Label>Preview:</Label>
+                      <div className="mt-2 p-4 border rounded-lg bg-gray-50">
+                        <img 
+                          src={form.watch("loginPageLogo") || ""} 
+                          alt="Login page logo preview" 
+                          className="h-20 w-auto mx-auto"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
 

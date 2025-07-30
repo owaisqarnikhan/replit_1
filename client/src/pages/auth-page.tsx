@@ -49,15 +49,15 @@ export default function AuthPage() {
       <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            {(settings?.headerLogo || settings?.logoUrl) && (
+            {settings?.loginPageLogo && (
               <img 
-                src={settings.headerLogo || settings.logoUrl} 
-                alt={settings.siteName || "InnovanceOrbit Store"} 
+                src={settings.loginPageLogo} 
+                alt={settings.loginPageTitle || "InnovanceOrbit Store"} 
                 className="h-20 w-auto mx-auto mb-6"
               />
             )}
             <h1 className="text-3xl font-bold text-slate-900">
-              {settings?.siteName || "InnovanceOrbit Store"}
+              {settings?.loginPageTitle || "InnovanceOrbit Store"}
             </h1>
           </div>
 

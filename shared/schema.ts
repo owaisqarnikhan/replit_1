@@ -238,6 +238,11 @@ export const siteSettings = pgTable("site_settings", {
   smtpFromEmail: text("smtp_from_email").default("noreply@innovanceorbit.com"),
   smtpFromName: text("smtp_from_name").default("InnovanceOrbit"),
   emailEnabled: boolean("email_enabled").default(false),
+  
+  // Login Page Specific Settings
+  loginPageLogo: text("login_page_logo"),
+  loginPageTitle: text("login_page_title").default("InnovanceOrbit Store"),
+  
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });
