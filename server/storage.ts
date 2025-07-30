@@ -313,9 +313,34 @@ export class DatabaseStorage implements IStorage {
     return ordersWithItems;
   }
 
-  async getOrderById(id: string): Promise<(Order & { items: (OrderItem & { product: Product })[] }) | undefined> {
-    const [order] = await db.select().from(orders).where(eq(orders.id, id));
-    if (!order) return undefined;
+  async getOrderById(id: string): Promise<any> {
+    const [order] = await db
+      .select({
+        id: orders.id,
+        userId: orders.userId,
+        subtotal: orders.subtotal,
+        tax: orders.tax,
+        shipping: orders.shipping,
+        total: orders.total,
+        status: orders.status,
+        paymentMethod: orders.paymentMethod,
+        paymentIntentId: orders.paymentIntentId,
+        shippingAddress: orders.shippingAddress,
+        createdAt: orders.createdAt,
+        updatedAt: orders.updatedAt,
+        user: {
+          id: users.id,
+          username: users.username,
+          email: users.email,
+          firstName: users.firstName,
+          lastName: users.lastName,
+        }
+      })
+      .from(orders)
+      .leftJoin(users, eq(orders.userId, users.id))
+      .where(eq(orders.id, id));
+      
+    if (!order) return null;
 
     const items = await db
       .select({
@@ -349,6 +374,8 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return newItem;
   }
+
+
 
   async updateOrderStatus(id: string, status: string): Promise<Order> {
     const [updated] = await db

@@ -7,6 +7,7 @@ import { CategoryManager } from "@/components/admin/CategoryManager";
 import { ProductManager } from "@/components/admin/ProductManager";
 import { DataImportExport } from "@/components/admin/DataImportExport";
 import { UserManager } from "@/components/admin/UserManager";
+import { OrderManager } from "@/components/admin/OrderManager";
 import { SiteSettings } from "@/components/admin/SiteSettings";
 import { 
   DollarSign, 
@@ -104,8 +105,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* Management Tabs */}
-        <Tabs defaultValue="categories" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+        <Tabs defaultValue="orders" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="orders" className="flex items-center gap-2">
+              <ShoppingBag className="h-4 w-4" />
+              Orders
+            </TabsTrigger>
             <TabsTrigger value="categories" className="flex items-center gap-2">
               <ShoppingCart className="h-4 w-4" />
               Categories
@@ -127,6 +132,10 @@ export default function AdminDashboard() {
               Settings
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="orders">
+            <OrderManager />
+          </TabsContent>
 
           <TabsContent value="categories">
             <CategoryManager />
