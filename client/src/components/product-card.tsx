@@ -108,11 +108,11 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
           <img 
             src={product.imageUrl} 
             alt={product.name}
-            className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-52 object-cover group-hover:scale-110 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-40 bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-            <span className="text-slate-600 text-lg font-bold">
+          <div className="w-full h-52 bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+            <span className="text-slate-600 text-2xl font-bold">
               {product.name.charAt(0)}
             </span>
           </div>
