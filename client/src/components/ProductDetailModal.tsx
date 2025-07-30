@@ -187,14 +187,14 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-lg font-semibold text-gray-700">Sale Price:</span>
-                    <span className="text-2xl font-bold text-primary">${product.price} USD</span>
+                    <span className="text-2xl font-bold text-primary">${product.price}</span>
                   </div>
                   
                   {product.productType === "rent" && product.rentalPrice && (
                     <div className="flex items-center justify-between border-t pt-3">
                       <span className="text-lg font-semibold text-gray-700">Rental Price:</span>
                       <div className="text-right">
-                        <span className="text-xl font-bold text-blue-600">${product.rentalPrice} USD</span>
+                        <span className="text-xl font-bold text-blue-600">${product.rentalPrice}</span>
                         {product.rentalPeriod && (
                           <p className="text-sm text-gray-600">per {product.rentalPeriod}</p>
                         )}

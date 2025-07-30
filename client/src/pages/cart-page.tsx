@@ -177,7 +177,7 @@ export default function CartPage() {
                 
                 <div className="flex items-center space-x-4">
                   <span className="text-lg font-bold text-slate-900">
-                    ${(parseFloat(item.product.price) * item.quantity).toFixed(2)} USD
+                    ${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
                   </span>
                   <Button
                     size="sm"
@@ -200,7 +200,7 @@ export default function CartPage() {
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-slate-600">
                 <span>Subtotal:</span>
-                <span className="font-medium">${subtotal.toFixed(2)} USD</span>
+                <span className="font-medium">${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>Shipping:</span>
@@ -208,11 +208,11 @@ export default function CartPage() {
               </div>
               <div className="flex justify-between text-slate-600">
                 <span>VAT (10%):</span>
-                <span className="font-medium">${tax.toFixed(2)} USD</span>
+                <span className="font-medium">${tax.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-xl font-bold text-slate-900 pt-2 border-t border-slate-200">
                 <span>Total:</span>
-                <span>${total.toFixed(2)} USD</span>
+                <span>${total.toFixed(2)}</span>
               </div>
             </div>
             

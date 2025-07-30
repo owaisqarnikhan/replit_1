@@ -235,7 +235,7 @@ export default function UserDashboard() {
                                   {item.product.name} × {item.quantity}
                                 </span>
                                 <span className="font-medium text-slate-900">
-                                  ${(parseFloat(item.price) * item.quantity).toFixed(2)} USD
+                                  ${(parseFloat(item.price) * item.quantity).toFixed(2)}
                                 </span>
                               </div>
                             )) || (
