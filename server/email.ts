@@ -17,7 +17,7 @@ async function createTransporter() {
     secure: false, // STARTTLS
     auth: {
       user: settings.smtpUser || settings.smtpFromEmail,
-      pass: settings.smtpPassword,
+      pass: settings.smtpPassword || process.env.HOSTINGER_EMAIL_PASSWORD,
     },
     tls: {
       rejectUnauthorized: false // Accept self-signed certificates
@@ -43,9 +43,9 @@ export async function sendOrderConfirmationEmail(
     // Get site settings for template and admin email
     const settings = await storage.getSiteSettings();
     
-    // Skip if email is not enabled
-    if (!settings.emailEnabled && !process.env.SENDGRID_API_KEY) {
-      console.log('Email notifications disabled - no SMTP configuration found');
+    // Skip if email is not enabled or no password configured
+    if (!settings.emailEnabled || (!settings.smtpPassword && !process.env.HOSTINGER_EMAIL_PASSWORD)) {
+      console.log('Email notifications disabled - no SMTP password configured');
       return;
     }
     
