@@ -5,6 +5,7 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema } from "@shared/schema";
 import { sendOrderConfirmationEmail } from "./email";
+import { testSMTP } from "./test-smtp";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
 // import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { createBenefitPayTransaction, verifyBenefitPayTransaction, handleBenefitPayWebhook } from "./benefit-pay";
@@ -579,6 +580,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Order completion error:', error);
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // SMTP test route
+  app.post("/api/admin/test-smtp", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const result = await testSMTP();
+      res.json(result);
+    } catch (error: any) {
+      console.error('SMTP test error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || "SMTP test failed" 
+      });
     }
   });
 
