@@ -203,6 +203,8 @@ export const siteSettings = pgTable("site_settings", {
   officeHoursTitle: text("office_hours_title").default("Office Hours"),
   paymentMethodsImage: text("payment_methods_image"),
   footerLeftImage: text("footer_left_image"),
+  footerLeftImageWidth: integer("footer_left_image_width").default(200),
+  paymentMethodsImageWidth: integer("payment_methods_image_width").default(250),
   socialFacebook: text("social_facebook"),
   socialTwitter: text("social_twitter"),
   socialInstagram: text("social_instagram"),

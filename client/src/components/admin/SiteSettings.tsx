@@ -40,6 +40,8 @@ export function SiteSettings() {
       officeHoursTitle: settings?.officeHoursTitle || "Office Hours",
       paymentMethodsImage: settings?.paymentMethodsImage || "",
       footerLeftImage: settings?.footerLeftImage || "",
+      footerLeftImageWidth: settings?.footerLeftImageWidth || 200,
+      paymentMethodsImageWidth: settings?.paymentMethodsImageWidth || 250,
       theme: settings?.theme || "default",
       primaryColor: settings?.primaryColor || "#2563eb",
       secondaryColor: settings?.secondaryColor || "#64748b",
@@ -94,6 +96,8 @@ export function SiteSettings() {
         officeHoursTitle: settings.officeHoursTitle || "Office Hours",
         paymentMethodsImage: settings.paymentMethodsImage || "",
         footerLeftImage: settings.footerLeftImage || "",
+        footerLeftImageWidth: settings.footerLeftImageWidth || 200,
+        paymentMethodsImageWidth: settings.paymentMethodsImageWidth || 250,
         theme: settings.theme || "default",
         primaryColor: settings.primaryColor || "#2563eb",
         secondaryColor: settings.secondaryColor || "#64748b",
@@ -887,19 +891,40 @@ export function SiteSettings() {
                       </Button>
                     </div>
                   </div>
-                  <FormField
-                    control={form.control}
-                    name="paymentMethodsImage"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Payment Methods Image URL (Alternative)</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://example.com/payment-methods.png" {...field} value={field.value || ""} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="paymentMethodsImage"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Payment Methods Image URL (Alternative)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="https://example.com/payment-methods.png" {...field} value={field.value || ""} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="paymentMethodsImageWidth"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Payment Methods Image Width (px)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              placeholder="250" 
+                              {...field} 
+                              value={field.value || 250}
+                              onChange={(e) => field.onChange(parseInt(e.target.value) || 250)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
               </TabsContent>
 
@@ -938,19 +963,40 @@ export function SiteSettings() {
                             </Button>
                           </div>
                         </div>
-                        <FormField
-                          control={form.control}
-                          name="footerLeftImage"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Footer Left Image URL (Alternative)</FormLabel>
-                              <FormControl>
-                                <Input placeholder="https://example.com/footer-image.png" {...field} value={field.value || ""} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="footerLeftImage"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Footer Left Image URL (Alternative)</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="https://example.com/footer-image.png" {...field} value={field.value || ""} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="footerLeftImageWidth"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Footer Left Image Width (px)</FormLabel>
+                                <FormControl>
+                                  <Input 
+                                    type="number" 
+                                    placeholder="200" 
+                                    {...field} 
+                                    value={field.value || 200}
+                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 200)}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
                       </div>
 
                       <FormField

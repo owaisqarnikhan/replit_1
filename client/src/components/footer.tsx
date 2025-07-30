@@ -27,7 +27,8 @@ export default function Footer() {
                 <img 
                   src={settings.footerLeftImage} 
                   alt="Company Image" 
-                  className="max-w-[200px] h-auto rounded" 
+                  className="h-auto rounded" 
+                  style={{ maxWidth: `${settings.footerLeftImageWidth || 200}px` }}
                 />
               </div>
             ) : (
@@ -106,7 +107,8 @@ export default function Footer() {
                 <img 
                   src={settings.paymentMethodsImage} 
                   alt="Accepted payment methods" 
-                  className="max-w-[250px] h-auto rounded"
+                  className="h-auto rounded"
+                  style={{ maxWidth: `${settings.paymentMethodsImageWidth || 250}px` }}
                 />
               </div>
             )}
