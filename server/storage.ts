@@ -314,49 +314,56 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrderById(id: string): Promise<any> {
-    const [order] = await db
-      .select({
-        id: orders.id,
-        userId: orders.userId,
-        subtotal: orders.subtotal,
-        tax: orders.tax,
-        shipping: orders.shipping,
-        total: orders.total,
-        status: orders.status,
-        paymentMethod: orders.paymentMethod,
-        paymentIntentId: orders.paymentIntentId,
-        shippingAddress: orders.shippingAddress,
-        createdAt: orders.createdAt,
-        updatedAt: orders.updatedAt,
-        user: {
-          id: users.id,
-          username: users.username,
-          email: users.email,
-          firstName: users.firstName,
-          lastName: users.lastName,
-        }
-      })
-      .from(orders)
-      .leftJoin(users, eq(orders.userId, users.id))
-      .where(eq(orders.id, id));
+    try {
+      console.log('Getting order by ID:', id);
       
-    if (!order) return null;
+      // Get the basic order first
+      const [orderData] = await db
+        .select()
+        .from(orders)
+        .where(eq(orders.id, id));
+        
+      if (!orderData) {
+        console.log('Order not found');
+        return null;
+      }
+      
+      console.log('Found order:', orderData);
 
-    const items = await db
-      .select({
-        id: orderItems.id,
-        orderId: orderItems.orderId,
-        productId: orderItems.productId,
-        quantity: orderItems.quantity,
-        price: orderItems.price,
-        createdAt: orderItems.createdAt,
-        product: products,
-      })
-      .from(orderItems)
-      .innerJoin(products, eq(orderItems.productId, products.id))
-      .where(eq(orderItems.orderId, order.id));
+      // Get the user separately
+      const [userData] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, orderData.userId));
+        
+      console.log('Found user:', userData);
 
-    return { ...order, items };
+      // Get order items
+      const items = await db
+        .select({
+          id: orderItems.id,
+          orderId: orderItems.orderId,
+          productId: orderItems.productId,
+          quantity: orderItems.quantity,
+          price: orderItems.price,
+          createdAt: orderItems.createdAt,
+          product: products,
+        })
+        .from(orderItems)
+        .innerJoin(products, eq(orderItems.productId, products.id))
+        .where(eq(orderItems.orderId, orderData.id));
+
+      console.log('Found items:', items);
+
+      return {
+        ...orderData,
+        user: userData || null,
+        items
+      };
+    } catch (error) {
+      console.error('Error in getOrderById:', error);
+      throw error;
+    }
   }
 
   async createOrder(order: InsertOrder): Promise<Order> {
