@@ -46,6 +46,25 @@ export function SiteSettings() {
       tabTextColor: settings?.tabTextColor || "#2563eb", 
       tabActiveTextColor: settings?.tabActiveTextColor || "#2563eb",
       orderConfirmationTemplate: settings?.orderConfirmationTemplate || "",
+      footerDescription: settings?.footerDescription || "",
+      footerBackgroundUrl: settings?.footerBackgroundUrl || "/uploads/footer-background.png",
+      quickLinksTitle: settings?.quickLinksTitle || "Quick Links",
+      quickLinkHome: settings?.quickLinkHome || "Home",
+      quickLinkProducts: settings?.quickLinkProducts || "Products",
+      quickLinkAbout: settings?.quickLinkAbout || "About",
+      quickLinkContact: settings?.quickLinkContact || "Contact",
+      servicesTitle: settings?.servicesTitle || "Services",
+      serviceLink1: settings?.serviceLink1 || "Customer Support",
+      serviceLink2: settings?.serviceLink2 || "Shipping Info",
+      serviceLink3: settings?.serviceLink3 || "Returns",
+      serviceLink4: settings?.serviceLink4 || "FAQ",
+      socialTitle: settings?.socialTitle || "Follow Us",
+      socialFacebook: settings?.socialFacebook || "",
+      socialTwitter: settings?.socialTwitter || "",
+      socialInstagram: settings?.socialInstagram || "",
+      socialLinkedin: settings?.socialLinkedin || "",
+      copyrightText: settings?.copyrightText || "",
+      additionalFooterText: settings?.additionalFooterText || "",
     },
   });
 
@@ -70,6 +89,25 @@ export function SiteSettings() {
         tabTextColor: settings.tabTextColor || "#2563eb",
         tabActiveTextColor: settings.tabActiveTextColor || "#2563eb",
         orderConfirmationTemplate: settings.orderConfirmationTemplate || "",
+        footerDescription: settings.footerDescription || "",
+        footerBackgroundUrl: settings.footerBackgroundUrl || "/uploads/footer-background.png",
+        quickLinksTitle: settings.quickLinksTitle || "Quick Links",
+        quickLinkHome: settings.quickLinkHome || "Home",
+        quickLinkProducts: settings.quickLinkProducts || "Products",
+        quickLinkAbout: settings.quickLinkAbout || "About",
+        quickLinkContact: settings.quickLinkContact || "Contact",
+        servicesTitle: settings.servicesTitle || "Services",
+        serviceLink1: settings.serviceLink1 || "Customer Support",
+        serviceLink2: settings.serviceLink2 || "Shipping Info",
+        serviceLink3: settings.serviceLink3 || "Returns",
+        serviceLink4: settings.serviceLink4 || "FAQ",
+        socialTitle: settings.socialTitle || "Follow Us",
+        socialFacebook: settings.socialFacebook || "",
+        socialTwitter: settings.socialTwitter || "",
+        socialInstagram: settings.socialInstagram || "",
+        socialLinkedin: settings.socialLinkedin || "",
+        copyrightText: settings.copyrightText || "",
+        additionalFooterText: settings.additionalFooterText || "",
       });
       
       // Apply the current theme on load
@@ -171,13 +209,14 @@ export function SiteSettings() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <Tabs defaultValue="general" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="general">General</TabsTrigger>
                 <TabsTrigger value="branding">
                   <Palette className="h-4 w-4 mr-2" />
                   Branding
                 </TabsTrigger>
                 <TabsTrigger value="contact">Contact</TabsTrigger>
+                <TabsTrigger value="footer">Footer</TabsTrigger>
                 <TabsTrigger value="email">
                   <Mail className="h-4 w-4 mr-2" />
                   Email
@@ -687,6 +726,300 @@ export function SiteSettings() {
                     </FormItem>
                   )}
                 />
+              </TabsContent>
+
+              <TabsContent value="footer" className="space-y-6">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Footer Content</h3>
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="footerDescription"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Footer Description</FormLabel>
+                            <FormControl>
+                              <Textarea 
+                                placeholder="Your trusted partner for premium products and exceptional service in Bahrain." 
+                                {...field} 
+                                value={field.value || ""} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="copyrightText"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Copyright Text</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="© 2025 InnovanceOrbit. All rights reserved." 
+                                {...field} 
+                                value={field.value || ""} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="additionalFooterText"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Additional Footer Text</FormLabel>
+                            <FormControl>
+                              <Textarea 
+                                placeholder="Any additional information to display in the footer" 
+                                {...field} 
+                                value={field.value || ""} 
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Quick Links Section</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="quickLinksTitle"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Section Title</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Quick Links" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div></div>
+
+                      <FormField
+                        control={form.control}
+                        name="quickLinkHome"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Home Link Text</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Home" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="quickLinkProducts"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Products Link Text</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Products" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="quickLinkAbout"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>About Link Text</FormLabel>
+                            <FormControl>
+                              <Input placeholder="About" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="quickLinkContact"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Contact Link Text</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Contact" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Services Section</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="servicesTitle"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Section Title</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Services" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div></div>
+
+                      <FormField
+                        control={form.control}
+                        name="serviceLink1"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Service Link 1</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Customer Support" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="serviceLink2"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Service Link 2</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Shipping Info" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="serviceLink3"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Service Link 3</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Returns" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="serviceLink4"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Service Link 4</FormLabel>
+                            <FormControl>
+                              <Input placeholder="FAQ" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Social Media</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="socialTitle"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Section Title</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Follow Us" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <div></div>
+
+                      <FormField
+                        control={form.control}
+                        name="socialFacebook"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Facebook URL</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://facebook.com/yourpage" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="socialTwitter"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Twitter/X URL</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://twitter.com/yourhandle" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="socialInstagram"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Instagram URL</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://instagram.com/yourhandle" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="socialLinkedin"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>LinkedIn URL</FormLabel>
+                            <FormControl>
+                              <Input placeholder="https://linkedin.com/company/yourcompany" {...field} value={field.value || ""} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="email" className="space-y-6">

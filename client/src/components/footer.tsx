@@ -14,7 +14,7 @@ export default function Footer() {
     <footer 
       className="text-white relative bg-cover bg-center bg-no-repeat min-h-[400px]"
       style={{
-        backgroundImage: "url('/uploads/footer-background.png')",
+        backgroundImage: `url('${settings?.footerBackgroundUrl || '/uploads/footer-background.png'}')`,
       }}
     >
       <div className="absolute inset-0 bg-slate-900/85"></div>
@@ -65,41 +65,53 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+            <h4 className="text-lg font-semibold mb-4">{settings?.quickLinksTitle || "Quick Links"}</h4>
             <nav className="space-y-2">
               <Link href="/" className="block text-slate-300 hover:text-white transition-colors">
-                Home
+                {settings?.quickLinkHome || "Home"}
               </Link>
               <Link href="/products" className="block text-slate-300 hover:text-white transition-colors">
-                Products
+                {settings?.quickLinkProducts || "Products"}
               </Link>
-              <Link href="/cart" className="block text-slate-300 hover:text-white transition-colors">
-                Cart
+              <Link href="/about" className="block text-slate-300 hover:text-white transition-colors">
+                {settings?.quickLinkAbout || "About"}
               </Link>
-              <Link href="/dashboard" className="block text-slate-300 hover:text-white transition-colors">
-                Account
+              <Link href="/contact" className="block text-slate-300 hover:text-white transition-colors">
+                {settings?.quickLinkContact || "Contact"}
               </Link>
             </nav>
           </div>
 
-          {/* Customer Support */}
+          {/* Services */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Support</h4>
-            <div className="space-y-2 text-slate-300">
-              <div>
-                <p className="font-medium">Business Hours:</p>
-                <p>{settings?.businessHours || "Sun-Thu: 9AM-6PM"}</p>
-              </div>
-              <div>
-                <p className="font-medium">Support:</p>
-                <p>{settings?.supportEmail || "support@innovanceorbit.com"}</p>
-              </div>
-            </div>
+            <h4 className="text-lg font-semibold mb-4">{settings?.servicesTitle || "Services"}</h4>
+            <nav className="space-y-2">
+              {settings?.serviceLink1 && (
+                <div className="block text-slate-300">
+                  {settings.serviceLink1}
+                </div>
+              )}
+              {settings?.serviceLink2 && (
+                <div className="block text-slate-300">
+                  {settings.serviceLink2}
+                </div>
+              )}
+              {settings?.serviceLink3 && (
+                <div className="block text-slate-300">
+                  {settings.serviceLink3}
+                </div>
+              )}
+              {settings?.serviceLink4 && (
+                <div className="block text-slate-300">
+                  {settings.serviceLink4}
+                </div>
+              )}
+            </nav>
 
             {/* Social Media */}
             {(settings?.socialFacebook || settings?.socialTwitter || settings?.socialInstagram || settings?.socialLinkedin) && (
               <div className="mt-6">
-                <h5 className="text-sm font-semibold mb-3">Follow Us</h5>
+                <h5 className="text-sm font-semibold mb-3">{settings?.socialTitle || "Follow Us"}</h5>
                 <div className="flex space-x-4">
                   {settings?.socialFacebook && (
                     <a href={settings.socialFacebook} target="_blank" rel="noopener noreferrer" 

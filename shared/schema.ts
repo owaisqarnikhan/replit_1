@@ -199,6 +199,18 @@ export const siteSettings = pgTable("site_settings", {
   socialLinkedin: text("social_linkedin"),
   copyrightText: text("copyright_text"),
   additionalFooterText: text("additional_footer_text"),
+  footerBackgroundUrl: text("footer_background_url").default("/uploads/footer-background.png"),
+  quickLinksTitle: text("quick_links_title").default("Quick Links"),
+  quickLinkHome: text("quick_link_home").default("Home"),
+  quickLinkProducts: text("quick_link_products").default("Products"),
+  quickLinkAbout: text("quick_link_about").default("About"),
+  quickLinkContact: text("quick_link_contact").default("Contact"),
+  servicesTitle: text("services_title").default("Services"),
+  serviceLink1: text("service_link_1").default("Customer Support"),
+  serviceLink2: text("service_link_2").default("Shipping Info"),
+  serviceLink3: text("service_link_3").default("Returns"),
+  serviceLink4: text("service_link_4").default("FAQ"),
+  socialTitle: text("social_title").default("Follow Us"),
   // Email templates and SMTP Configuration
   orderConfirmationTemplate: text("order_confirmation_template").default(`
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
