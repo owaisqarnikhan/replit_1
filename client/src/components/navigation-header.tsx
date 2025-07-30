@@ -74,8 +74,17 @@ export function NavigationHeader() {
           <Button
             key={item.href}
             variant="ghost"
-            className={`${mobile ? 'justify-start w-full' : ''} transition-colors duration-200 font-medium hover:opacity-80`}
-            style={{ color: siteSettings?.headerTextColor || '#64748b' }}
+            className={`${mobile ? 'justify-start w-full' : ''} transition-colors duration-200 font-medium`}
+            style={{ 
+              color: siteSettings?.headerTextColor || '#64748b',
+              '--hover-color': siteSettings?.tabTextColor || '#2563eb'
+            } as React.CSSProperties & { '--hover-color': string }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = siteSettings?.tabTextColor || '#2563eb';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = siteSettings?.headerTextColor || '#64748b';
+            }}
             onClick={() => {
               setLocation(item.href);
               if (mobile) setIsMobileMenuOpen(false);
@@ -111,11 +120,7 @@ export function NavigationHeader() {
 
   return (
     <header 
-      className="shadow-sm border-b sticky top-0 z-50 nav-header"
-      style={{
-        backgroundColor: siteSettings?.primaryColor || '#ffffff',
-        borderBottomColor: siteSettings?.primaryColor ? `${siteSettings.primaryColor}20` : '#e5e7eb'
-      }}
+      className="bg-white shadow-sm border-b sticky top-0 z-50 nav-header"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -123,8 +128,14 @@ export function NavigationHeader() {
             <div className="flex-shrink-0">
               <Button
                 variant="ghost"
-                className="text-2xl font-bold hover:bg-transparent flex items-center space-x-3"
+                className="text-2xl font-bold hover:bg-transparent flex items-center space-x-3 transition-colors duration-200"
                 style={{ color: siteSettings?.headerTextColor || '#2563eb' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = siteSettings?.tabTextColor || '#2563eb';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = siteSettings?.headerTextColor || '#2563eb';
+                }}
                 onClick={() => setLocation("/")}
               >
                 {siteSettings?.logoUrl ? (
@@ -150,8 +161,14 @@ export function NavigationHeader() {
             {/* Shopping Cart */}
             <Button
               variant="ghost"
-              className="relative transition-colors duration-200 hover:opacity-80"
+              className="relative transition-colors duration-200"
               style={{ color: siteSettings?.headerTextColor || '#64748b' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = siteSettings?.tabTextColor || '#2563eb';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = siteSettings?.headerTextColor || '#64748b';
+              }}
               onClick={() => setLocation("/cart")}
             >
               <ShoppingCart className="h-5 w-5" />

@@ -51,8 +51,8 @@ export function SiteSettings() {
       accentColor: settings?.accentColor || "#0ea5e9",
       backgroundColor: settings?.backgroundColor || "#ffffff",
       textColor: settings?.textColor || "#1e293b",
-      headerTextColor: settings?.headerTextColor || "#ffffff",
-      tabTextColor: settings?.tabTextColor || "#64748b",
+      headerTextColor: settings?.headerTextColor || "#64748b",
+      tabTextColor: settings?.tabTextColor || "#2563eb", 
       tabActiveTextColor: settings?.tabActiveTextColor || "#2563eb",
       orderConfirmationTemplate: settings?.orderConfirmationTemplate || "",
     },
@@ -75,8 +75,8 @@ export function SiteSettings() {
         accentColor: settings.accentColor || "#0ea5e9",
         backgroundColor: settings.backgroundColor || "#ffffff",
         textColor: settings.textColor || "#1e293b",
-        headerTextColor: settings.headerTextColor || "#ffffff",
-        tabTextColor: settings.tabTextColor || "#64748b",
+        headerTextColor: settings.headerTextColor || "#64748b",
+        tabTextColor: settings.tabTextColor || "#2563eb",
         tabActiveTextColor: settings.tabActiveTextColor || "#2563eb",
         orderConfirmationTemplate: settings.orderConfirmationTemplate || "",
       });
@@ -412,11 +412,27 @@ export function SiteSettings() {
                         name="headerTextColor"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Header Text Color</FormLabel>
-                            <FormControl>
-                              <Input type="color" {...field} value={field.value || "#ffffff"} />
-                            </FormControl>
-                            <p className="text-xs text-muted-foreground">Color for text in navigation header</p>
+                            <FormLabel>Navigation Text Color</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value || "#64748b"}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select text color" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="#000000">Black</SelectItem>
+                                <SelectItem value="#374151">Dark Gray</SelectItem>
+                                <SelectItem value="#64748b">Medium Gray</SelectItem>
+                                <SelectItem value="#94a3b8">Light Gray</SelectItem>
+                                <SelectItem value="#2563eb">Blue</SelectItem>
+                                <SelectItem value="#dc2626">Red</SelectItem>
+                                <SelectItem value="#059669">Green</SelectItem>
+                                <SelectItem value="#7c3aed">Purple</SelectItem>
+                                <SelectItem value="#ea580c">Orange</SelectItem>
+                                <SelectItem value="#0891b2">Cyan</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">Default color for navigation items</p>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -427,11 +443,27 @@ export function SiteSettings() {
                         name="tabTextColor"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Tab Text (Inactive)</FormLabel>
-                            <FormControl>
-                              <Input type="color" {...field} value={field.value || "#64748b"} />
-                            </FormControl>
-                            <p className="text-xs text-muted-foreground">Color for inactive tab text</p>
+                            <FormLabel>Hover/Focus Color</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value || "#2563eb"}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select hover color" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="#000000">Black</SelectItem>
+                                <SelectItem value="#374151">Dark Gray</SelectItem>
+                                <SelectItem value="#64748b">Medium Gray</SelectItem>
+                                <SelectItem value="#94a3b8">Light Gray</SelectItem>
+                                <SelectItem value="#2563eb">Blue</SelectItem>
+                                <SelectItem value="#dc2626">Red</SelectItem>
+                                <SelectItem value="#059669">Green</SelectItem>
+                                <SelectItem value="#7c3aed">Purple</SelectItem>
+                                <SelectItem value="#ea580c">Orange</SelectItem>
+                                <SelectItem value="#0891b2">Cyan</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">Color when hovering over navigation items</p>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -442,11 +474,27 @@ export function SiteSettings() {
                         name="tabActiveTextColor"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Tab Text (Active)</FormLabel>
-                            <FormControl>
-                              <Input type="color" {...field} value={field.value || "#2563eb"} />
-                            </FormControl>
-                            <p className="text-xs text-muted-foreground">Color for active tab text</p>
+                            <FormLabel>Active/Current Page Color</FormLabel>
+                            <Select onValueChange={field.onChange} value={field.value || "#2563eb"}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select active color" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="#000000">Black</SelectItem>
+                                <SelectItem value="#374151">Dark Gray</SelectItem>
+                                <SelectItem value="#64748b">Medium Gray</SelectItem>
+                                <SelectItem value="#94a3b8">Light Gray</SelectItem>
+                                <SelectItem value="#2563eb">Blue</SelectItem>
+                                <SelectItem value="#dc2626">Red</SelectItem>
+                                <SelectItem value="#059669">Green</SelectItem>
+                                <SelectItem value="#7c3aed">Purple</SelectItem>
+                                <SelectItem value="#ea580c">Orange</SelectItem>
+                                <SelectItem value="#0891b2">Cyan</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">Color for currently active page/tab</p>
                             <FormMessage />
                           </FormItem>
                         )}
