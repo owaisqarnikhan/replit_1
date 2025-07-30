@@ -90,42 +90,42 @@ export function ProductCard({ product }: ProductCardProps) {
   const reviewCount = product.reviewCount || 0;
 
   return (
-    <Card className="group cursor-pointer overflow-hidden hover:shadow-xl transition-shadow duration-300">
-      <div className="relative">
+    <Card className="group cursor-pointer overflow-hidden border-none shadow-md hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] bg-gradient-to-br from-white to-slate-50">
+      <div className="relative overflow-hidden rounded-t-xl">
         {product.imageUrl ? (
           <img 
             src={product.imageUrl} 
             alt={product.name}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-52 object-cover group-hover:scale-110 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-48 bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-            <span className="text-slate-500 text-lg font-medium">
+          <div className="w-full h-52 bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+            <span className="text-slate-600 text-2xl font-bold">
               {product.name.charAt(0)}
             </span>
           </div>
         )}
         
         {/* Badges */}
-        <div className="absolute top-2 left-2">
+        <div className="absolute top-3 left-3">
           {product.isFeatured && (
-            <Badge className="bg-green-500 text-white text-xs px-2 py-1 font-medium">
-              Featured
+            <Badge className="bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs px-3 py-1.5 font-semibold shadow-lg">
+              ⭐ Featured
             </Badge>
           )}
         </div>
         
         {/* Wishlist Button */}
-        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
           <Button
             size="icon"
             variant="secondary"
-            className="w-8 h-8 rounded-full shadow-md hover:bg-slate-50 transition-colors duration-200"
+            className="w-10 h-10 rounded-full shadow-lg hover:shadow-xl bg-white/90 backdrop-blur-sm hover:bg-white transition-all duration-200 border border-white/50"
             onClick={handleWishlistToggle}
           >
             <Heart 
-              className={`w-4 h-4 transition-colors duration-200 ${
-                isWishlisted ? "fill-red-500 text-red-500" : "text-slate-400 hover:text-red-500"
+              className={`w-5 h-5 transition-all duration-200 ${
+                isWishlisted ? "fill-red-500 text-red-500 scale-110" : "text-slate-500 hover:text-red-500 hover:scale-110"
               }`} 
             />
           </Button>
@@ -133,34 +133,34 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {/* Stock indicator */}
         {product.stock === 0 && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <Badge variant="destructive" className="text-white">
+          <div className="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center">
+            <Badge variant="destructive" className="text-white text-lg px-4 py-2 font-bold shadow-lg">
               Out of Stock
             </Badge>
           </div>
         )}
       </div>
       
-      <CardContent className="p-6">
-        <h3 className="text-lg font-semibold text-slate-900 mb-2 line-clamp-2">
+      <CardContent className="p-6 bg-gradient-to-b from-transparent to-slate-50/30">
+        <h3 className="text-xl font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-blue-700 transition-colors duration-300">
           {product.name}
         </h3>
         
-        <p className="text-slate-600 text-sm mb-3 line-clamp-2">
+        <p className="text-slate-600 text-sm mb-4 line-clamp-2 leading-relaxed">
           {product.description || "No description available"}
         </p>
         
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-2xl font-bold text-primary">
+        <div className="flex items-center justify-between mb-6">
+          <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             ${parseFloat(product.price).toFixed(2)}
           </span>
           
           {rating > 0 && (
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-2 bg-yellow-50 px-3 py-1.5 rounded-full border border-yellow-200">
               <div className="flex">
                 {renderStars(rating)}
               </div>
-              <span className="text-slate-500 text-sm">
+              <span className="text-slate-600 text-sm font-medium">
                 ({reviewCount > 0 ? reviewCount : rating.toFixed(1)})
               </span>
             </div>
@@ -168,17 +168,20 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
         
         <Button 
-          className="w-full bg-primary hover:bg-blue-600 text-white font-medium transition-colors duration-200"
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
           onClick={handleAddToCart}
           disabled={addToCartMutation.isPending || product.stock === 0}
         >
           {addToCartMutation.isPending ? (
-            "Adding..."
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+              Adding...
+            </div>
           ) : product.stock === 0 ? (
             "Out of Stock"
           ) : (
             <>
-              <ShoppingCart className="mr-2 h-4 w-4" />
+              <ShoppingCart className="mr-2 h-5 w-5 group-hover:animate-bounce" />
               Add to Cart
             </>
           )}
