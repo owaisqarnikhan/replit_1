@@ -874,8 +874,6 @@ export function SiteSettings() {
                         <li>Contact your IT administrator if you encounter issues</li>
                       </ul>
                     </div>
-                      </ol>
-                    </div>
                   </div>
                 </div>
 
