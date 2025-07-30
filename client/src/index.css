@@ -2,30 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Dynamic theme variables - updated by site settings */
+/* Dynamic theme variables - updated by site settings and theme system */
 :root {
-  --primary-color: #2563eb;
-  --secondary-color: #64748b;
-  --accent-color: #0ea5e9;
-  --background-color: #ffffff;
-  --text-color: #1e293b;
+  --theme-primary: #2563eb;
+  --theme-secondary: #64748b;
+  --theme-accent: #0ea5e9;
+  --theme-background: #ffffff;
+  --theme-text: #1e293b;
+  
+  /* Legacy support */
+  --primary-color: var(--theme-primary);
+  --secondary-color: var(--theme-secondary);
+  --accent-color: var(--theme-accent);
+  --background-color: var(--theme-background);
+  --text-color: var(--theme-text);
 }
 
-/* Apply theme colors to components */
-.btn-primary, .bg-primary {
-  background-color: var(--primary-color) !important;
+/* Enhanced theme application */
+.theme-primary, .btn-primary, .bg-primary {
+  background-color: var(--theme-primary) !important;
 }
 
-.text-primary {
-  color: var(--primary-color) !important;
+.theme-text-primary, .text-primary {
+  color: var(--theme-primary) !important;
 }
 
-.border-primary {
-  border-color: var(--primary-color) !important;
+.theme-border-primary, .border-primary {
+  border-color: var(--theme-primary) !important;
 }
 
-.bg-accent {
-  background-color: var(--accent-color) !important;
+.theme-secondary, .bg-secondary {
+  background-color: var(--theme-secondary) !important;
+}
+
+.theme-accent, .bg-accent {
+  background-color: var(--theme-accent) !important;
+}
+
+.theme-text-accent {
+  color: var(--theme-accent) !important;
+}
+
+/* Primary button with theme colors */
+.btn[data-theme="primary"] {
+  background-color: var(--theme-primary);
+  border-color: var(--theme-primary);
+  color: white;
+}
+
+.btn[data-theme="primary"]:hover {
+  background-color: color-mix(in srgb, var(--theme-primary) 85%, black);
+  border-color: color-mix(in srgb, var(--theme-primary) 85%, black);
+}
+
+/* Theme-aware cards and components */
+.theme-card {
+  background-color: var(--theme-background);
+  color: var(--theme-text);
+  border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
+}
+
+.theme-gradient {
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
 }
 
 :root {

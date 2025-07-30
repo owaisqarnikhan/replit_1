@@ -177,6 +177,7 @@ export const siteSettings = pgTable("site_settings", {
   headerLogo: text("header_logo"),
   footerLogo: text("footer_logo"),
   logoUrl: text("logo_url"), // Main site logo
+  theme: text("theme").default("default"), // default, ocean, forest, sunset, midnight, coral, violet, emerald
   primaryColor: text("primary_color").default("#2563eb"),
   secondaryColor: text("secondary_color").default("#64748b"),
   accentColor: text("accent_color").default("#0ea5e9"),

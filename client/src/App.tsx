@@ -14,6 +14,12 @@ import UserDashboard from "@/pages/user-dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
 import { ProtectedRoute } from "./lib/protected-route";
 import Footer from "@/components/footer";
+import { useTheme } from "./hooks/use-theme";
+
+function ThemeWrapper({ children }: { children: React.ReactNode }) {
+  useTheme(); // This will automatically apply the theme from settings
+  return <>{children}</>;
+}
 
 function Router() {
   return (
@@ -34,10 +40,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Router />
-        </TooltipProvider>
+        <ThemeWrapper>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </ThemeWrapper>
       </AuthProvider>
     </QueryClientProvider>
   );

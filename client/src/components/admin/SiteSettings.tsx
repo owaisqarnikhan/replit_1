@@ -13,6 +13,8 @@ import { insertSiteSettingsSchema, type InsertSiteSettings, type SiteSettings } 
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Settings, Palette, Mail, Upload, Save } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { themes, applyTheme, type ThemeName } from "@/lib/themes";
 
 const colorOptions = [
   { name: "Blue", value: "#2563eb" },
@@ -43,6 +45,7 @@ export function SiteSettings() {
       adminEmail: settings?.adminEmail || "",
       contactPhone: settings?.contactPhone || "",
       contactAddress: settings?.contactAddress || "",
+      theme: settings?.theme || "default",
       primaryColor: settings?.primaryColor || "#2563eb",
       secondaryColor: settings?.secondaryColor || "#64748b",
       accentColor: settings?.accentColor || "#0ea5e9",
@@ -63,6 +66,7 @@ export function SiteSettings() {
         adminEmail: settings.adminEmail || "",
         contactPhone: settings.contactPhone || "",
         contactAddress: settings.contactAddress || "",
+        theme: settings.theme || "default",
         primaryColor: settings.primaryColor || "#2563eb",
         secondaryColor: settings.secondaryColor || "#64748b",
         accentColor: settings.accentColor || "#0ea5e9",
@@ -70,6 +74,11 @@ export function SiteSettings() {
         textColor: settings.textColor || "#1e293b",
         orderConfirmationTemplate: settings.orderConfirmationTemplate || "",
       });
+      
+      // Apply the current theme on load
+      if (settings.theme) {
+        applyTheme(settings.theme as ThemeName);
+      }
     }
   }, [settings, form]);
 
@@ -78,11 +87,17 @@ export function SiteSettings() {
       const response = await apiRequest("PUT", "/api/settings", data);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
+      
+      // Apply the theme immediately after successful save
+      if (variables.theme) {
+        applyTheme(variables.theme as ThemeName);
+      }
+      
       toast({
         title: "Success",
-        description: "Site settings updated successfully",
+        description: "Site settings and theme updated successfully",
       });
     },
     onError: (error: any) => {
@@ -226,7 +241,63 @@ export function SiteSettings() {
               </TabsContent>
 
               <TabsContent value="branding" className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="theme"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Theme Preset</FormLabel>
+                      <Select 
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          const selectedTheme = themes[value as ThemeName];
+                          if (selectedTheme) {
+                            // Update form colors when theme changes
+                            form.setValue("primaryColor", selectedTheme.primary);
+                            form.setValue("secondaryColor", selectedTheme.secondary);
+                            form.setValue("accentColor", selectedTheme.accent);
+                            form.setValue("backgroundColor", selectedTheme.background);
+                            form.setValue("textColor", selectedTheme.text);
+                            
+                            // Apply theme preview
+                            applyTheme(value as ThemeName);
+                          }
+                        }} 
+                        value={field.value || "default"}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a theme" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {Object.entries(themes).map(([key, theme]) => (
+                            <SelectItem key={key} value={key}>
+                              <div className="flex items-center gap-3">
+                                <div 
+                                  className="w-4 h-4 rounded-full border-2 border-gray-300"
+                                  style={{ backgroundColor: theme.primary }}
+                                />
+                                <div>
+                                  <div className="font-medium">{theme.name}</div>
+                                  <div className="text-xs text-muted-foreground">{theme.description}</div>
+                                </div>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-sm text-muted-foreground">
+                        Choose a predefined theme or customize colors below
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="border-t pt-4">
+                  <h3 className="text-sm font-medium mb-4">Custom Colors (Override Theme)</h3>
+                  <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="primaryColor"
@@ -299,6 +370,7 @@ export function SiteSettings() {
                       </FormItem>
                     )}
                   />
+                  </div>
                 </div>
               </TabsContent>
 
