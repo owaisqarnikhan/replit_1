@@ -104,7 +104,7 @@ export function NavigationHeader() {
         <img
           src={siteSettings.logoUrl}
           alt={siteSettings.siteName || "InnovanceOrbit"}
-          className="h-12 w-auto"
+          className="h-16 w-auto"
           onError={(e) => {
             // Fallback to text logo if image fails to load
             e.currentTarget.style.display = 'none';
@@ -112,7 +112,7 @@ export function NavigationHeader() {
           }}
         />
       ) : null}
-      <span className={`text-2xl font-bold ${siteSettings?.logoUrl ? 'hidden' : ''}`}>
+      <span className={`text-3xl font-bold ${siteSettings?.logoUrl ? 'hidden' : ''}`}>
         {siteSettings?.siteName || "InnovanceOrbit"}
       </span>
     </div>
@@ -142,10 +142,10 @@ export function NavigationHeader() {
                   <img 
                     src={siteSettings.logoUrl} 
                     alt={siteSettings.siteName || "InnovanceOrbit"} 
-                    className="h-12 w-auto"
+                    className="h-16 w-auto"
                   />
                 ) : (
-                  <Store className="w-8 h-8" />
+                  <Store className="w-12 h-12" />
                 )}
                 <span>{siteSettings?.siteName || "InnovanceOrbit"}</span>
               </Button>

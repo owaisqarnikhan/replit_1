@@ -27,14 +27,14 @@ export default function Footer() {
                 <img 
                   src={settings.logoUrl} 
                   alt={settings.siteName || "InnovanceOrbit"} 
-                  className="h-8 w-auto brightness-0 invert"
+                  className="h-16 w-auto brightness-0 invert"
                 />
               ) : (
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">I</span>
+                <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-2xl">I</span>
                 </div>
               )}
-              <h3 className="text-xl font-bold">{settings?.siteName || "InnovanceOrbit"}</h3>
+              <h3 className="text-2xl font-bold">{settings?.siteName || "InnovanceOrbit"}</h3>
             </div>
             <p className="text-slate-300 mb-6 max-w-md">
               {settings?.footerDescription || "Your trusted partner for premium products and exceptional service in Bahrain."}
