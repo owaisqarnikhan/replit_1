@@ -54,9 +54,6 @@ export default function HomePage() {
             <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-slate-900 via-emerald-900 to-blue-900 bg-clip-text text-transparent mb-4">
               Shop by Category
             </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Explore our carefully organized product collections to find exactly what you're looking for
-            </p>
             <div className="w-24 h-1 bg-gradient-to-r from-emerald-600 to-blue-600 mx-auto mt-6 rounded-full"></div>
           </div>
           
