@@ -117,11 +117,11 @@ export function ImageSlider({
       />
       
       {/* Main Image Display */}
-      <div className="relative w-full h-full flex items-center justify-center">
+      <div className="relative w-full h-full">
         {images.map((image, index) => (
           <div
             key={image.id}
-            className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ease-in-out ${
+            className={`absolute inset-0 transition-all duration-700 ease-in-out ${
               index === currentIndex 
                 ? 'opacity-100 transform translate-x-0' 
                 : index < currentIndex 
@@ -132,7 +132,7 @@ export function ImageSlider({
             <img
               src={image.imageUrl}
               alt={image.title || `Slide ${index + 1}`}
-              className="max-w-full max-h-full w-auto h-auto object-contain"
+              className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
             
