@@ -209,16 +209,18 @@ export function ProductManager() {
             <ShoppingCart className="h-5 w-5" />
             Product Management
           </CardTitle>
-          <Dialog open={isAddOpen || !!editingProduct} onOpenChange={handleCloseDialog}>
-            <DialogTrigger asChild>
-              <Button onClick={() => {
-                console.log("Add Product button clicked");
-                setIsAddOpen(true);
-              }} className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Add Product
-              </Button>
-            </DialogTrigger>
+          <Button onClick={() => {
+            console.log("Add Product button clicked");
+            setIsAddOpen(true);
+          }} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add Product
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {/* Product Dialog */}
+        <Dialog open={isAddOpen || !!editingProduct} onOpenChange={handleCloseDialog}>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
@@ -486,10 +488,7 @@ export function ProductManager() {
                 </form>
               </Form>
             </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
-      <CardContent>
+        </Dialog>
         <div className="grid gap-4">
           {products?.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">

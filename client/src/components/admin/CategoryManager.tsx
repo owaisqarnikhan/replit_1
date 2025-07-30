@@ -174,16 +174,18 @@ export function CategoryManager() {
             <Package className="h-5 w-5" />
             Category Management
           </CardTitle>
-          <Dialog open={isAddOpen || !!editingCategory} onOpenChange={handleCloseDialog}>
-            <DialogTrigger asChild>
-              <Button onClick={() => {
-                console.log("Add Category button clicked");
-                setIsAddOpen(true);
-              }} className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Add Category
-              </Button>
-            </DialogTrigger>
+          <Button onClick={() => {
+            console.log("Add Category button clicked");
+            setIsAddOpen(true);
+          }} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add Category
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {/* Category Dialog */}
+        <Dialog open={isAddOpen || !!editingCategory} onOpenChange={handleCloseDialog}>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
@@ -277,10 +279,7 @@ export function CategoryManager() {
                 </form>
               </Form>
             </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
-      <CardContent>
+        </Dialog>
         <div className="grid gap-4">
           {categories?.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">

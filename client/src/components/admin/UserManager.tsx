@@ -170,16 +170,18 @@ export function UserManager() {
             <Users className="h-5 w-5" />
             User Management
           </CardTitle>
-          <Dialog open={isAddOpen || !!editingUser} onOpenChange={handleCloseDialog}>
-            <DialogTrigger asChild>
-              <Button onClick={() => {
-                console.log("Add User button clicked");
-                setIsAddOpen(true);
-              }} className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Add User
-              </Button>
-            </DialogTrigger>
+          <Button onClick={() => {
+            console.log("Add User button clicked");
+            setIsAddOpen(true);
+          }} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add User
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {/* User Dialog */}
+        <Dialog open={isAddOpen || !!editingUser} onOpenChange={handleCloseDialog}>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
@@ -303,10 +305,7 @@ export function UserManager() {
                 </form>
               </Form>
             </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
-      <CardContent>
+        </Dialog>
         <div className="grid gap-4">
           {users?.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
