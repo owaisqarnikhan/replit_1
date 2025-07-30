@@ -51,6 +51,9 @@ export function SiteSettings() {
       accentColor: settings?.accentColor || "#0ea5e9",
       backgroundColor: settings?.backgroundColor || "#ffffff",
       textColor: settings?.textColor || "#1e293b",
+      headerTextColor: settings?.headerTextColor || "#ffffff",
+      tabTextColor: settings?.tabTextColor || "#64748b",
+      tabActiveTextColor: settings?.tabActiveTextColor || "#2563eb",
       orderConfirmationTemplate: settings?.orderConfirmationTemplate || "",
     },
   });
@@ -72,12 +75,19 @@ export function SiteSettings() {
         accentColor: settings.accentColor || "#0ea5e9",
         backgroundColor: settings.backgroundColor || "#ffffff",
         textColor: settings.textColor || "#1e293b",
+        headerTextColor: settings.headerTextColor || "#ffffff",
+        tabTextColor: settings.tabTextColor || "#64748b",
+        tabActiveTextColor: settings.tabActiveTextColor || "#2563eb",
         orderConfirmationTemplate: settings.orderConfirmationTemplate || "",
       });
       
       // Apply the current theme on load
       if (settings.theme) {
-        applyTheme(settings.theme as ThemeName);
+        applyTheme(settings.theme as ThemeName, {
+          headerTextColor: settings.headerTextColor || undefined,
+          tabTextColor: settings.tabTextColor || undefined,
+          tabActiveTextColor: settings.tabActiveTextColor || undefined,
+        });
       }
     }
   }, [settings, form]);
@@ -92,7 +102,11 @@ export function SiteSettings() {
       
       // Apply the theme immediately after successful save
       if (variables.theme) {
-        applyTheme(variables.theme as ThemeName);
+        applyTheme(variables.theme as ThemeName, {
+          headerTextColor: variables.headerTextColor || undefined,
+          tabTextColor: variables.tabTextColor || undefined,
+          tabActiveTextColor: variables.tabActiveTextColor || undefined,
+        });
       }
       
       toast({
@@ -259,8 +273,12 @@ export function SiteSettings() {
                             form.setValue("backgroundColor", selectedTheme.background);
                             form.setValue("textColor", selectedTheme.text);
                             
-                            // Apply theme preview
-                            applyTheme(value as ThemeName);
+                            // Apply theme preview with current text colors
+                            applyTheme(value as ThemeName, {
+                              headerTextColor: form.getValues("headerTextColor"),
+                              tabTextColor: form.getValues("tabTextColor"),
+                              tabActiveTextColor: form.getValues("tabActiveTextColor"),
+                            });
                           }
                         }} 
                         value={field.value || "default"}
@@ -370,6 +388,70 @@ export function SiteSettings() {
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={form.control}
+                    name="textColor"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Main Text Color</FormLabel>
+                        <FormControl>
+                          <Input type="color" {...field} value={field.value || "#1e293b"} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h3 className="text-sm font-medium mb-4">Header & Navigation Text Colors</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="headerTextColor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Header Text Color</FormLabel>
+                            <FormControl>
+                              <Input type="color" {...field} value={field.value || "#ffffff"} />
+                            </FormControl>
+                            <p className="text-xs text-muted-foreground">Color for text in navigation header</p>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="tabTextColor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tab Text (Inactive)</FormLabel>
+                            <FormControl>
+                              <Input type="color" {...field} value={field.value || "#64748b"} />
+                            </FormControl>
+                            <p className="text-xs text-muted-foreground">Color for inactive tab text</p>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="tabActiveTextColor"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Tab Text (Active)</FormLabel>
+                            <FormControl>
+                              <Input type="color" {...field} value={field.value || "#2563eb"} />
+                            </FormControl>
+                            <p className="text-xs text-muted-foreground">Color for active tab text</p>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                 </div>
               </TabsContent>

@@ -135,13 +135,136 @@ export const themes = {
       '--accent': 'hsl(158, 84%, 38%)',
       '--accent-foreground': 'hsl(0, 0%, 100%)'
     }
+  },
+  ruby: {
+    name: "Ruby Red",
+    description: "Bold reds with gold highlights",
+    primary: "#dc2626",      // Red 600
+    secondary: "#b91c1c",    // Red 700
+    accent: "#f59e0b",       // Amber 500
+    background: "#fef2f2",   // Red 50
+    text: "#7f1d1d",         // Red 900
+    cssVars: {
+      '--primary': 'hsl(0, 84%, 50%)',
+      '--primary-foreground': 'hsl(0, 0%, 100%)',
+      '--secondary': 'hsl(0, 77%, 42%)',
+      '--secondary-foreground': 'hsl(0, 0%, 100%)',
+      '--accent': 'hsl(45, 93%, 47%)',
+      '--accent-foreground': 'hsl(0, 0%, 100%)'
+    }
+  },
+  sapphire: {
+    name: "Sapphire Blue",
+    description: "Deep blues with silver accents",
+    primary: "#1e40af",      // Blue 800
+    secondary: "#3b82f6",    // Blue 500
+    accent: "#06b6d4",       // Cyan 500
+    background: "#eff6ff",   // Blue 50
+    text: "#1e3a8a",         // Blue 900
+    cssVars: {
+      '--primary': 'hsl(224, 76%, 38%)',
+      '--primary-foreground': 'hsl(0, 0%, 100%)',
+      '--secondary': 'hsl(217, 91%, 60%)',
+      '--secondary-foreground': 'hsl(0, 0%, 100%)',
+      '--accent': 'hsl(188, 96%, 43%)',
+      '--accent-foreground': 'hsl(0, 0%, 100%)'
+    }
+  },
+  rose: {
+    name: "Rose Gold",
+    description: "Elegant rose tones with gold",
+    primary: "#e11d48",      // Rose 600
+    secondary: "#f43f5e",    // Rose 500
+    accent: "#f59e0b",       // Amber 500
+    background: "#fff1f2",   // Rose 50
+    text: "#881337",         // Rose 900
+    cssVars: {
+      '--primary': 'hsl(346, 77%, 50%)',
+      '--primary-foreground': 'hsl(0, 0%, 100%)',
+      '--secondary': 'hsl(351, 89%, 60%)',
+      '--secondary-foreground': 'hsl(0, 0%, 100%)',
+      '--accent': 'hsl(45, 93%, 47%)',
+      '--accent-foreground': 'hsl(0, 0%, 100%)'
+    }
+  },
+  bronze: {
+    name: "Bronze Elegance",
+    description: "Warm bronze and copper tones",
+    primary: "#a16207",      // Yellow 700
+    secondary: "#ca8a04",    // Yellow 600
+    accent: "#f97316",       // Orange 500
+    background: "#fefce8",   // Yellow 50
+    text: "#713f12",         // Yellow 900
+    cssVars: {
+      '--primary': 'hsl(45, 93%, 33%)',
+      '--primary-foreground': 'hsl(0, 0%, 100%)',
+      '--secondary': 'hsl(45, 93%, 40%)',
+      '--secondary-foreground': 'hsl(0, 0%, 100%)',
+      '--accent': 'hsl(27, 96%, 53%)',
+      '--accent-foreground': 'hsl(0, 0%, 100%)'
+    }
+  },
+  slate: {
+    name: "Modern Slate",
+    description: "Professional gray tones",
+    primary: "#475569",      // Slate 600
+    secondary: "#64748b",    // Slate 500
+    accent: "#0ea5e9",       // Sky 500
+    background: "#f8fafc",   // Slate 50
+    text: "#0f172a",         // Slate 900
+    cssVars: {
+      '--primary': 'hsl(215, 19%, 35%)',
+      '--primary-foreground': 'hsl(0, 0%, 100%)',
+      '--secondary': 'hsl(215, 16%, 47%)',
+      '--secondary-foreground': 'hsl(0, 0%, 100%)',
+      '--accent': 'hsl(199, 89%, 48%)',
+      '--accent-foreground': 'hsl(0, 0%, 100%)'
+    }
+  },
+  mint: {
+    name: "Fresh Mint",
+    description: "Cool mint greens and blues",
+    primary: "#14b8a6",      // Teal 500
+    secondary: "#06b6d4",    // Cyan 500
+    accent: "#22d3ee",       // Cyan 400
+    background: "#f0fdfa",   // Teal 50
+    text: "#134e4a",         // Teal 800
+    cssVars: {
+      '--primary': 'hsl(172, 83%, 40%)',
+      '--primary-foreground': 'hsl(0, 0%, 100%)',
+      '--secondary': 'hsl(188, 96%, 43%)',
+      '--secondary-foreground': 'hsl(0, 0%, 100%)',
+      '--accent': 'hsl(187, 85%, 53%)',
+      '--accent-foreground': 'hsl(0, 0%, 100%)'
+    }
+  },
+  lavender: {
+    name: "Soft Lavender", 
+    description: "Gentle purples and soft tones",
+    primary: "#8b5cf6",      // Violet 500
+    secondary: "#a78bfa",    // Violet 400
+    accent: "#c4b5fd",       // Violet 300
+    background: "#faf5ff",   // Purple 50
+    text: "#581c87",         // Purple 900
+    cssVars: {
+      '--primary': 'hsl(258, 90%, 66%)',
+      '--primary-foreground': 'hsl(0, 0%, 100%)',
+      '--secondary': 'hsl(258, 94%, 74%)',
+      '--secondary-foreground': 'hsl(0, 0%, 100%)',
+      '--accent': 'hsl(266, 87%, 78%)',
+      '--accent-foreground': 'hsl(266, 100%, 25%)'
+    }
   }
 } as const;
 
 export type ThemeName = keyof typeof themes;
 
 // Function to apply theme to CSS variables
-export function applyTheme(themeName: ThemeName) {
+export function applyTheme(themeName: ThemeName, customColors?: {
+  headerTextColor?: string;
+  tabTextColor?: string;
+  tabActiveTextColor?: string;
+}) {
   const theme = themes[themeName];
   if (!theme) return;
 
@@ -158,4 +281,15 @@ export function applyTheme(themeName: ThemeName) {
   root.style.setProperty('--theme-accent', theme.accent);
   root.style.setProperty('--theme-background', theme.background);
   root.style.setProperty('--theme-text', theme.text);
+  
+  // Apply custom text colors if provided
+  if (customColors?.headerTextColor) {
+    root.style.setProperty('--theme-header-text', customColors.headerTextColor);
+  }
+  if (customColors?.tabTextColor) {
+    root.style.setProperty('--theme-tab-text', customColors.tabTextColor);
+  }
+  if (customColors?.tabActiveTextColor) {
+    root.style.setProperty('--theme-tab-active-text', customColors.tabActiveTextColor);
+  }
 }

@@ -177,12 +177,15 @@ export const siteSettings = pgTable("site_settings", {
   headerLogo: text("header_logo"),
   footerLogo: text("footer_logo"),
   logoUrl: text("logo_url"), // Main site logo
-  theme: text("theme").default("default"), // default, ocean, forest, sunset, midnight, coral, violet, emerald
+  theme: text("theme").default("default"), // default, ocean, forest, sunset, midnight, coral, violet, emerald, ruby, sapphire, rose, bronze, slate, mint, lavender
   primaryColor: text("primary_color").default("#2563eb"),
   secondaryColor: text("secondary_color").default("#64748b"),
   accentColor: text("accent_color").default("#0ea5e9"),
   backgroundColor: text("background_color").default("#ffffff"),
   textColor: text("text_color").default("#1e293b"),
+  headerTextColor: text("header_text_color").default("#ffffff"),
+  tabTextColor: text("tab_text_color").default("#64748b"),
+  tabActiveTextColor: text("tab_active_text_color").default("#2563eb"),
   footerDescription: text("footer_description"),
   contactEmail: text("contact_email"),
   contactPhone: text("contact_phone"),

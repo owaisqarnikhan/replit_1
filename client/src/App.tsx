@@ -18,7 +18,7 @@ import { useTheme } from "./hooks/use-theme";
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {
   useTheme(); // This will automatically apply the theme from settings
-  return <>{children}</>;
+  return <div>{children}</div>;
 }
 
 function Router() {

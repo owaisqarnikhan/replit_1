@@ -13,9 +13,13 @@ export function useTheme() {
 
   useEffect(() => {
     if (settings?.theme) {
-      applyTheme(settings.theme as ThemeName);
+      applyTheme(settings.theme as ThemeName, {
+        headerTextColor: settings.headerTextColor || undefined,
+        tabTextColor: settings.tabTextColor || undefined,
+        tabActiveTextColor: settings.tabActiveTextColor || undefined,
+      });
     }
-  }, [settings?.theme]);
+  }, [settings?.theme, settings?.headerTextColor, settings?.tabTextColor, settings?.tabActiveTextColor]);
 
   return {
     currentTheme: settings?.theme || "default",

@@ -9,6 +9,9 @@
   --theme-accent: #0ea5e9;
   --theme-background: #ffffff;
   --theme-text: #1e293b;
+  --theme-header-text: #ffffff;
+  --theme-tab-text: #64748b;
+  --theme-tab-active-text: #2563eb;
   
   /* Legacy support */
   --primary-color: var(--theme-primary);
@@ -64,6 +67,41 @@
 
 .theme-gradient {
   background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
+}
+
+/* Header and navigation text styling */
+.theme-header-text {
+  color: var(--theme-header-text) !important;
+}
+
+.theme-tab-text {
+  color: var(--theme-tab-text) !important;
+}
+
+.theme-tab-active-text {
+  color: var(--theme-tab-active-text) !important;
+}
+
+/* Tab components with theme colors */
+.tabs-list [data-state="active"] {
+  color: var(--theme-tab-active-text) !important;
+}
+
+.tabs-list [data-state="inactive"] {
+  color: var(--theme-tab-text) !important;
+}
+
+/* Navigation header styling */
+.nav-header {
+  color: var(--theme-header-text);
+}
+
+.nav-header a {
+  color: var(--theme-header-text);
+}
+
+.nav-header a:hover {
+  color: color-mix(in srgb, var(--theme-header-text) 80%, transparent);
 }
 
 :root {
