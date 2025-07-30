@@ -39,6 +39,7 @@ export function SiteSettings() {
       businessHours: settings?.businessHours || "",
       officeHoursTitle: settings?.officeHoursTitle || "Office Hours",
       paymentMethodsImage: settings?.paymentMethodsImage || "",
+      footerLeftImage: settings?.footerLeftImage || "",
       theme: settings?.theme || "default",
       primaryColor: settings?.primaryColor || "#2563eb",
       secondaryColor: settings?.secondaryColor || "#64748b",
@@ -92,6 +93,7 @@ export function SiteSettings() {
         businessHours: settings.businessHours || "",
         officeHoursTitle: settings.officeHoursTitle || "Office Hours",
         paymentMethodsImage: settings.paymentMethodsImage || "",
+        footerLeftImage: settings.footerLeftImage || "",
         theme: settings.theme || "default",
         primaryColor: settings.primaryColor || "#2563eb",
         secondaryColor: settings.secondaryColor || "#64748b",
@@ -239,6 +241,43 @@ export function SiteSettings() {
       toast({
         title: "Upload Failed",
         description: "Failed to upload payment methods image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleFooterLeftImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const data = await response.json();
+      form.setValue("footerLeftImage", data.imageUrl);
+      
+      toast({
+        title: "Footer Image Uploaded",
+        description: "Footer left image uploaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload footer image",
         variant: "destructive",
       });
     } finally {
@@ -869,15 +908,60 @@ export function SiteSettings() {
                   <div>
                     <h3 className="text-lg font-semibold mb-4">Footer Content</h3>
                     <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="footer-left-upload">Footer Left Side Image</Label>
+                        <div className="flex items-center gap-4">
+                          {form.watch("footerLeftImage") && (
+                            <img
+                              src={form.watch("footerLeftImage") || ""}
+                              alt="Footer left image preview"
+                              className="h-16 w-auto border rounded"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <input
+                              id="footer-left-upload"
+                              type="file"
+                              accept="image/*"
+                              onChange={handleFooterLeftImageUpload}
+                              className="hidden"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => document.getElementById("footer-left-upload")?.click()}
+                              disabled={isUploading}
+                              className="flex items-center gap-2"
+                            >
+                              <Upload className="h-4 w-4" />
+                              {isUploading ? "Uploading..." : "Upload Footer Left Image"}
+                            </Button>
+                          </div>
+                        </div>
+                        <FormField
+                          control={form.control}
+                          name="footerLeftImage"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Footer Left Image URL (Alternative)</FormLabel>
+                              <FormControl>
+                                <Input placeholder="https://example.com/footer-image.png" {...field} value={field.value || ""} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
                       <FormField
                         control={form.control}
                         name="footerDescription"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Footer Description</FormLabel>
+                            <FormLabel>Footer Description (Optional)</FormLabel>
                             <FormControl>
                               <Textarea 
-                                placeholder="Your trusted partner for premium products and exceptional service in Bahrain." 
+                                placeholder="Optional description text below the image..." 
                                 {...field} 
                                 value={field.value || ""} 
                               />

@@ -202,6 +202,7 @@ export const siteSettings = pgTable("site_settings", {
   businessHours: text("business_hours"),
   officeHoursTitle: text("office_hours_title").default("Office Hours"),
   paymentMethodsImage: text("payment_methods_image"),
+  footerLeftImage: text("footer_left_image"),
   socialFacebook: text("social_facebook"),
   socialTwitter: text("social_twitter"),
   socialInstagram: text("social_instagram"),

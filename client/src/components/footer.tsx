@@ -20,25 +20,26 @@ export default function Footer() {
       <div className="absolute inset-0 bg-slate-900/85"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Company Info */}
+          {/* Company Info - Custom Image */}
           <div className="col-span-1 lg:col-span-1">
-            <div className="flex items-center space-x-3 mb-4">
-              {settings?.logoUrl ? (
+            {settings?.footerLeftImage ? (
+              <div className="mb-6">
                 <img 
-                  src={settings.logoUrl} 
-                  alt={settings.siteName || "InnovanceOrbit"} 
-                  className="h-16 w-auto brightness-0 invert"
+                  src={settings.footerLeftImage} 
+                  alt="Company Image" 
+                  className="max-w-full h-auto rounded border border-slate-600" 
                 />
-              ) : (
-                <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-2xl">I</span>
-                </div>
-              )}
-              <h3 className="text-2xl font-bold">{settings?.siteName || "InnovanceOrbit"}</h3>
-            </div>
-            <p className="text-slate-300 mb-6 max-w-md">
-              {settings?.footerDescription || "Your trusted partner for premium products and exceptional service in Bahrain."}
-            </p>
+              </div>
+            ) : (
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold">{settings?.siteName || "InnovanceOrbit"}</h3>
+              </div>
+            )}
+            {settings?.footerDescription && (
+              <p className="text-slate-300 mb-6 max-w-md">
+                {settings.footerDescription}
+              </p>
+            )}
             
             {/* Contact Info */}
             <div className="space-y-2">
