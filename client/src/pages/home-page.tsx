@@ -33,7 +33,7 @@ export default function HomePage() {
       <section className="w-full">
         <ImageSlider 
           images={sliderImages || []} 
-          height="h-[500px] md:h-[600px] lg:h-[700px]"
+          height="h-auto min-h-[400px] max-h-[80vh]"
           autoplay={true}
           autoplayInterval={5000}
           showControls={true}
