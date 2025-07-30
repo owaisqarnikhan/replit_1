@@ -11,9 +11,11 @@ import type { Product } from "@shared/schema";
 interface ProductCardProps {
   product: Product;
   onViewDetails?: (product: Product) => void;
+  onCardClick?: (product: Product) => void;
+  showDetailsButton?: boolean;
 }
 
-export function ProductCard({ product, onViewDetails }: ProductCardProps) {
+export function ProductCard({ product, onViewDetails, onCardClick, showDetailsButton = true }: ProductCardProps) {
   const { toast } = useToast();
   const [isWishlisted, setIsWishlisted] = useState(false);
 
@@ -90,8 +92,17 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
   const rating = parseFloat(product.rating || "0");
   const reviewCount = product.reviewCount || 0;
 
+  const handleCardClick = () => {
+    if (onCardClick) {
+      onCardClick(product);
+    }
+  };
+
   return (
-    <Card className="group cursor-pointer overflow-hidden border-none shadow-md hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] bg-gradient-to-br from-white to-slate-50">
+    <Card 
+      className="group cursor-pointer overflow-hidden border-none shadow-md hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] bg-gradient-to-br from-white to-slate-50"
+      onClick={handleCardClick}
+    >
       <div className="relative overflow-hidden rounded-t-xl">
         {product.imageUrl ? (
           <img 
@@ -168,19 +179,50 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
           )}
         </div>
         
-        <div className="flex gap-2">
+        {showDetailsButton ? (
+          <div className="flex gap-2">
+            <Button 
+              variant="outline"
+              className="flex-1 border-2 border-blue-200 hover:border-blue-400 text-blue-600 hover:text-blue-700 font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewDetails?.(product);
+              }}
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              Details
+            </Button>
+            
+            <Button 
+              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                addToCartMutation.mutate();
+              }}
+              disabled={addToCartMutation.isPending || product.stock === 0}
+            >
+              {addToCartMutation.isPending ? (
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-1"></div>
+                  Adding...
+                </div>
+              ) : product.stock === 0 ? (
+                "Out of Stock"
+              ) : (
+                <>
+                  <ShoppingCart className="mr-1 h-4 w-4 group-hover:animate-bounce" />
+                  Add to Cart
+                </>
+              )}
+            </Button>
+          </div>
+        ) : (
           <Button 
-            variant="outline"
-            className="flex-1 border-2 border-blue-200 hover:border-blue-400 text-blue-600 hover:text-blue-700 font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
-            onClick={() => onViewDetails?.(product)}
-          >
-            <Eye className="mr-2 h-4 w-4" />
-            Details
-          </Button>
-          
-          <Button 
-            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
-            onClick={handleAddToCart}
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
+            onClick={(e) => {
+              e.stopPropagation();
+              addToCartMutation.mutate();
+            }}
             disabled={addToCartMutation.isPending || product.stock === 0}
           >
             {addToCartMutation.isPending ? (
@@ -192,12 +234,12 @@ export function ProductCard({ product, onViewDetails }: ProductCardProps) {
               "Out of Stock"
             ) : (
               <>
-                <ShoppingCart className="mr-1 h-4 w-4 group-hover:animate-bounce" />
+                <ShoppingCart className="mr-2 h-5 w-5 group-hover:animate-bounce" />
                 Add to Cart
               </>
             )}
           </Button>
-        </div>
+        )}
       </CardContent>
     </Card>
   );
