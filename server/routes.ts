@@ -373,26 +373,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Cart is empty" });
       }
 
-      // Calculate totals
+      // Calculate totals with 10% VAT
       const subtotal = cartItems.reduce(
         (sum, item) => sum + parseFloat(item.product.price) * item.quantity,
         0
       );
-      const tax = subtotal * 0.075; // 7.5% tax
+      const vatPercentage = 10.00;
+      const tax = subtotal * (vatPercentage / 100); // 10% VAT
       const shipping = 0; // Free shipping
       const total = subtotal + tax + shipping;
 
-      // Create order
+      // Create order with approval workflow - always starts as pending approval
       const order = await storage.createOrder({
         userId: req.user!.id,
         subtotal: subtotal.toFixed(2),
         tax: tax.toFixed(2),
         shipping: shipping.toFixed(2),
         total: total.toFixed(2),
+        vatPercentage: vatPercentage.toFixed(2),
         paymentMethod,
         paymentIntentId,
         shippingAddress,
-        status: "processing",
+        status: "pending", // Order status starts as pending
+        adminApprovalStatus: "pending", // Always requires admin approval
+        estimatedDeliveryDays: 2, // Default 2-day arrangement period
       });
 
       // Create order items and update stock
@@ -428,8 +432,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           orderNumber: order.id,
           customerName,
           items: orderItems,
+          subtotal: subtotal.toFixed(2),
+          vatAmount: tax.toFixed(2),
+          vatPercentage: vatPercentage.toFixed(0),
           total: order.total,
-          paymentMethod: order.paymentMethod || 'Unknown'
+          paymentMethod: order.paymentMethod || 'Unknown',
+          estimatedDeliveryDays: 2
         });
       } catch (emailError) {
         console.error('Failed to send order confirmation email:', emailError);
@@ -451,6 +459,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const order = await storage.updateOrderStatus(req.params.id, status);
       res.json(order);
     } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Admin order approval routes
+  app.put("/api/admin/orders/:id/approve", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { adminRemarks } = req.body;
+      const orderId = req.params.id;
+      
+      // Update order approval status
+      await storage.updateOrder(orderId, {
+        adminApprovalStatus: "approved",
+        adminApprovedBy: req.user!.id,
+        adminApprovedAt: new Date(),
+        adminRemarks: adminRemarks || null,
+        status: "payment_pending" // Move to payment pending after approval
+      });
+
+      // Get order details for email
+      const orderWithDetails = await storage.getOrderWithDetails(orderId);
+      const user = await storage.getUserById(orderWithDetails.userId);
+
+      if (user && orderWithDetails) {
+        // Send approval email to customer
+        const { sendOrderApprovalEmail } = await import("./email");
+        await sendOrderApprovalEmail(user.email, {
+          orderNumber: orderWithDetails.id,
+          customerName: user.name,
+          total: orderWithDetails.total,
+          paymentMethod: orderWithDetails.paymentMethod || "Pending",
+          adminRemarks
+        });
+      }
+
+      res.json({ success: true, message: "Order approved successfully" });
+    } catch (error: any) {
+      console.error('Order approval error:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/orders/:id/reject", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { adminRemarks } = req.body;
+      const orderId = req.params.id;
+      
+      // Update order approval status
+      await storage.updateOrder(orderId, {
+        adminApprovalStatus: "rejected",
+        adminApprovedBy: req.user!.id,
+        adminApprovedAt: new Date(),
+        adminRemarks: adminRemarks || null,
+        status: "cancelled" // Cancel order after rejection
+      });
+
+      // Get order details for email
+      const orderWithDetails = await storage.getOrderWithDetails(orderId);
+      const user = await storage.getUserById(orderWithDetails.userId);
+
+      if (user && orderWithDetails) {
+        // Send rejection email to customer
+        const { sendOrderRejectionEmail } = await import("./email");
+        await sendOrderRejectionEmail(user.email, {
+          orderNumber: orderWithDetails.id,
+          customerName: user.name,
+          total: orderWithDetails.total,
+          adminRemarks
+        });
+      }
+
+      res.json({ success: true, message: "Order rejected successfully" });
+    } catch (error: any) {
+      console.error('Order rejection error:', error);
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/orders/:id/complete", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const orderId = req.params.id;
+      const deliveredAt = new Date();
+      
+      // Update order status to delivered
+      await storage.updateOrder(orderId, {
+        status: "delivered",
+        deliveredAt
+      });
+
+      // Get order details for email
+      const orderWithDetails = await storage.getOrderWithDetails(orderId);
+      const user = await storage.getUserById(orderWithDetails.userId);
+
+      if (user && orderWithDetails) {
+        // Send completion email to customer
+        const { sendOrderCompletionEmail } = await import("./email");
+        await sendOrderCompletionEmail(user.email, {
+          orderNumber: orderWithDetails.id,
+          customerName: user.name,
+          total: orderWithDetails.total,
+          deliveredAt: deliveredAt.toLocaleDateString()
+        });
+      }
+
+      res.json({ success: true, message: "Order marked as delivered" });
+    } catch (error: any) {
+      console.error('Order completion error:', error);
       res.status(400).json({ message: error.message });
     }
   });
@@ -599,6 +726,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.sendStatus(204);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Admin orders management
+  app.get("/api/admin/orders", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const orders = await storage.getOrdersWithDetails();
+      res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   });
 

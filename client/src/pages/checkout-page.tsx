@@ -170,8 +170,8 @@ export default function CheckoutPage() {
     0
   ) || 0;
 
-  // Using 5% VAT for Bahrain
-  const tax = subtotal * 0.05;
+  // Using 10% VAT as requested
+  const tax = subtotal * 0.10;
   const total = subtotal + tax;
 
   if (isLoading) {
@@ -435,7 +435,7 @@ export default function CheckoutPage() {
                     <span>Free</span>
                   </div>
                   <div className="flex justify-between text-slate-600">
-                    <span>VAT (5%)</span>
+                    <span>VAT (10%)</span>
                     <span>{tax.toFixed(2)} BHD</span>
                   </div>
                   <div className="flex justify-between text-lg font-bold text-slate-900 pt-2 border-t border-slate-200">

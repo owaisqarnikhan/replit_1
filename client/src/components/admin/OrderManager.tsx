@@ -1,358 +1,457 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Package, User, MapPin, CreditCard, Calendar, Eye, RefreshCw } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-
-interface OrderItem {
-  id: string;
-  productId: string;
-  quantity: number;
-  price: string;
-  product: {
-    id: string;
-    name: string;
-    image?: string;
-  };
-}
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { 
+  CheckCircle, 
+  XCircle, 
+  Clock, 
+  Eye, 
+  Package, 
+  DollarSign,
+  Calendar,
+  User,
+  MapPin
+} from "lucide-react";
 
 interface Order {
   id: string;
   userId: string;
+  status: string;
+  adminApprovalStatus: string;
+  total: string;
   subtotal: string;
   tax: string;
-  shipping: string;
-  total: string;
-  status: string;
-  paymentMethod?: string;
-  shippingAddress?: any;
+  vatPercentage: string;
+  paymentMethod: string;
+  shippingAddress: any;
+  adminRemarks?: string;
+  adminApprovedBy?: string;
+  adminApprovedAt?: string;
+  estimatedDeliveryDays: number;
   createdAt: string;
   user?: {
-    username: string;
+    name: string;
     email: string;
-    firstName?: string;
-    lastName?: string;
   };
-  items?: OrderItem[];
+  items?: Array<{
+    id: string;
+    quantity: number;
+    price: string;
+    product: {
+      name: string;
+      image?: string;
+    };
+  }>;
 }
 
 export function OrderManager() {
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { toast } = useToast();
-  const queryClient = useQueryClient();
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [approvalAction, setApprovalAction] = useState<'approve' | 'reject' | null>(null);
+  const [adminRemarks, setAdminRemarks] = useState("");
 
   const { data: orders, isLoading } = useQuery<Order[]>({
-    queryKey: ["/api/orders"],
+    queryKey: ["/api/admin/orders"],
   });
 
-  const { data: orderDetails, isLoading: orderDetailsLoading } = useQuery<Order>({
-    queryKey: ["/api/orders", selectedOrder?.id],
-    enabled: !!selectedOrder?.id,
-  });
-
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
-      const response = await fetch(`/api/orders/${orderId}/status`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status }),
+  const approveOrderMutation = useMutation({
+    mutationFn: async ({ orderId, remarks }: { orderId: string; remarks: string }) => {
+      const res = await apiRequest("PUT", `/api/admin/orders/${orderId}/approve`, {
+        adminRemarks: remarks
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update order status');
-      }
-      
-      return response.json();
+      return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
       toast({
-        title: "Success",
-        description: "Order status updated successfully",
+        title: "Order Approved",
+        description: "Customer has been notified via email",
       });
+      setApprovalAction(null);
+      setAdminRemarks("");
+      setSelectedOrder(null);
     },
-    onError: (error: any) => {
+    onError: () => {
       toast({
         title: "Error",
-        description: error.message || "Failed to update order status",
+        description: "Failed to approve order",
         variant: "destructive",
       });
     },
   });
 
-  const getStatusColor = (status: string) => {
+  const rejectOrderMutation = useMutation({
+    mutationFn: async ({ orderId, remarks }: { orderId: string; remarks: string }) => {
+      const res = await apiRequest("PUT", `/api/admin/orders/${orderId}/reject`, {
+        adminRemarks: remarks
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      toast({
+        title: "Order Rejected",
+        description: "Customer has been notified via email",
+      });
+      setApprovalAction(null);
+      setAdminRemarks("");
+      setSelectedOrder(null);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to reject order",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const completeOrderMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      const res = await apiRequest("PUT", `/api/admin/orders/${orderId}/complete`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      toast({
+        title: "Order Completed",
+        description: "Customer has been notified of delivery",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to complete order",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const getStatusBadge = (status: string, approvalStatus: string) => {
+    if (approvalStatus === "pending") {
+      return <Badge variant="secondary"><Clock className="w-3 h-3 mr-1" />Awaiting Approval</Badge>;
+    }
+    if (approvalStatus === "approved") {
+      return <Badge variant="default"><CheckCircle className="w-3 h-3 mr-1" />Approved</Badge>;
+    }
+    if (approvalStatus === "rejected") {
+      return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Rejected</Badge>;
+    }
+    
     switch (status) {
-      case "pending": return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "processing": return "bg-blue-100 text-blue-800 border-blue-200";
-      case "shipped": return "bg-purple-100 text-purple-800 border-purple-200";
-      case "delivered": return "bg-green-100 text-green-800 border-green-200";
-      case "cancelled": return "bg-red-100 text-red-800 border-red-200";
-      default: return "bg-gray-100 text-gray-800 border-gray-200";
+      case "payment_pending":
+        return <Badge variant="outline"><DollarSign className="w-3 h-3 mr-1" />Payment Pending</Badge>;
+      case "processing":
+        return <Badge variant="secondary"><Package className="w-3 h-3 mr-1" />Processing</Badge>;
+      case "shipped":
+        return <Badge variant="default"><Package className="w-3 h-3 mr-1" />Shipped</Badge>;
+      case "delivered":
+        return <Badge variant="default"><CheckCircle className="w-3 h-3 mr-1" />Delivered</Badge>;
+      case "cancelled":
+        return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" />Cancelled</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const handleApprovalAction = () => {
+    if (!selectedOrder || !approvalAction) return;
+
+    if (approvalAction === 'approve') {
+      approveOrderMutation.mutate({
+        orderId: selectedOrder.id,
+        remarks: adminRemarks
+      });
+    } else {
+      rejectOrderMutation.mutate({
+        orderId: selectedOrder.id,
+        remarks: adminRemarks
+      });
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="h-6 bg-gray-200 rounded w-32 animate-pulse"></div>
+        <div className="grid gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-32 bg-gray-200 rounded animate-pulse"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-slate-900">Order Management</h2>
-        <Button
-          variant="outline"
-          onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/orders"] })}
-          className="flex items-center gap-2"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Refresh
-        </Button>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900">Order Management</h2>
+        <div className="text-sm text-gray-500">
+          {orders?.length || 0} total orders
+        </div>
       </div>
 
-      {isLoading ? (
-        <div className="space-y-4">
-          {[...Array(5)].map((_, i) => (
-            <Card key={i}>
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start">
-                  <div className="space-y-2">
-                    <Skeleton className="h-5 w-32" />
-                    <Skeleton className="h-4 w-48" />
-                    <Skeleton className="h-4 w-24" />
-                  </div>
-                  <Skeleton className="h-6 w-20" />
+      <div className="grid gap-4">
+        {orders?.map((order) => (
+          <Card key={order.id} className="hover:shadow-md transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <CardTitle className="text-lg">Order #{order.id.slice(-8)}</CardTitle>
+                  {getStatusBadge(order.status, order.adminApprovalStatus)}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : orders && orders.length > 0 ? (
-        <div className="space-y-4">
-          {orders.map((order) => (
-            <Card key={order.id} className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-slate-900">
-                        Order #{order.id.slice(0, 8)}
-                      </h3>
-                      <Badge className={getStatusColor(order.status)}>
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-slate-600">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {formatDate(order.createdAt)}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <User className="h-4 w-4" />
-                        {order.user?.firstName && order.user?.lastName 
-                          ? `${order.user.firstName} ${order.user.lastName}`
-                          : order.user?.username || 'Unknown Customer'
-                        }
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <CreditCard className="h-4 w-4" />
-                        {order.paymentMethod || 'Unknown'}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-slate-900">${order.total}</div>
-                    <div className="text-sm text-slate-600">{order.items?.length || 0} items</div>
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center pt-4 border-t">
-                  <div className="flex items-center gap-2">
-                    <Select
-                      value={order.status}
-                      onValueChange={(status) => updateStatusMutation.mutate({ orderId: order.id, status })}
-                      disabled={updateStatusMutation.isPending}
-                    >
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="processing">Processing</SelectItem>
-                        <SelectItem value="shipped">Shipped</SelectItem>
-                        <SelectItem value="delivered">Delivered</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
+                <div className="flex items-center space-x-2">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        onClick={() => setSelectedOrder(order)}
-                        className="flex items-center gap-2"
-                      >
-                        <Eye className="h-4 w-4" />
+                      <Button variant="outline" size="sm">
+                        <Eye className="w-4 h-4 mr-1" />
                         View Details
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                       <DialogHeader>
-                        <DialogTitle>Order Details - #{order.id.slice(0, 8)}</DialogTitle>
+                        <DialogTitle>Order Details - #{order.id.slice(-8)}</DialogTitle>
+                        <DialogDescription>
+                          Complete order information and management actions
+                        </DialogDescription>
                       </DialogHeader>
                       
-                      {orderDetailsLoading ? (
-                        <div className="space-y-4">
-                          <Skeleton className="h-32 w-full" />
-                          <Skeleton className="h-32 w-full" />
+                      <div className="space-y-6">
+                        {/* Customer Information */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                              <User className="w-4 h-4 mr-2" />
+                              Customer Information
+                            </h4>
+                            <div className="space-y-1 text-sm text-gray-600">
+                              <p><strong>Name:</strong> {order.user?.name}</p>
+                              <p><strong>Email:</strong> {order.user?.email}</p>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                              <Calendar className="w-4 h-4 mr-2" />
+                              Order Information
+                            </h4>
+                            <div className="space-y-1 text-sm text-gray-600">
+                              <p><strong>Date:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
+                              <p><strong>Delivery:</strong> {order.estimatedDeliveryDays} days</p>
+                              <p><strong>Payment:</strong> {order.paymentMethod}</p>
+                            </div>
+                          </div>
                         </div>
-                      ) : orderDetails ? (
-                        <div className="space-y-6">
-                          {/* Customer Information */}
-                          <Card>
-                            <CardHeader>
-                              <CardTitle className="flex items-center gap-2">
-                                <User className="h-5 w-5" />
-                                Customer Information
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-2">
-                              <div><strong>Name:</strong> {orderDetails.user?.firstName && orderDetails.user?.lastName 
-                                ? `${orderDetails.user.firstName} ${orderDetails.user.lastName}`
-                                : orderDetails.user?.username || 'Unknown Customer'}</div>
-                              <div><strong>Email:</strong> {orderDetails.user?.email || 'Unknown'}</div>
-                              <div><strong>Order Date:</strong> {formatDate(orderDetails.createdAt)}</div>
-                            </CardContent>
-                          </Card>
 
-                          {/* Shipping Address */}
-                          {orderDetails.shippingAddress && (
-                            <Card>
-                              <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                  <MapPin className="h-5 w-5" />
-                                  Shipping Address
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent>
-                                <div className="space-y-1">
-                                  {typeof orderDetails.shippingAddress === 'string' ? (
-                                    <div>{orderDetails.shippingAddress}</div>
-                                  ) : (
-                                    <>
-                                      <div>{orderDetails.shippingAddress.street}</div>
-                                      <div>{orderDetails.shippingAddress.city}</div>
-                                      <div>{orderDetails.shippingAddress.country}</div>
-                                      {orderDetails.shippingAddress.postalCode && (
-                                        <div>{orderDetails.shippingAddress.postalCode}</div>
-                                      )}
-                                    </>
-                                  )}
-                                </div>
-                              </CardContent>
-                            </Card>
-                          )}
+                        {/* Shipping Address */}
+                        {order.shippingAddress && (
+                          <div>
+                            <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                              <MapPin className="w-4 h-4 mr-2" />
+                              Shipping Address
+                            </h4>
+                            <div className="bg-gray-50 p-3 rounded text-sm text-gray-600">
+                              <p>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
+                              <p>{order.shippingAddress.address}</p>
+                              <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
+                              <p>Phone: {order.shippingAddress.phone}</p>
+                            </div>
+                          </div>
+                        )}
 
-                          {/* Order Items */}
-                          <Card>
-                            <CardHeader>
-                              <CardTitle className="flex items-center gap-2">
-                                <Package className="h-5 w-5" />
-                                Order Items
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="space-y-4">
-                                {orderDetails.items?.map((item) => (
-                                  <div key={item.id} className="flex justify-between items-center p-4 border rounded-lg">
-                                    <div className="flex items-center gap-4">
-                                      {item.product.image && (
-                                        <img 
-                                          src={item.product.image} 
-                                          alt={item.product.name}
-                                          className="w-16 h-16 object-cover rounded"
-                                        />
-                                      )}
-                                      <div>
-                                        <h4 className="font-medium">{item.product.name}</h4>
-                                        <p className="text-sm text-slate-600">Quantity: {item.quantity}</p>
-                                      </div>
-                                    </div>
-                                    <div className="text-right">
-                                      <div className="font-semibold">${(parseFloat(item.price) * item.quantity).toFixed(2)}</div>
-                                      <div className="text-sm text-slate-600">${item.price} each</div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </CardContent>
-                          </Card>
-
-                          {/* Order Summary */}
-                          <Card>
-                            <CardHeader>
-                              <CardTitle>Order Summary</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="space-y-2">
-                                <div className="flex justify-between">
-                                  <span>Subtotal:</span>
-                                  <span>${orderDetails.subtotal}</span>
+                        {/* Order Items */}
+                        <div>
+                          <h4 className="font-medium text-gray-900 mb-2">Order Items</h4>
+                          <div className="space-y-2">
+                            {order.items?.map((item) => (
+                              <div key={item.id} className="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                <div>
+                                  <p className="font-medium">{item.product.name}</p>
+                                  <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
                                 </div>
-                                <div className="flex justify-between">
-                                  <span>Tax:</span>
-                                  <span>${orderDetails.tax}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span>Shipping:</span>
-                                  <span>${orderDetails.shipping}</span>
-                                </div>
-                                <div className="flex justify-between font-bold text-lg border-t pt-2">
-                                  <span>Total:</span>
-                                  <span>${orderDetails.total}</span>
-                                </div>
-                                <div className="flex justify-between text-sm text-slate-600">
-                                  <span>Payment Method:</span>
-                                  <span>{orderDetails.paymentMethod || 'Unknown'}</span>
+                                <div className="text-right">
+                                  <p className="font-medium">${item.price}</p>
                                 </div>
                               </div>
-                            </CardContent>
-                          </Card>
+                            ))}
+                          </div>
                         </div>
-                      ) : (
-                        <div className="text-center py-8">
-                          <p className="text-slate-600">Failed to load order details</p>
+
+                        {/* Order Totals */}
+                        <div className="bg-gray-50 p-4 rounded">
+                          <div className="space-y-2">
+                            <div className="flex justify-between">
+                              <span>Subtotal:</span>
+                              <span>${order.subtotal}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>VAT ({order.vatPercentage}%):</span>
+                              <span>${order.tax}</span>
+                            </div>
+                            <div className="flex justify-between font-bold text-lg border-t pt-2">
+                              <span>Total:</span>
+                              <span>${order.total}</span>
+                            </div>
+                          </div>
                         </div>
-                      )}
+
+                        {/* Admin Remarks */}
+                        {order.adminRemarks && (
+                          <div>
+                            <h4 className="font-medium text-gray-900 mb-2">Admin Remarks</h4>
+                            <div className="bg-blue-50 p-3 rounded text-sm">
+                              {order.adminRemarks}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </DialogContent>
                   </Dialog>
+
+                  {order.adminApprovalStatus === "pending" && (
+                    <>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedOrder(order);
+                          setApprovalAction('approve');
+                        }}
+                      >
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        Approve
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedOrder(order);
+                          setApprovalAction('reject');
+                        }}
+                      >
+                        <XCircle className="w-4 h-4 mr-1" />
+                        Reject
+                      </Button>
+                    </>
+                  )}
+
+                  {order.status === "payment_pending" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => completeOrderMutation.mutate(order.id)}
+                    >
+                      <Package className="w-4 h-4 mr-1" />
+                      Mark Delivered
+                    </Button>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : (
-        <Card>
-          <CardContent className="text-center py-8">
-            <Package className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-600">No orders found</p>
-          </CardContent>
-        </Card>
-      )}
+              </div>
+            </CardHeader>
+            
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <p className="text-gray-600">Customer</p>
+                  <p className="font-medium">{order.user?.name}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Total Amount</p>
+                  <p className="font-medium">${order.total} (incl. {order.vatPercentage}% VAT)</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Order Date</p>
+                  <p className="font-medium">{new Date(order.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+
+        {orders?.length === 0 && (
+          <Card className="text-center py-12">
+            <CardContent>
+              <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No Orders Found</h3>
+              <p className="text-gray-600">Orders will appear here once customers start placing them.</p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Approval Action Dialog */}
+      <Dialog open={!!approvalAction} onOpenChange={() => {
+        setApprovalAction(null);
+        setAdminRemarks("");
+        setSelectedOrder(null);
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {approvalAction === 'approve' ? 'Approve Order' : 'Reject Order'}
+            </DialogTitle>
+            <DialogDescription>
+              {approvalAction === 'approve' 
+                ? 'Approve this order and notify the customer to proceed with payment.'
+                : 'Reject this order and notify the customer with a reason.'
+              }
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="remarks">
+                {approvalAction === 'approve' ? 'Additional Notes (Optional)' : 'Reason for Rejection (Required)'}
+              </Label>
+              <Textarea
+                id="remarks"
+                placeholder={approvalAction === 'approve' 
+                  ? "Add any additional notes for the customer..." 
+                  : "Please provide a reason for rejecting this order..."
+                }
+                value={adminRemarks}
+                onChange={(e) => setAdminRemarks(e.target.value)}
+                className="mt-1"
+              />
+            </div>
+            
+            <div className="flex justify-end space-x-2">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setApprovalAction(null);
+                  setAdminRemarks("");
+                  setSelectedOrder(null);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant={approvalAction === 'approve' ? 'default' : 'destructive'}
+                onClick={handleApprovalAction}
+                disabled={approvalAction === 'reject' && !adminRemarks.trim()}
+              >
+                {approvalAction === 'approve' ? 'Approve Order' : 'Reject Order'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

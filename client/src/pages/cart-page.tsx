@@ -61,7 +61,7 @@ export default function CartPage() {
     0
   ) || 0;
 
-  const tax = subtotal * 0.075;
+  const tax = subtotal * 0.10; // 10% VAT
   const total = subtotal + tax;
 
   if (isLoading) {
@@ -207,7 +207,7 @@ export default function CartPage() {
                 <span className="font-medium">Free</span>
               </div>
               <div className="flex justify-between text-slate-600">
-                <span>Tax:</span>
+                <span>VAT (10%):</span>
                 <span className="font-medium">${tax.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-xl font-bold text-slate-900 pt-2 border-t border-slate-200">

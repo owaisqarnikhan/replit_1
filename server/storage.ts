@@ -71,8 +71,12 @@ export interface IStorage {
   getOrders(): Promise<Order[]>;
   getUserOrders(userId: string): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]>;
   getOrderById(id: string): Promise<(Order & { items: (OrderItem & { product: Product })[] }) | undefined>;
+  getOrdersWithDetails(): Promise<any[]>;
+  getOrderWithDetails(id: string): Promise<any>;
+  getUserById(id: string): Promise<User | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   createOrderItem(item: InsertOrderItem): Promise<OrderItem>;
+  updateOrder(id: string, updates: Partial<Order>): Promise<Order>;
   updateOrderStatus(id: string, status: string): Promise<Order>;
 
   // Site settings methods
@@ -91,7 +95,7 @@ export interface IStorage {
   getUsers(): Promise<User[]>;
   getOrders(): Promise<Order[]>;
   getOrderItems(): Promise<OrderItem[]>;
-  getCartItems(): Promise<CartItem[]>;
+  getAllCartItems(): Promise<CartItem[]>;
   clearProductsAndCategories(): Promise<void>;
   executeSQLImport(sqlContent: string): Promise<void>;
   
@@ -358,7 +362,6 @@ export class DatabaseStorage implements IStorage {
         const hashedPassword = crypto.scryptSync(defaultPassword, salt, 64).toString('hex');
         
         await db.insert(users).values({
-          id: user.id,
           username: user.username,
           email: user.email,
           firstName: user.firstName,
@@ -524,6 +527,59 @@ export class DatabaseStorage implements IStorage {
     );
 
     return ordersWithItems;
+  }
+
+  async getOrderWithDetails(orderId: string): Promise<any> {
+    // Get order data
+    const [orderData] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, orderId));
+    
+    if (!orderData) {
+      throw new Error('Order not found');
+    }
+    
+    // Get user data
+    const [userData] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, orderData.userId));
+      
+    // Get order items
+    const items = await db
+      .select({
+        id: orderItems.id,
+        orderId: orderItems.orderId,
+        productId: orderItems.productId,
+        quantity: orderItems.quantity,
+        price: orderItems.price,
+        createdAt: orderItems.createdAt,
+        product: products,
+      })
+      .from(orderItems)
+      .innerJoin(products, eq(orderItems.productId, products.id))
+      .where(eq(orderItems.orderId, orderData.id));
+
+    return {
+      ...orderData,
+      user: userData || null,
+      items
+    };
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async updateOrder(id: string, updates: Partial<Order>): Promise<Order> {
+    const [updated] = await db
+      .update(orders)
+      .set(updates)
+      .where(eq(orders.id, id))
+      .returning();
+    return updated;
   }
 
   async getOrderById(id: string): Promise<any> {

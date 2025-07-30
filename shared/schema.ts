@@ -55,11 +55,18 @@ export const cartItems = pgTable("cart_items", {
 export const orders = pgTable("orders", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id).notNull(),
-  status: text("status").notNull().default("pending"), // pending, processing, shipped, delivered, cancelled
+  status: text("status").notNull().default("pending"), // pending, awaiting_approval, approved, rejected, payment_pending, processing, shipped, delivered, cancelled
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
-  tax: decimal("tax", { precision: 10, scale: 2 }).default("0.00"),
+  tax: decimal("tax", { precision: 10, scale: 2 }).default("0.00"), // This will be the VAT amount (10%)
   shipping: decimal("shipping", { precision: 10, scale: 2 }).default("0.00"),
+  vatPercentage: decimal("vat_percentage", { precision: 5, scale: 2 }).notNull().default("10.00"), // VAT percentage
+  adminApprovalStatus: text("admin_approval_status").notNull().default("pending"), // pending, approved, rejected
+  adminApprovedBy: varchar("admin_approved_by").references(() => users.id),
+  adminApprovedAt: timestamp("admin_approved_at"),
+  adminRemarks: text("admin_remarks"), // Admin can add notes for approval/rejection
+  estimatedDeliveryDays: integer("estimated_delivery_days").notNull().default(2),
+  deliveredAt: timestamp("delivered_at"),
   paymentMethod: text("payment_method"), // stripe, paypal, benefit_pay, cash_on_delivery, knet, benefit_debit
   paymentIntentId: text("payment_intent_id"),
   shippingAddress: json("shipping_address"),
