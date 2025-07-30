@@ -11,7 +11,7 @@ if (process.env.SENDGRID_API_KEY) {
 async function createTransporter() {
   const settings = await storage.getSiteSettings();
   
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     host: settings.smtpHost || 'smtp.sendgrid.net',
     port: settings.smtpPort || 587,
     secure: false,
@@ -157,10 +157,10 @@ export async function sendOrderConfirmationEmail(
     } else {
       // Fallback to SMTP transporter
       console.log('Sending emails via SMTP...');
-      const transporter = await createTransporter();
+      const smtpTransporter = await createTransporter();
       
       // Send to customer
-      await transporter.sendMail({
+      await smtpTransporter.sendMail({
         from: `${fromName} <${fromEmail}>`,
         to: customerEmail,
         subject: `Order Confirmation - ${orderDetails.orderNumber}`,
@@ -191,7 +191,7 @@ export async function sendOrderConfirmationEmail(
           </div>
         `;
 
-        await transporter.sendMail({
+        await smtpTransporter.sendMail({
           from: `${fromName} <${fromEmail}>`,
           to: settings.adminEmail,
           subject: `New Order Alert - ${orderDetails.orderNumber}`,
