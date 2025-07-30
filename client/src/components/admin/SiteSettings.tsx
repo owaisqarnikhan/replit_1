@@ -12,8 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertSiteSettingsSchema, type InsertSiteSettings, type SiteSettings } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Settings, Palette, Mail, Upload, Save, Monitor } from "lucide-react";
-import { LoginPageManager } from "./LoginPageManager";
+import { Settings, Palette, Mail, Upload, Save } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { themes, applyTheme, type ThemeName } from "@/lib/themes";
 
@@ -210,7 +209,7 @@ export function SiteSettings() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <Tabs defaultValue="general" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-6">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="general">General</TabsTrigger>
                 <TabsTrigger value="branding">
                   <Palette className="h-4 w-4 mr-2" />
@@ -218,10 +217,6 @@ export function SiteSettings() {
                 </TabsTrigger>
                 <TabsTrigger value="contact">Contact</TabsTrigger>
                 <TabsTrigger value="footer">Footer</TabsTrigger>
-                <TabsTrigger value="login">
-                  <Monitor className="h-4 w-4 mr-2" />
-                  Login Page
-                </TabsTrigger>
                 <TabsTrigger value="email">
                   <Mail className="h-4 w-4 mr-2" />
                   Email
@@ -1239,9 +1234,7 @@ export function SiteSettings() {
                 />
               </TabsContent>
 
-              <TabsContent value="login" className="space-y-6">
-                <LoginPageManager />
-              </TabsContent>
+
             </Tabs>
 
             <div className="flex justify-end pt-6">

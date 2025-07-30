@@ -238,25 +238,6 @@ export const siteSettings = pgTable("site_settings", {
   smtpFromEmail: text("smtp_from_email").default("noreply@innovanceorbit.com"),
   smtpFromName: text("smtp_from_name").default("InnovanceOrbit"),
   emailEnabled: boolean("email_enabled").default(false),
-  
-  // Login Page Customization
-  loginPageTitle: text("login_page_title").default("InnovanceOrbit Store"),
-  loginPageSubtitle: text("login_page_subtitle").default("Sign in to access our exclusive products"),
-  loginCardTitle: text("login_card_title").default("Sign In to Your Account"),
-  loginBackgroundImage: text("login_background_image"),
-  loginLogoUrl: text("login_logo_url"),
-  loginSeparatorImage1: text("login_separator_image_1"),
-  loginSeparatorImage2: text("login_separator_image_2"),
-  loginSeparatorImage3: text("login_separator_image_3"),
-  loginFeature1Title: text("login_feature_1_title").default("Secure Shopping"),
-  loginFeature1Description: text("login_feature_1_description").default("Your data is protected with enterprise-grade security"),
-  loginFeature2Title: text("login_feature_2_title").default("Fast Delivery"),
-  loginFeature2Description: text("login_feature_2_description").default("Quick and reliable delivery across Bahrain"),
-  loginFeature3Title: text("login_feature_3_title").default("Premium Quality"),
-  loginFeature3Description: text("login_feature_3_description").default("Carefully curated products for discerning customers"),
-  loginFeature4Title: text("login_feature_4_title").default("24/7 Support"),
-  loginFeature4Description: text("login_feature_4_description").default("Always here to help with your questions"),
-  
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });
