@@ -100,7 +100,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
 
   return (
     <Card 
-      className="group cursor-pointer overflow-hidden border-none shadow-md hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] bg-gradient-to-br from-white to-slate-50 h-full flex flex-col"
+      className="group cursor-pointer overflow-hidden border-none shadow-md hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] bg-gradient-to-br from-white to-slate-50 flex flex-col"
       onClick={handleCardClick}
     >
       <div className="relative overflow-hidden rounded-t-xl">
@@ -153,7 +153,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
         )}
       </div>
       
-      <CardContent className="p-6 bg-gradient-to-b from-transparent to-slate-50/30 flex flex-col h-full">
+      <CardContent className="p-6 bg-gradient-to-b from-transparent to-slate-50/30 flex flex-col">
         <div className="flex-1">
           <h3 className="text-xl font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-blue-700 transition-colors duration-300">
             {product.name}
