@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // Removed tabs import - only login now available
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertUserSchema } from "@shared/schema";
+import { insertUserSchema, type SiteSettings } from "@shared/schema";
 import { z } from "zod";
 import { Loader2, Store, Shield, Truck, CreditCard } from "lucide-react";
 
@@ -18,6 +19,10 @@ type LoginData = z.infer<typeof loginSchema>;
 export default function AuthPage() {
   const { user, loginMutation } = useAuth();
   const [, setLocation] = useLocation();
+
+  const { data: settings } = useQuery<SiteSettings>({
+    queryKey: ["/api/settings"],
+  });
 
   const loginForm = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
@@ -44,7 +49,16 @@ export default function AuthPage() {
       <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-slate-900">InnovanceOrbit Store</h1>
+            {(settings?.headerLogo || settings?.logoUrl) && (
+              <img 
+                src={settings.headerLogo || settings.logoUrl} 
+                alt={settings.siteName || "InnovanceOrbit Store"} 
+                className="h-20 w-auto mx-auto mb-6"
+              />
+            )}
+            <h1 className="text-3xl font-bold text-slate-900">
+              {settings?.siteName || "InnovanceOrbit Store"}
+            </h1>
           </div>
 
           <Card>
