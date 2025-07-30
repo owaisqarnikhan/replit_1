@@ -153,10 +153,22 @@ export function ImageSlider({
               <div className="absolute bottom-16 left-0 right-0 p-8 text-white z-20 text-center">
                 <div className="max-w-2xl mx-auto">
                   {image.title && (
-                    <h3 className="text-4xl font-bold mb-3 drop-shadow-lg">{image.title}</h3>
+                    <h3 className={`text-4xl font-bold mb-3 drop-shadow-lg transition-all duration-1000 ${
+                      index === currentIndex 
+                        ? 'animate-fadeInUp opacity-100 transform translate-y-0' 
+                        : 'opacity-0 transform translate-y-4'
+                    }`}>
+                      {image.title}
+                    </h3>
                   )}
                   {image.description && (
-                    <p className="text-xl opacity-90 drop-shadow-md">{image.description}</p>
+                    <p className={`text-xl opacity-90 drop-shadow-md transition-all duration-1000 delay-300 ${
+                      index === currentIndex 
+                        ? 'animate-fadeInUp opacity-90 transform translate-y-0' 
+                        : 'opacity-0 transform translate-y-4'
+                    }`}>
+                      {image.description}
+                    </p>
                   )}
                 </div>
               </div>
