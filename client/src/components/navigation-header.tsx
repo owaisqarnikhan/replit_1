@@ -135,16 +135,18 @@ export function NavigationHeader() {
                 }}
                 onClick={() => setLocation("/")}
               >
-                {siteSettings?.logoUrl ? (
+                {siteSettings?.logoUrl && siteSettings.logoUrl.trim() !== "" ? (
                   <img 
                     src={siteSettings.logoUrl} 
-                    alt={siteSettings.siteName || "InnovanceOrbit"} 
+                    alt={siteSettings.siteName || "Store"} 
                     className="h-16 w-auto"
                   />
-                ) : (
+                ) : (!siteSettings?.siteName || siteSettings.siteName.trim() === "") ? (
                   <Store className="w-12 h-12" />
+                ) : null}
+                {siteSettings?.siteName && siteSettings.siteName.trim() !== "" && (
+                  <span>{siteSettings.siteName}</span>
                 )}
-                <span>{siteSettings?.siteName || "InnovanceOrbit"}</span>
               </Button>
             </div>
             
