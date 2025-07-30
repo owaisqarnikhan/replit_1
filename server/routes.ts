@@ -395,7 +395,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: "processing",
       });
 
-      // Create order items
+      // Create order items and update stock
       for (const cartItem of cartItems) {
         await storage.createOrderItem({
           orderId: order.id,
@@ -403,6 +403,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           quantity: cartItem.quantity,
           price: cartItem.product.price,
         });
+        
+        // Decrease stock quantity
+        const product = await storage.getProductById(cartItem.productId);
+        if (product) {
+          const newStock = Math.max(0, (product.stock || 0) - cartItem.quantity);
+          await storage.updateProduct(cartItem.productId, { stock: newStock });
+        }
       }
 
       // Clear cart
@@ -609,11 +616,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ]);
 
       const totalRevenue = orders.reduce((sum, order) => sum + parseFloat(order.total), 0);
+      const totalStock = products.reduce((sum, product) => sum + (product.stock || 0), 0);
       
       const stats = {
         revenue: totalRevenue.toFixed(2),
         orders: orders.length,
         products: products.length,
+        totalStock: totalStock,
         users: users.length,
       };
 

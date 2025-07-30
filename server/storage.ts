@@ -252,7 +252,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(orderItems);
   }
 
-  async getCartItems(): Promise<CartItem[]> {
+  async getAllCartItems(): Promise<CartItem[]> {
     return await db.select().from(cartItems);
   }
 
