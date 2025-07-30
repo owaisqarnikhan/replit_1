@@ -7,9 +7,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { useLocation } from "wouter";
 import type { Product, Category } from "@shared/schema";
 
 export default function ProductsPage() {
+  const [, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -86,10 +88,12 @@ export default function ProductsPage() {
               <ProductCard 
                 key={product.id} 
                 product={product}
+                onCardClick={(product) => setLocation(`/products/${product.id}`)}
                 onViewDetails={(product) => {
                   setSelectedProduct(product);
                   setIsModalOpen(true);
                 }}
+                showDetailsButton={true}
               />
             ))}
           </div>
