@@ -205,7 +205,7 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
                   {/* VAT Notice */}
                   <div className="bg-blue-50 p-3 rounded text-sm text-blue-800">
                     <Info className="w-4 h-4 inline mr-1" />
-                    Prices include 10% VAT
+                    Prices exclude 10% VAT
                   </div>
                 </div>
               </CardContent>

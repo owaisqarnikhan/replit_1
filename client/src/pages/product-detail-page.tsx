@@ -239,7 +239,7 @@ export default function ProductDetailPage() {
                   {/* VAT Notice */}
                   <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-800">
                     <Info className="w-4 h-4 inline mr-2" />
-                    Prices include 10% VAT
+                    Prices exclude 10% VAT
                   </div>
                 </div>
               </CardContent>
