@@ -143,8 +143,8 @@ export default function ExcelManager() {
       <Alert>
         <AlertTriangle className="h-4 w-4" />
         <AlertDescription>
-          <strong>Excel Data Management:</strong> Export your data to Excel for analysis or import bulk data from Excel files. 
-          The Excel file contains separate sheets for Products, Categories, and Users with all relevant fields.
+          <strong>Comprehensive Excel Data Management:</strong> Export all your e-commerce data to Excel for analysis or import bulk data from Excel files. 
+          The Excel workbook contains 8 separate sheets covering all data types: Products (with units of measure), Categories, Users, Orders, Order Items, Units of Measure, Site Settings, and Slider Images. Perfect for data backups, analysis, and bulk operations.
         </AlertDescription>
       </Alert>
 
@@ -163,11 +163,11 @@ export default function ExcelManager() {
           <CardContent>
             <div className="space-y-4">
               <div className="text-sm text-muted-foreground">
-                <p>The Excel export includes 3 separate sheets:</p>
+                <p>The Excel export includes 8 comprehensive data sheets:</p>
                 <ul className="list-disc ml-4 mt-2 space-y-1">
                   <li className="flex items-center gap-2">
                     <Package className="h-3 w-3" />
-                    <strong>Products:</strong> All product data including prices, stock, categories
+                    <strong>Products:</strong> All product data including prices, stock, units of measure, categories
                   </li>
                   <li className="flex items-center gap-2">
                     <FolderOpen className="h-3 w-3" />
@@ -176,6 +176,26 @@ export default function ExcelManager() {
                   <li className="flex items-center gap-2">
                     <Users className="h-3 w-3" />
                     <strong>Users:</strong> User accounts (passwords excluded for security)
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Package className="h-3 w-3" />
+                    <strong>Units of Measure:</strong> All measurement units (kg, liter, piece, etc.)
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Package className="h-3 w-3" />
+                    <strong>Orders:</strong> Complete order history and status information
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Package className="h-3 w-3" />
+                    <strong>Order Items:</strong> Individual items within each order
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Package className="h-3 w-3" />
+                    <strong>Site Settings:</strong> All website configuration and customization settings
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <Package className="h-3 w-3" />
+                    <strong>Slider Images:</strong> Homepage slider configuration and image data
                   </li>
                 </ul>
               </div>
@@ -221,11 +241,16 @@ export default function ExcelManager() {
               </div>
 
               <div className="text-sm text-muted-foreground">
-                <p><strong>Excel file structure expected:</strong></p>
+                <p><strong>Excel file structure expected (8 sheets):</strong></p>
                 <ul className="list-disc ml-4 mt-1 space-y-1 text-xs">
-                  <li>Sheet 1: "Products" with columns: Name, Description, Price, Stock, SKU, Category ID, etc.</li>
-                  <li>Sheet 2: "Categories" with columns: Name, Description, Image URL</li>
-                  <li>Sheet 3: "Users" with columns: Username, Email, First Name, Last Name, Is Admin</li>
+                  <li>Sheet 1: "Products" - Name, Description, Price, Stock, SKU, Unit of Measure, Category ID, etc.</li>
+                  <li>Sheet 2: "Categories" - Name, Description, Image URL</li>
+                  <li>Sheet 3: "Users" - Username, Email, First Name, Last Name, Is Admin</li>
+                  <li>Sheet 4: "Units of Measure" - Name, Abbreviation, Is Active</li>
+                  <li>Sheet 5: "Orders" - User ID, Status, Total Amount, Shipping Address, Payment Method</li>
+                  <li>Sheet 6: "Order Items" - Order ID, Product ID, Quantity, Price</li>
+                  <li>Sheet 7: "Site Settings" - All website configuration settings</li>
+                  <li>Sheet 8: "Slider Images" - Title, Image URL, Link URL, Is Active, Display Order</li>
                 </ul>
               </div>
 

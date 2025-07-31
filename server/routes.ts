@@ -1104,30 +1104,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const fileBuffer = await fs.promises.readFile(req.file.path);
       const parsedData = parseExcelFile(fileBuffer);
       
-      // Import data in order: categories first, then products, then users
+      // Import data in order: foundational data first, then dependent data
+      let importCounts = {
+        categories: 0,
+        products: 0,
+        users: 0,
+        orders: 0,
+        orderItems: 0,
+        unitsOfMeasure: 0,
+        sliderImages: 0
+      };
+
       if (parsedData.categories.length > 0) {
         await storage.importCategories(parsedData.categories);
+        importCounts.categories = parsedData.categories.length;
+      }
+      
+      if (parsedData.unitsOfMeasure.length > 0) {
+        await storage.importUnitsOfMeasure(parsedData.unitsOfMeasure);
+        importCounts.unitsOfMeasure = parsedData.unitsOfMeasure.length;
       }
       
       if (parsedData.products.length > 0) {
         await storage.importProducts(parsedData.products);
+        importCounts.products = parsedData.products.length;
       }
       
       if (parsedData.users.length > 0) {
         await storage.importUsers(parsedData.users);
+        importCounts.users = parsedData.users.length;
+      }
+
+      if (parsedData.orders.length > 0) {
+        await storage.importOrders(parsedData.orders);
+        importCounts.orders = parsedData.orders.length;
+      }
+
+      if (parsedData.orderItems.length > 0) {
+        await storage.importOrderItems(parsedData.orderItems);
+        importCounts.orderItems = parsedData.orderItems.length;
+      }
+
+      if (parsedData.sliderImages.length > 0) {
+        await storage.importSliderImages(parsedData.sliderImages);
+        importCounts.sliderImages = parsedData.sliderImages.length;
       }
       
       // Clean up uploaded file
       await fs.promises.unlink(req.file.path);
       
+      const totalImported = Object.values(importCounts).reduce((sum, count) => sum + count, 0);
+      
       res.json({ 
         success: true, 
-        message: `Successfully imported ${parsedData.categories.length} categories, ${parsedData.products.length} products, and ${parsedData.users.length} users`,
-        imported: {
-          categories: parsedData.categories.length,
-          products: parsedData.products.length,
-          users: parsedData.users.length
-        }
+        message: `Successfully imported ${totalImported} total records: ${importCounts.categories} categories, ${importCounts.products} products, ${importCounts.users} users, ${importCounts.orders} orders, ${importCounts.orderItems} order items, ${importCounts.unitsOfMeasure} units of measure, and ${importCounts.sliderImages} slider images`,
+        imported: importCounts
       });
     } catch (error) {
       console.error('Excel import error:', error);

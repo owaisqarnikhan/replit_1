@@ -361,6 +361,7 @@ export class DatabaseStorage implements IStorage {
         price: product.price.toString(),
         stock: product.stock,
         sku: product.sku,
+        unitOfMeasure: product.unitOfMeasure || 'piece',
         categoryId: product.categoryId,
         imageUrl: product.imageUrl,
         isActive: product.isActive,
@@ -378,6 +379,7 @@ export class DatabaseStorage implements IStorage {
           price: product.price.toString(),
           stock: product.stock,
           sku: product.sku,
+          unitOfMeasure: product.unitOfMeasure || 'piece',
           categoryId: product.categoryId,
           imageUrl: product.imageUrl,
           isActive: product.isActive,
@@ -404,7 +406,7 @@ export class DatabaseStorage implements IStorage {
       if (existingUser.length > 0) {
         // Update existing user (excluding password for security)
         await db.update(users).set({
-          username: user.username,
+          username: user.username || user.email,
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
@@ -413,19 +415,97 @@ export class DatabaseStorage implements IStorage {
       } else {
         // Create new user with default password (they'll need to reset)
         const defaultPassword = crypto.randomBytes(16).toString('hex');
-        const salt = crypto.randomBytes(16).toString('hex');
-        const hashedPassword = crypto.scryptSync(defaultPassword, salt, 64).toString('hex');
+        const hashedPassword = crypto.scryptSync(defaultPassword, defaultPassword, 64).toString('hex');
         
         await db.insert(users).values({
-          username: user.username,
+          username: user.username || user.email,
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
           isAdmin: user.isAdmin,
-          password: hashedPassword,
-          salt: salt
+          password: hashedPassword
         });
       }
+    }
+  }
+
+  async importUnitsOfMeasure(unitsData: any[]): Promise<void> {
+    if (unitsData.length === 0) return;
+    
+    // Clear existing units and insert new ones
+    await db.delete(unitsOfMeasure);
+    
+    for (const unit of unitsData) {
+      await db.insert(unitsOfMeasure).values({
+        id: unit.id,
+        name: unit.name,
+        abbreviation: unit.abbreviation,
+        isActive: unit.isActive
+      }).onConflictDoUpdate({
+        target: unitsOfMeasure.id,
+        set: {
+          name: unit.name,
+          abbreviation: unit.abbreviation,
+          isActive: unit.isActive
+        }
+      });
+    }
+  }
+
+  async importOrders(ordersData: any[]): Promise<void> {
+    if (ordersData.length === 0) return;
+    
+    // Clear existing orders and order items
+    await db.delete(orderItems);
+    await db.delete(orders);
+    
+    for (const order of ordersData) {
+      await db.insert(orders).values({
+        userId: order.userId,
+        status: order.status,
+        total: order.totalAmount.toString(),
+        subtotal: order.totalAmount.toString(),
+        shippingAddress: order.shippingAddress,
+        paymentMethod: order.paymentMethod
+      });
+    }
+  }
+
+  async importOrderItems(orderItemsData: any[]): Promise<void> {
+    if (orderItemsData.length === 0) return;
+    
+    for (const item of orderItemsData) {
+      await db.insert(orderItems).values({
+        id: item.id,
+        orderId: item.orderId,
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price.toString()
+      }).onConflictDoUpdate({
+        target: orderItems.id,
+        set: {
+          orderId: item.orderId,
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.price.toString()
+        }
+      });
+    }
+  }
+
+  async importSliderImages(sliderData: any[]): Promise<void> {
+    if (sliderData.length === 0) return;
+    
+    // Clear existing slider images
+    await db.delete(sliderImages);
+    
+    for (const slide of sliderData) {
+      await db.insert(sliderImages).values({
+        title: slide.title,
+        imageUrl: slide.imageUrl,
+        isActive: slide.isActive,
+        sortOrder: slide.displayOrder
+      });
     }
   }
 
