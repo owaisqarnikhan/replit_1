@@ -1112,7 +1112,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         orders: 0,
         orderItems: 0,
         unitsOfMeasure: 0,
-        sliderImages: 0
+        sliderImages: 0,
+        siteSettings: 0
       };
 
       if (parsedData.categories.length > 0) {
@@ -1149,6 +1150,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.importSliderImages(parsedData.sliderImages);
         importCounts.sliderImages = parsedData.sliderImages.length;
       }
+
+      if (parsedData.siteSettings.length > 0) {
+        await storage.importSiteSettings(parsedData.siteSettings);
+        importCounts.siteSettings = parsedData.siteSettings.length;
+      }
       
       // Clean up uploaded file
       await fs.promises.unlink(req.file.path);
@@ -1157,7 +1163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({ 
         success: true, 
-        message: `Successfully imported ${totalImported} total records: ${importCounts.categories} categories, ${importCounts.products} products, ${importCounts.users} users, ${importCounts.orders} orders, ${importCounts.orderItems} order items, ${importCounts.unitsOfMeasure} units of measure, and ${importCounts.sliderImages} slider images`,
+        message: `Successfully imported ${totalImported} total records: ${importCounts.categories} categories, ${importCounts.products} products, ${importCounts.users} users, ${importCounts.orders} orders, ${importCounts.orderItems} order items, ${importCounts.unitsOfMeasure} units of measure, ${importCounts.sliderImages} slider images, and ${importCounts.siteSettings} site settings`,
         imported: importCounts
       });
     } catch (error) {

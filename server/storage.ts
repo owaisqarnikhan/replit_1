@@ -403,14 +403,21 @@ export class DatabaseStorage implements IStorage {
         const defaultPassword = crypto.randomBytes(16).toString('hex');
         const hashedPassword = crypto.scryptSync(defaultPassword, defaultPassword, 64).toString('hex');
         
-        await db.insert(users).values({
-          username: user.username || user.email,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          isAdmin: user.isAdmin,
+        const insertData: any = {
+          username: user.username || user.email || `user${Date.now()}`,
+          email: user.email || `user${Date.now()}@example.com`,
+          firstName: user.firstName || "",
+          lastName: user.lastName || "",
+          isAdmin: user.isAdmin || false,
           password: hashedPassword
-        });
+        };
+        
+        // Only include ID if it exists and is not empty
+        if (user.id && user.id.trim() !== "") {
+          insertData.id = user.id;
+        }
+        
+        await db.insert(users).values(insertData);
       }
     }
   }
@@ -445,14 +452,21 @@ export class DatabaseStorage implements IStorage {
     await db.delete(orders);
     
     for (const order of ordersData) {
-      await db.insert(orders).values({
+      const insertData: any = {
         userId: order.userId,
-        status: order.status,
-        total: order.totalAmount.toString(),
-        subtotal: order.totalAmount.toString(),
-        shippingAddress: order.shippingAddress,
-        paymentMethod: order.paymentMethod
-      });
+        status: order.status || 'pending',
+        total: (order.totalAmount || 0).toString(),
+        subtotal: (order.totalAmount || 0).toString(),
+        shippingAddress: order.shippingAddress || null,
+        paymentMethod: order.paymentMethod || 'cash_on_delivery'
+      };
+      
+      // Only include ID if it exists and is not empty
+      if (order.id && order.id.trim() !== "") {
+        insertData.id = order.id;
+      }
+      
+      await db.insert(orders).values(insertData);
     }
   }
 
@@ -460,21 +474,19 @@ export class DatabaseStorage implements IStorage {
     if (orderItemsData.length === 0) return;
     
     for (const item of orderItemsData) {
-      await db.insert(orderItems).values({
-        id: item.id,
+      const insertData: any = {
         orderId: item.orderId,
         productId: item.productId,
-        quantity: item.quantity,
-        price: item.price.toString()
-      }).onConflictDoUpdate({
-        target: orderItems.id,
-        set: {
-          orderId: item.orderId,
-          productId: item.productId,
-          quantity: item.quantity,
-          price: item.price.toString()
-        }
-      });
+        quantity: item.quantity || 1,
+        price: (item.price || 0).toString()
+      };
+      
+      // Only include ID if it exists and is not empty
+      if (item.id && item.id.trim() !== "") {
+        insertData.id = item.id;
+      }
+      
+      await db.insert(orderItems).values(insertData);
     }
   }
 
@@ -485,12 +497,62 @@ export class DatabaseStorage implements IStorage {
     await db.delete(sliderImages);
     
     for (const slide of sliderData) {
-      await db.insert(sliderImages).values({
-        title: slide.title,
-        imageUrl: slide.imageUrl,
-        isActive: slide.isActive,
-        sortOrder: slide.displayOrder
-      });
+      const insertData: any = {
+        title: slide.title || "Slide",
+        imageUrl: slide.imageUrl || "",
+        isActive: slide.isActive !== undefined ? slide.isActive : true,
+        sortOrder: slide.displayOrder || 0
+      };
+      
+      // Only include ID if it exists and is not empty
+      if (slide.id && slide.id.trim() !== "") {
+        insertData.id = slide.id;
+      }
+      
+      await db.insert(sliderImages).values(insertData);
+    }
+  }
+
+  async importSiteSettings(settingsData: any[]): Promise<void> {
+    if (settingsData.length === 0) return;
+    
+    for (const setting of settingsData) {
+      const insertData: any = {
+        siteName: setting.siteName || "",
+        headerLogo: setting.headerLogo || null,
+        footerLogo: setting.footerLogo || null,
+        footerDescription: setting.footerDescription || "",
+        footerCopyright: setting.footerCopyright || "",
+        footerBackgroundImage: setting.footerBackgroundImage || null,
+        quickLinksTitle: setting.quickLinksTitle || "Quick Links",
+        quickLinks: setting.quickLinks || null,
+        servicesTitle: setting.servicesTitle || "Our Services",
+        serviceLink1Text: setting.serviceLink1Text || "",
+        serviceLink1Url: setting.serviceLink1Url || "",
+        serviceLink2Text: setting.serviceLink2Text || "",
+        serviceLink2Url: setting.serviceLink2Url || "",
+        serviceLink3Text: setting.serviceLink3Text || "",
+        serviceLink3Url: setting.serviceLink3Url || "",
+        serviceLink4Text: setting.serviceLink4Text || "",
+        serviceLink4Url: setting.serviceLink4Url || "",
+        socialFacebook: setting.socialFacebook || "",
+        socialTwitter: setting.socialTwitter || "",
+        socialInstagram: setting.socialInstagram || "",
+        socialLinkedin: setting.socialLinkedin || ""
+      };
+      
+      // Use default ID or provided ID
+      const settingId = (setting.id && setting.id.trim() !== "") ? setting.id : "default";
+      
+      // Update existing or insert new
+      const existingSetting = await db.select().from(siteSettings).where(eq(siteSettings.id, settingId)).limit(1);
+      
+      if (existingSetting.length > 0) {
+        await db.update(siteSettings).set(insertData).where(eq(siteSettings.id, settingId));
+      } else {
+        insertData.id = settingId;
+        await db.insert(siteSettings).values(insertData);
+      }
     }
   }
 

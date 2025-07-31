@@ -167,21 +167,21 @@ export function parseExcelFile(buffer: Buffer): {
     const productsSheet = workbook.Sheets['Products'];
     const productsData = XLSX.utils.sheet_to_json(productsSheet);
     result.products = productsData.map((row: any) => ({
-      id: row.ID || row.id,
-      name: row.Name || row.name,
-      description: row.Description || row.description,
+      id: row.ID || row.id || "",
+      name: row.Name || row.name || "Unnamed Product",
+      description: row.Description || row.description || "",
       price: parseFloat(row.Price || row.price || '0'),
       stock: parseInt(row.Stock || row.stock || '0'),
-      sku: row.SKU || row.sku,
+      sku: row.SKU || row.sku || "",
       unitOfMeasure: row['Unit of Measure'] || row.unitOfMeasure || 'piece',
-      categoryId: row['Category ID'] || row.categoryId,
-      imageUrl: row['Image URL'] || row.imageUrl,
+      categoryId: row['Category ID'] || row.categoryId || null,
+      imageUrl: row['Image URL'] || row.imageUrl || "",
       isActive: Boolean(row['Is Active'] !== undefined ? row['Is Active'] : row.isActive !== undefined ? row.isActive : true),
       isFeatured: Boolean(row['Is Featured'] !== undefined ? row['Is Featured'] : row.isFeatured !== undefined ? row.isFeatured : false),
       rating: parseFloat(row.Rating || row.rating || '0'),
       reviewCount: parseInt(row['Review Count'] || row.reviewCount || '0'),
-      productType: row['Product Type'] || row.productType || 'purchase',
-      rentalPeriod: row['Rental Period'] || row.rentalPeriod,
+      productType: row['Product Type'] || row.productType || 'sale',
+      rentalPeriod: row['Rental Period'] || row.rentalPeriod || null,
       rentalPrice: row['Rental Price'] ? parseFloat(row['Rental Price']) : row.rentalPrice ? parseFloat(row.rentalPrice) : null
     }));
   }
@@ -191,10 +191,10 @@ export function parseExcelFile(buffer: Buffer): {
     const categoriesSheet = workbook.Sheets['Categories'];
     const categoriesData = XLSX.utils.sheet_to_json(categoriesSheet);
     result.categories = categoriesData.map((row: any) => ({
-      id: row.ID || row.id,
-      name: row.Name || row.name,
-      description: row.Description || row.description,
-      imageUrl: row['Image URL'] || row.imageUrl
+      id: row.ID || row.id || "",
+      name: row.Name || row.name || "Unnamed Category",
+      description: row.Description || row.description || "",
+      imageUrl: row['Image URL'] || row.imageUrl || ""
     }));
   }
 
@@ -203,11 +203,11 @@ export function parseExcelFile(buffer: Buffer): {
     const usersSheet = workbook.Sheets['Users'];
     const usersData = XLSX.utils.sheet_to_json(usersSheet);
     result.users = usersData.map((row: any) => ({
-      id: row.ID || row.id,
-      username: row.Username || row.username,
-      email: row.Email || row.email,
-      firstName: row['First Name'] || row.firstName,
-      lastName: row['Last Name'] || row.lastName,
+      id: row.ID || row.id || "",
+      username: row.Username || row.username || row.Email || row.email || "user",
+      email: row.Email || row.email || `user${Date.now()}@example.com`,
+      firstName: row['First Name'] || row.firstName || "",
+      lastName: row['Last Name'] || row.lastName || "",
       isAdmin: Boolean(row['Is Admin'] !== undefined ? row['Is Admin'] : row.isAdmin !== undefined ? row.isAdmin : false)
     }));
   }
@@ -217,9 +217,9 @@ export function parseExcelFile(buffer: Buffer): {
     const unitsSheet = workbook.Sheets['Units of Measure'];
     const unitsData = XLSX.utils.sheet_to_json(unitsSheet);
     result.unitsOfMeasure = unitsData.map((row: any) => ({
-      id: row.ID || row.id,
-      name: row.Name || row.name,
-      abbreviation: row.Abbreviation || row.abbreviation,
+      id: row.ID || row.id || "",
+      name: row.Name || row.name || "Unit",
+      abbreviation: row.Abbreviation || row.abbreviation || "unit",
       isActive: Boolean(row['Is Active'] !== undefined ? row['Is Active'] : row.isActive !== undefined ? row.isActive : true)
     }));
   }
@@ -229,14 +229,14 @@ export function parseExcelFile(buffer: Buffer): {
     const ordersSheet = workbook.Sheets['Orders'];
     const ordersData = XLSX.utils.sheet_to_json(ordersSheet);
     result.orders = ordersData.map((row: any) => ({
-      id: row.ID || row.id,
-      userId: row['User ID'] || row.userId,
+      id: row.ID || row.id || "",
+      userId: row['User ID'] || row.userId || null,
       status: row.Status || row.status || 'pending',
       totalAmount: parseFloat(row['Total Amount'] || row.totalAmount || '0'),
-      shippingAddress: row['Shipping Address'] || row.shippingAddress,
-      paymentMethod: row['Payment Method'] || row.paymentMethod,
+      shippingAddress: row['Shipping Address'] || row.shippingAddress || "",
+      paymentMethod: row['Payment Method'] || row.paymentMethod || 'cash_on_delivery',
       paymentStatus: row['Payment Status'] || row.paymentStatus || 'pending',
-      notes: row.Notes || row.notes
+      notes: row.Notes || row.notes || ""
     }));
   }
 
@@ -245,9 +245,9 @@ export function parseExcelFile(buffer: Buffer): {
     const orderItemsSheet = workbook.Sheets['Order Items'];
     const orderItemsData = XLSX.utils.sheet_to_json(orderItemsSheet);
     result.orderItems = orderItemsData.map((row: any) => ({
-      id: row.ID || row.id,
-      orderId: row['Order ID'] || row.orderId,
-      productId: row['Product ID'] || row.productId,
+      id: row.ID || row.id || "",
+      orderId: row['Order ID'] || row.orderId || null,
+      productId: row['Product ID'] || row.productId || null,
       quantity: parseInt(row.Quantity || row.quantity || '1'),
       price: parseFloat(row.Price || row.price || '0')
     }));
@@ -258,12 +258,42 @@ export function parseExcelFile(buffer: Buffer): {
     const sliderSheet = workbook.Sheets['Slider Images'];
     const sliderData = XLSX.utils.sheet_to_json(sliderSheet);
     result.sliderImages = sliderData.map((row: any) => ({
-      id: row.ID || row.id,
-      title: row.Title || row.title,
-      imageUrl: row['Image URL'] || row.imageUrl,
-      linkUrl: row['Link URL'] || row.linkUrl,
+      id: row.ID || row.id || "",
+      title: row.Title || row.title || "Slide",
+      imageUrl: row['Image URL'] || row.imageUrl || "",
+      linkUrl: row['Link URL'] || row.linkUrl || "",
       isActive: Boolean(row['Is Active'] !== undefined ? row['Is Active'] : row.isActive !== undefined ? row.isActive : true),
       displayOrder: parseInt(row['Display Order'] || row.displayOrder || '0')
+    }));
+  }
+
+  // Parse site settings sheet
+  if (workbook.SheetNames.includes('Site Settings')) {
+    const settingsSheet = workbook.Sheets['Site Settings'];
+    const settingsData = XLSX.utils.sheet_to_json(settingsSheet);
+    result.siteSettings = settingsData.map((row: any) => ({
+      id: row.ID || row.id || "default",
+      siteName: row['Site Name'] || row.siteName || "",
+      headerLogo: row['Header Logo'] || row.headerLogo || null,
+      footerLogo: row['Footer Logo'] || row.footerLogo || null,
+      footerDescription: row['Footer Description'] || row.footerDescription || "",
+      footerCopyright: row['Footer Copyright'] || row.footerCopyright || "",
+      footerBackgroundImage: row['Footer Background Image'] || row.footerBackgroundImage || null,
+      quickLinksTitle: row['Quick Links Title'] || row.quickLinksTitle || "Quick Links",
+      quickLinks: row['Quick Links'] || row.quickLinks || null,
+      servicesTitle: row['Services Title'] || row.servicesTitle || "Our Services",
+      serviceLink1Text: row['Service Link 1 Text'] || row.serviceLink1Text || "",
+      serviceLink1Url: row['Service Link 1 URL'] || row.serviceLink1Url || "",
+      serviceLink2Text: row['Service Link 2 Text'] || row.serviceLink2Text || "",
+      serviceLink2Url: row['Service Link 2 URL'] || row.serviceLink2Url || "",
+      serviceLink3Text: row['Service Link 3 Text'] || row.serviceLink3Text || "",
+      serviceLink3Url: row['Service Link 3 URL'] || row.serviceLink3Url || "",
+      serviceLink4Text: row['Service Link 4 Text'] || row.serviceLink4Text || "",
+      serviceLink4Url: row['Service Link 4 URL'] || row.serviceLink4Url || "",
+      socialFacebook: row['Social Facebook'] || row.socialFacebook || "",
+      socialTwitter: row['Social Twitter'] || row.socialTwitter || "",
+      socialInstagram: row['Social Instagram'] || row.socialInstagram || "",
+      socialLinkedin: row['Social LinkedIn'] || row.socialLinkedin || ""
     }));
   }
 
