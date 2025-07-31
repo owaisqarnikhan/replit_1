@@ -32,7 +32,7 @@ export function BahrainPaymentMethods({
     {
       id: "benefit_pay" as PaymentMethod,
       name: "Benefit Pay",
-      description: "Pay securely using Benefit Pay - Bahrain's leading payment gateway",
+      description: "Pay securely using Benefit Pay - Regional payment gateway",
       icon: <Smartphone className="h-5 w-5" />,
       available: true,
     },
@@ -52,8 +52,8 @@ export function BahrainPaymentMethods({
     },
     {
       id: "benefit_debit" as PaymentMethod,
-      name: "Benefit Debit Card",
-      description: "Pay using your Benefit debit card (Available soon)",
+      name: "International Cards",
+      description: "Pay using Visa, MasterCard, or other international cards via Stripe",
       icon: <Building2 className="h-5 w-5" />,
       available: false,
     },
@@ -190,7 +190,7 @@ export function BahrainPaymentMethods({
           <div className="flex justify-between items-center mb-4">
             <span className="text-lg font-semibold">Total</span>
             <span className="text-lg font-semibold">
-              {total.toFixed(2)} BHD
+              ${total.toFixed(2)}
             </span>
           </div>
 
@@ -208,13 +208,13 @@ export function BahrainPaymentMethods({
             ) : selectedMethod === "cash_on_delivery" ? (
               "Place Order (Cash on Delivery)"
             ) : (
-              `Pay ${total.toFixed(2)} BHD`
+              `Pay $${total.toFixed(2)}`
             )}
           </Button>
 
           {selectedMethod === "cash_on_delivery" && (
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              You will pay {total.toFixed(2)} BHD when your order is delivered
+              You will pay ${total.toFixed(2)} when your order is delivered
             </p>
           )}
         </div>

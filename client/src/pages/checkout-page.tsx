@@ -32,91 +32,7 @@ const shippingSchema = z.object({
 type ShippingData = z.infer<typeof shippingSchema>;
 type CartItemWithProduct = CartItem & { product: Product };
 
-function StripeCheckoutForm({ 
-  total, 
-  shippingData, 
-  onSuccess 
-}: { 
-  total: number; 
-  shippingData: ShippingData;
-  onSuccess: () => void;
-}) {
-  const stripe = useStripe();
-  const elements = useElements();
-  const { toast } = useToast();
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!stripe || !elements) return;
-
-    setIsProcessing(true);
-
-    try {
-      const { error } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/dashboard`,
-          payment_method_data: {
-            billing_details: {
-              name: `${shippingData.firstName} ${shippingData.lastName}`,
-              email: shippingData.email,
-              phone: shippingData.phone,
-              address: {
-                line1: shippingData.address,
-                city: shippingData.city,
-                state: shippingData.state,
-                postal_code: shippingData.zipCode,
-              },
-            },
-          },
-        },
-      });
-
-      if (error) {
-        toast({
-          title: "Payment Failed",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        onSuccess();
-      }
-    } catch (error) {
-      toast({
-        title: "Payment Failed",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <PaymentElement />
-      <Button 
-        type="submit" 
-        className="w-full" 
-        disabled={!stripe || isProcessing}
-      >
-        {isProcessing ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Processing...
-          </>
-        ) : (
-          <>
-            <Lock className="mr-2 h-4 w-4" />
-            Pay ${total.toFixed(2)}
-          </>
-        )}
-      </Button>
-    </form>
-  );
-}
+// Stripe checkout removed - using international payment methods instead
 
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
@@ -392,7 +308,7 @@ export default function CheckoutPage() {
               </Card>
             )}
 
-            {/* Payment Methods for Bahrain */}
+            {/* International Payment Methods */}
             {currentOrderId && (
               <BahrainPaymentMethods
                 total={total}
@@ -430,7 +346,7 @@ export default function CheckoutPage() {
                         <p className="text-slate-600 text-sm">Qty: {item.quantity}</p>
                       </div>
                       <span className="font-semibold text-slate-900">
-                        {(parseFloat(item.product.price) * item.quantity).toFixed(2)} BHD
+                        ${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   ))}
@@ -439,7 +355,7 @@ export default function CheckoutPage() {
                 <div className="space-y-2 pt-4 border-t border-slate-200">
                   <div className="flex justify-between text-slate-600">
                     <span>Subtotal</span>
-                    <span>{subtotal.toFixed(2)} BHD</span>
+                    <span>${subtotal.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-slate-600">
                     <span>Shipping</span>
@@ -447,17 +363,17 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex justify-between text-slate-600">
                     <span>VAT (10%)</span>
-                    <span>{tax.toFixed(2)} BHD</span>
+                    <span>${tax.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-lg font-bold text-slate-900 pt-2 border-t border-slate-200">
                     <span>Total</span>
-                    <span>{total.toFixed(2)} BHD</span>
+                    <span>${total.toFixed(2)}</span>
                   </div>
                 </div>
                 
                 <p className="text-center text-sm text-slate-500 mt-4">
                   <Lock className="inline h-4 w-4 mr-1" />
-                  Secure payments powered by Bahrain's trusted payment gateways
+                  Secure payments powered by international payment gateways
                 </p>
               </CardContent>
             </Card>
