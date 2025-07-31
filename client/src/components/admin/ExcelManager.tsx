@@ -12,9 +12,12 @@ import {
   AlertTriangle, 
   Package, 
   Users, 
-  FolderOpen 
+  FolderOpen,
+  Database
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { IndividualExcelManager } from "./IndividualExcelManager";
 
 export default function ExcelManager() {
   const { toast } = useToast();
@@ -148,7 +151,24 @@ export default function ExcelManager() {
         </AlertDescription>
       </Alert>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <Tabs defaultValue="individual" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="individual" className="flex items-center space-x-2">
+            <FileSpreadsheet className="h-4 w-4" />
+            <span>Individual Sheets</span>
+          </TabsTrigger>
+          <TabsTrigger value="bulk" className="flex items-center space-x-2">
+            <Database className="h-4 w-4" />
+            <span>Bulk Operations</span>
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="individual" className="space-y-6">
+          <IndividualExcelManager />
+        </TabsContent>
+        
+        <TabsContent value="bulk" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Export Excel */}
         <Card>
           <CardHeader>
@@ -294,7 +314,9 @@ export default function ExcelManager() {
             </div>
           </CardContent>
         </Card>
-      </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

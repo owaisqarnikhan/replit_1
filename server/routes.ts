@@ -1067,6 +1067,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Individual sheet export routes
+  app.get("/api/admin/export/excel/:sheetType", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    const { sheetType } = req.params;
+    
+    try {
+      let excelBuffer: Buffer;
+      let filename: string;
+      
+      switch (sheetType) {
+        case 'products':
+          const { exportProductsToExcel } = await import('./excelUtils');
+          excelBuffer = await exportProductsToExcel();
+          filename = `products-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+          break;
+        case 'categories':
+          const { exportCategoriesToExcel } = await import('./excelUtils');
+          excelBuffer = await exportCategoriesToExcel();
+          filename = `categories-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+          break;
+        case 'users':
+          const { exportUsersToExcel } = await import('./excelUtils');
+          excelBuffer = await exportUsersToExcel();
+          filename = `users-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+          break;
+        case 'orders':
+          const { exportOrdersToExcel } = await import('./excelUtils');
+          excelBuffer = await exportOrdersToExcel();
+          filename = `orders-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+          break;
+        case 'order-items':
+          const { exportOrderItemsToExcel } = await import('./excelUtils');
+          excelBuffer = await exportOrderItemsToExcel();
+          filename = `order-items-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+          break;
+        case 'units':
+          const { exportUnitsToExcel } = await import('./excelUtils');
+          excelBuffer = await exportUnitsToExcel();
+          filename = `units-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+          break;
+        case 'site-settings':
+          const { exportSiteSettingsToExcel } = await import('./excelUtils');
+          excelBuffer = await exportSiteSettingsToExcel();
+          filename = `site-settings-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+          break;
+        case 'slider-images':
+          const { exportSliderImagesToExcel } = await import('./excelUtils');
+          excelBuffer = await exportSliderImagesToExcel();
+          filename = `slider-images-export-${new Date().toISOString().split('T')[0]}.xlsx`;
+          break;
+        default:
+          return res.status(400).json({ 
+            success: false, 
+            message: "Invalid sheet type" 
+          });
+      }
+      
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.send(excelBuffer);
+    } catch (error) {
+      console.error('Excel export error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to export Excel file" 
+      });
+    }
+  });
+
   // Configure multer for Excel import
   const excelUpload = multer({ 
     storage: storage_config,
@@ -1181,6 +1253,121 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         success: false, 
         message: error instanceof Error ? error.message : "Failed to import Excel file" 
+      });
+    }
+  });
+
+  // Individual sheet import routes  
+  app.post("/api/admin/import/excel/:sheetType", excelUpload.single('excel'), async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "No Excel file uploaded" 
+      });
+    }
+
+    const { sheetType } = req.params;
+
+    try {
+      const { parseExcelFile } = await import('./excelUtils');
+      const fileBuffer = await fs.promises.readFile(req.file.path);
+      const parsedData = parseExcelFile(fileBuffer);
+      
+      let importCount = 0;
+      let successMessage = "";
+
+      switch (sheetType) {
+        case 'products':
+          if (parsedData.products.length > 0) {
+            await storage.importProducts(parsedData.products);
+            importCount = parsedData.products.length;
+            successMessage = `Successfully imported ${importCount} products`;
+          }
+          break;
+        case 'categories':
+          if (parsedData.categories.length > 0) {
+            await storage.importCategories(parsedData.categories);
+            importCount = parsedData.categories.length;
+            successMessage = `Successfully imported ${importCount} categories`;
+          }
+          break;
+        case 'users':
+          if (parsedData.users.length > 0) {
+            await storage.importUsers(parsedData.users);
+            importCount = parsedData.users.length;
+            successMessage = `Successfully imported ${importCount} users`;
+          }
+          break;
+        case 'orders':
+          if (parsedData.orders.length > 0) {
+            await storage.importOrders(parsedData.orders);
+            importCount = parsedData.orders.length;
+            successMessage = `Successfully imported ${importCount} orders`;
+          }
+          break;
+        case 'order-items':
+          if (parsedData.orderItems.length > 0) {
+            await storage.importOrderItems(parsedData.orderItems);
+            importCount = parsedData.orderItems.length;
+            successMessage = `Successfully imported ${importCount} order items`;
+          }
+          break;
+        case 'units':
+          if (parsedData.unitsOfMeasure.length > 0) {
+            await storage.importUnitsOfMeasure(parsedData.unitsOfMeasure);
+            importCount = parsedData.unitsOfMeasure.length;
+            successMessage = `Successfully imported ${importCount} units of measure`;
+          }
+          break;
+        case 'site-settings':
+          if (parsedData.siteSettings.length > 0) {
+            await storage.importSiteSettings(parsedData.siteSettings);
+            importCount = parsedData.siteSettings.length;
+            successMessage = `Successfully imported ${importCount} site settings`;
+          }
+          break;
+        case 'slider-images':
+          if (parsedData.sliderImages.length > 0) {
+            await storage.importSliderImages(parsedData.sliderImages);
+            importCount = parsedData.sliderImages.length;
+            successMessage = `Successfully imported ${importCount} slider images`;
+          }
+          break;
+        default:
+          await fs.promises.unlink(req.file.path);
+          return res.status(400).json({ 
+            success: false, 
+            message: "Invalid sheet type" 
+          });
+      }
+      
+      // Clean up uploaded file
+      await fs.promises.unlink(req.file.path);
+      
+      res.json({ 
+        success: true, 
+        message: successMessage,
+        imported: importCount
+      });
+    } catch (error) {
+      console.error(`Excel import error (${sheetType}):`, error);
+      
+      // Clean up uploaded file on error
+      if (req.file) {
+        try {
+          await fs.promises.unlink(req.file.path);
+        } catch (cleanupError) {
+          console.error('Failed to cleanup upload file:', cleanupError);
+        }
+      }
+      
+      res.status(500).json({ 
+        success: false, 
+        message: error instanceof Error ? error.message : `Failed to import ${sheetType} Excel file` 
       });
     }
   });

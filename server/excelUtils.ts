@@ -300,6 +300,173 @@ export function parseExcelFile(buffer: Buffer): {
   return result;
 }
 
+// Individual sheet export functions
+export async function exportProductsToExcel(): Promise<Buffer> {
+  const storage = new DatabaseStorage();
+  const products = await storage.getProducts();
+  
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet(products.map(product => ({
+    ID: product.id,
+    Name: product.name,
+    Description: product.description,
+    Price: product.price,
+    Stock: product.stock,
+    SKU: product.sku,
+    'Unit of Measure': product.unitOfMeasure,
+    'Category ID': product.categoryId,
+    'Image URL': product.imageUrl,
+    'Is Active': product.isActive,
+    'Is Featured': product.isFeatured,
+    Rating: product.rating,
+    'Review Count': product.reviewCount,
+    'Product Type': product.productType,
+    'Rental Period': product.rentalPeriod,
+    'Rental Price': product.rentalPrice
+  })));
+  
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
+  return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+}
+
+export async function exportCategoriesToExcel(): Promise<Buffer> {
+  const storage = new DatabaseStorage();
+  const categories = await storage.getCategories();
+  
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet(categories.map(category => ({
+    ID: category.id,
+    Name: category.name,
+    Description: category.description,
+    'Image URL': category.imageUrl
+  })));
+  
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Categories');
+  return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+}
+
+export async function exportUsersToExcel(): Promise<Buffer> {
+  const storage = new DatabaseStorage();
+  const users = await storage.getUsers();
+  
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet(users.map(user => ({
+    ID: user.id,
+    Username: user.username,
+    Email: user.email,
+    'First Name': user.firstName,
+    'Last Name': user.lastName,
+    'Is Admin': user.isAdmin
+  })));
+  
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
+  return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+}
+
+export async function exportOrdersToExcel(): Promise<Buffer> {
+  const storage = new DatabaseStorage();
+  const orders = await storage.getOrders();
+  
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet(orders.map(order => ({
+    ID: order.id,
+    'User ID': order.userId,
+    Status: order.status,
+    'Total Amount': order.total,
+    'Shipping Address': order.shippingAddress,
+    'Payment Method': order.paymentMethod,
+    'Created At': order.createdAt
+  })));
+  
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Orders');
+  return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+}
+
+export async function exportOrderItemsToExcel(): Promise<Buffer> {
+  const storage = new DatabaseStorage();
+  const orderItems = await storage.getOrderItems();
+  
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet(orderItems.map(item => ({
+    ID: item.id,
+    'Order ID': item.orderId,
+    'Product ID': item.productId,
+    Quantity: item.quantity,
+    Price: item.price
+  })));
+  
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Order Items');
+  return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+}
+
+export async function exportUnitsToExcel(): Promise<Buffer> {
+  const storage = new DatabaseStorage();
+  const units = await storage.getUnitsOfMeasure();
+  
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet(units.map(unit => ({
+    ID: unit.id,
+    Name: unit.name,
+    Abbreviation: unit.abbreviation,
+    'Is Active': unit.isActive
+  })));
+  
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Units of Measure');
+  return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+}
+
+export async function exportSiteSettingsToExcel(): Promise<Buffer> {
+  const storage = new DatabaseStorage();
+  const settings = await storage.getSiteSettings();
+  
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet([{
+    ID: settings.id,
+    'Site Name': settings.siteName,
+    'Header Logo': settings.headerLogo,
+    'Footer Logo': settings.footerLogo,
+    'Footer Description': settings.footerDescription,
+    'Footer Copyright': settings.footerCopyright,
+    'Footer Background Image': settings.footerBackgroundImage,
+    'Quick Links Title': settings.quickLinksTitle,
+    'Quick Links': settings.quickLinks,
+    'Services Title': settings.servicesTitle,
+    'Service Link 1 Text': settings.serviceLink1Text,
+    'Service Link 1 URL': settings.serviceLink1Url,
+    'Service Link 2 Text': settings.serviceLink2Text,
+    'Service Link 2 URL': settings.serviceLink2Url,
+    'Service Link 3 Text': settings.serviceLink3Text,
+    'Service Link 3 URL': settings.serviceLink3Url,
+    'Service Link 4 Text': settings.serviceLink4Text,
+    'Service Link 4 URL': settings.serviceLink4Url,
+    'Social Facebook': settings.socialFacebook,
+    'Social Twitter': settings.socialTwitter,
+    'Social Instagram': settings.socialInstagram,
+    'Social LinkedIn': settings.socialLinkedin
+  }]);
+  
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Site Settings');
+  return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+}
+
+export async function exportSliderImagesToExcel(): Promise<Buffer> {
+  const storage = new DatabaseStorage();
+  const sliderImages = await storage.getSliderImages();
+  
+  const workbook = XLSX.utils.book_new();
+  const worksheet = XLSX.utils.json_to_sheet(sliderImages.map(slide => ({
+    ID: slide.id,
+    Title: slide.title,
+    'Image URL': slide.imageUrl,
+    'Link URL': slide.linkUrl,
+    'Is Active': slide.isActive,
+    'Display Order': slide.sortOrder
+  })));
+  
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Slider Images');
+  return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+}
+
 export async function exportDataToExcel(): Promise<Buffer> {
   const [
     productsData, 
