@@ -61,7 +61,8 @@ export default function OrdersPage() {
     }
   };
 
-  const formatStatus = (status: string) => {
+  const formatStatus = (status: string | null | undefined) => {
+    if (!status) return "Pending";
     return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
@@ -240,20 +241,20 @@ export default function OrdersPage() {
                         {order.paymentMethod || "Not specified"}
                       </p>
                       <p className="text-sm text-slate-600 mt-1">
-                        Status: <span className="font-medium">{formatStatus(order.paymentStatus)}</span>
+                        Status: <span className="font-medium">{formatStatus((order as any).paymentStatus)}</span>
                       </p>
                     </div>
                     
-                    {order.shippingAddress && (
+                    {(order as any).shippingAddress && (
                       <div>
                         <h4 className="font-medium text-slate-900 mb-2">Shipping Address</h4>
                         <div className="text-sm text-slate-600 space-y-1">
-                          {typeof order.shippingAddress === 'string' ? (
-                            <p>{order.shippingAddress}</p>
+                          {typeof (order as any).shippingAddress === 'string' ? (
+                            <p>{(order as any).shippingAddress}</p>
                           ) : (
                             <>
-                              <p>{(order.shippingAddress as any)?.street}</p>
-                              <p>{(order.shippingAddress as any)?.city}, {(order.shippingAddress as any)?.country}</p>
+                              <p>{((order as any).shippingAddress as any)?.street}</p>
+                              <p>{((order as any).shippingAddress as any)?.city}, {((order as any).shippingAddress as any)?.country}</p>
                             </>
                           )}
                         </div>
@@ -261,10 +262,10 @@ export default function OrdersPage() {
                     )}
                   </div>
 
-                  {order.orderNotes && (
+                  {(order as any).orderNotes && (
                     <div className="mt-4 pt-4 border-t border-slate-200">
                       <h4 className="font-medium text-slate-900 mb-2">Order Notes</h4>
-                      <p className="text-sm text-slate-600">{order.orderNotes}</p>
+                      <p className="text-sm text-slate-600">{(order as any).orderNotes}</p>
                     </div>
                   )}
                 </CardContent>
