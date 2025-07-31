@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ShoppingBag, DollarSign, Heart, Package, Truck, CheckCircle } from "lucide-react";
+import { ShoppingBag, DollarSign, Package, Truck, CheckCircle, User } from "lucide-react";
 import { useState } from "react";
 import type { Order, OrderItem, Product } from "@shared/schema";
 
@@ -86,7 +86,7 @@ export default function UserDashboard() {
                     className="w-full justify-start"
                     onClick={() => setActiveTab("profile")}
                   >
-                    <Heart className="mr-3 h-4 w-4" />
+                    <User className="mr-3 h-4 w-4" />
                     Profile Settings
                   </Button>
                 </div>
