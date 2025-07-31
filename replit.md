@@ -51,6 +51,8 @@ Preferred communication style: Simple, everyday language.
 
 ### Email Services
 - **Microsoft 365 SMTP**: Professional email delivery (`smtp.office365.com`) with admin-configurable settings through dashboard.
+- **SMTP Configuration**: Uses `itsupport@bayg.bh` with proper app password authentication.
+- **Tenant Requirement**: Requires IT administrator to enable SMTP authentication at tenant level.
 
 ### UI Components
 - **Radix UI**: Accessible component primitives.
@@ -71,6 +73,7 @@ Preferred communication style: Simple, everyday language.
 - ✅ **Email Setup Guide**: Comprehensive EMAIL-SETUP-GUIDE.md with Microsoft 365 configuration instructions
 - ✅ **Admin Email Configuration**: Complete SMTP settings managed through admin dashboard with test functionality
 - ✅ **SendGrid Removal**: Completely removed SendGrid in favor of Microsoft 365 SMTP with database-stored configuration
+- ✅ **SMTP Troubleshooting**: Enhanced error handling with specific Microsoft 365 authentication guidance and IT administrator instructions
 
 ### AWS PuTTY Deployment Ready:
 - ✅ **Complete AWS Deployment Guide**: Comprehensive step-by-step guide for deploying to AWS using PuTTY SSH client

@@ -1084,9 +1084,15 @@ export function SiteSettings() {
                   <p className="text-sm text-amber-700 mb-2">
                     If you get "Authentication unsuccessful" errors, your Microsoft 365 tenant may have SMTP authentication disabled.
                   </p>
-                  <p className="text-sm text-amber-700">
+                  <p className="text-sm text-amber-700 mb-2">
                     Contact your IT administrator to enable SMTP authentication in the Microsoft 365 Admin Center under Security &amp; Compliance &gt; Basic Authentication policies.
                   </p>
+                  <div className="bg-amber-100 p-3 rounded mt-2">
+                    <p className="text-xs text-amber-800 font-medium">PowerShell Command for IT Admin:</p>
+                    <code className="text-xs text-amber-900 block mt-1">
+                      Set-CasMailbox -Identity "itsupport@bayg.bh" -SmtpClientAuthenticationDisabled $false
+                    </code>
+                  </div>
                 </div>
 
                 <FormField
