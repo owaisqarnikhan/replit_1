@@ -79,7 +79,7 @@ export default function HomePage() {
                   <Card 
                     key={category.id} 
                     className="group cursor-pointer overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] bg-gradient-to-br from-white to-slate-50/80 backdrop-blur-sm"
-                    onClick={() => setLocation("/categories")}
+                    onClick={() => setLocation(`/products?category=${category.id}`)}
                   >
                     <div className="relative overflow-hidden">
                       {category.imageUrl ? (
@@ -114,7 +114,7 @@ export default function HomePage() {
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-emerald-600 font-semibold group-hover:text-emerald-700 transition-colors duration-300">
-                          Browse Categories
+                          Browse Products
                         </span>
                         <svg className="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
