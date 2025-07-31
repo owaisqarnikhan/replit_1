@@ -254,6 +254,20 @@ export default function ExcelManager() {
                 </ul>
               </div>
 
+              <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                <p className="text-sm font-medium text-green-900">✓ ID Handling:</p>
+                <p className="text-xs text-green-700">You can import Excel sheets with or without ID columns. If IDs are missing or empty, the database will automatically generate new unique IDs for all records.</p>
+              </div>
+
+              <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                <p className="text-sm font-medium text-amber-900">⚠️ Important Notes:</p>
+                <ul className="text-xs text-amber-700 mt-1 space-y-1">
+                  <li>• Import will replace existing data in each sheet</li>
+                  <li>• User passwords will not be imported for security</li>
+                  <li>• New users get random passwords that need reset</li>
+                </ul>
+              </div>
+
               {importFile && (
                 <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
                   <p className="text-sm font-medium text-blue-900">Selected File:</p>

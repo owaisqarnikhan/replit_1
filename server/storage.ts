@@ -330,19 +330,18 @@ export class DatabaseStorage implements IStorage {
     
     // Insert new categories
     for (const category of categoriesData) {
-      await db.insert(categories).values({
-        id: category.id,
+      const insertData: any = {
         name: category.name,
-        description: category.description,
-        imageUrl: category.imageUrl
-      }).onConflictDoUpdate({
-        target: categories.id,
-        set: {
-          name: category.name,
-          description: category.description,
-          imageUrl: category.imageUrl
-        }
-      });
+        description: category.description || "",
+        imageUrl: category.imageUrl || ""
+      };
+      
+      // Only include ID if it exists and is not empty
+      if (category.id && category.id.trim() !== "") {
+        insertData.id = category.id;
+      }
+      
+      await db.insert(categories).values(insertData);
     }
   }
 
@@ -354,43 +353,30 @@ export class DatabaseStorage implements IStorage {
     
     // Insert new products
     for (const product of productsData) {
-      await db.insert(products).values({
-        id: product.id,
+      const insertData: any = {
         name: product.name,
-        description: product.description,
+        description: product.description || "",
         price: product.price.toString(),
-        stock: product.stock,
-        sku: product.sku,
+        stock: product.stock || 0,
+        sku: product.sku || "",
         unitOfMeasure: product.unitOfMeasure || 'piece',
         categoryId: product.categoryId,
-        imageUrl: product.imageUrl,
-        isActive: product.isActive,
-        isFeatured: product.isFeatured,
-        rating: product.rating.toString(),
-        reviewCount: product.reviewCount,
-        productType: product.productType,
+        imageUrl: product.imageUrl || "",
+        isActive: product.isActive !== undefined ? product.isActive : true,
+        isFeatured: product.isFeatured !== undefined ? product.isFeatured : false,
+        rating: (product.rating || 0).toString(),
+        reviewCount: product.reviewCount || 0,
+        productType: product.productType || 'sale',
         rentalPeriod: product.rentalPeriod,
         rentalPrice: product.rentalPrice?.toString()
-      }).onConflictDoUpdate({
-        target: products.id,
-        set: {
-          name: product.name,
-          description: product.description,
-          price: product.price.toString(),
-          stock: product.stock,
-          sku: product.sku,
-          unitOfMeasure: product.unitOfMeasure || 'piece',
-          categoryId: product.categoryId,
-          imageUrl: product.imageUrl,
-          isActive: product.isActive,
-          isFeatured: product.isFeatured,
-          rating: product.rating.toString(),
-          reviewCount: product.reviewCount,
-          productType: product.productType,
-          rentalPeriod: product.rentalPeriod,
-          rentalPrice: product.rentalPrice?.toString()
-        }
-      });
+      };
+      
+      // Only include ID if it exists and is not empty
+      if (product.id && product.id.trim() !== "") {
+        insertData.id = product.id;
+      }
+      
+      await db.insert(products).values(insertData);
     }
   }
 
@@ -436,19 +422,18 @@ export class DatabaseStorage implements IStorage {
     await db.delete(unitsOfMeasure);
     
     for (const unit of unitsData) {
-      await db.insert(unitsOfMeasure).values({
-        id: unit.id,
+      const insertData: any = {
         name: unit.name,
         abbreviation: unit.abbreviation,
-        isActive: unit.isActive
-      }).onConflictDoUpdate({
-        target: unitsOfMeasure.id,
-        set: {
-          name: unit.name,
-          abbreviation: unit.abbreviation,
-          isActive: unit.isActive
-        }
-      });
+        isActive: unit.isActive !== undefined ? unit.isActive : true
+      };
+      
+      // Only include ID if it exists and is not empty
+      if (unit.id && unit.id.trim() !== "") {
+        insertData.id = unit.id;
+      }
+      
+      await db.insert(unitsOfMeasure).values(insertData);
     }
   }
 
