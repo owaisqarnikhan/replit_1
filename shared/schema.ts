@@ -40,7 +40,7 @@ export const products = pgTable("products", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   imageUrl: text("image_url").default(""),
   categoryId: varchar("category_id").references(() => categories.id),
-  stock: integer("stock").default(0),
+
   sku: text("sku").unique().default(""),
   unitOfMeasure: text("unit_of_measure").default("piece"), // piece, kg, liter, meter, box, pack, etc.
   isActive: boolean("is_active").default(true),

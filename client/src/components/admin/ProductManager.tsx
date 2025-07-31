@@ -527,7 +527,7 @@ export function ProductManager() {
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Price: ${product.price} | Stock: {product.stock} | SKU: {product.sku}
+                    Price: ${product.price} | SKU: {product.sku}
                   </p>
                   {product.description && (
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-2">

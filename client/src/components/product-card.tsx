@@ -143,8 +143,8 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
           </Button>
         </div>
 
-        {/* Stock indicator */}
-        {product.stock === 0 && (
+        {/* Stock indicator - removed */}
+        {false && (
           <div className="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center">
             <Badge variant="destructive" className="text-white text-lg px-4 py-2 font-bold shadow-lg">
               Out of Stock
@@ -202,15 +202,13 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
                   e.stopPropagation();
                   addToCartMutation.mutate();
                 }}
-                disabled={addToCartMutation.isPending || product.stock === 0}
+                disabled={addToCartMutation.isPending}
               >
                 {addToCartMutation.isPending ? (
                   <div className="flex items-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-1"></div>
                     Adding...
                   </div>
-                ) : product.stock === 0 ? (
-                  "Out of Stock"
                 ) : (
                   <>
                     <ShoppingCart className="mr-1 h-4 w-4 group-hover:animate-bounce" />
@@ -226,15 +224,13 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
                 e.stopPropagation();
                 addToCartMutation.mutate();
               }}
-              disabled={addToCartMutation.isPending || product.stock === 0}
+              disabled={addToCartMutation.isPending}
             >
               {addToCartMutation.isPending ? (
                 <div className="flex items-center">
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-1"></div>
                   Adding...
                 </div>
-              ) : product.stock === 0 ? (
-                "Out of Stock"
               ) : (
                 <>
                   <ShoppingCart className="mr-2 h-5 w-5 group-hover:animate-bounce" />

@@ -29,7 +29,7 @@ interface Product {
   name: string;
   description: string | null;
   price: string;
-  stock: number | null;
+
   sku: string | null;
   categoryId: string | null;
   unitOfMeasure?: string | null;
@@ -89,9 +89,7 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
   };
 
   const incrementQuantity = () => {
-    if (quantity < (product.stock || 0)) {
-      setQuantity(quantity + 1);
-    }
+    setQuantity(quantity + 1);
   };
 
   const decrementQuantity = () => {
@@ -140,15 +138,9 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
               <Badge variant={product.productType === "sale" ? "default" : "secondary"}>
                 {product.productType === "sale" ? "For Sale" : "For Rent"}
               </Badge>
-              {(product.stock || 0) > 0 ? (
-                <Badge variant="outline" className="text-green-600 border-green-600">
-                  In Stock ({product.stock || 0} {product.unitOfMeasure || 'units'})
-                </Badge>
-              ) : (
-                <Badge variant="destructive">
-                  Out of Stock
-                </Badge>
-              )}
+              <Badge variant="outline" className="text-green-600 border-green-600">
+                Available
+              </Badge>
             </div>
           </div>
 
@@ -233,7 +225,7 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
                   <div className="flex items-center gap-2">
                     <Package className="w-4 h-4 text-gray-500" />
                     <span className="text-gray-600">Stock:</span>
-                    <span className="font-medium">{product.stock || 0} units</span>
+                    <span className="font-medium">Available</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-gray-500" />
@@ -252,7 +244,7 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
             </Card>
 
             {/* Add to Cart Section */}
-            {(product.stock || 0) > 0 && (
+            {true && (
               <Card>
                 <CardContent className="p-4">
                   <div className="space-y-4">
@@ -274,7 +266,7 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
                           variant="outline"
                           className="h-8 w-8 p-0"
                           onClick={incrementQuantity}
-                          disabled={quantity >= (product.stock || 0)}
+                          disabled={false}
                         >
                           <Plus className="h-4 w-4" />
                         </Button>

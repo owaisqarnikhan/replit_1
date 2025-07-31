@@ -104,7 +104,7 @@ export default function AdminDashboard() {
               ) : (
                 <div className="text-3xl font-bold text-purple-700">{stats?.products || 0}</div>
               )}
-              <p className="text-xs text-purple-600 mt-1">in inventory</p>
+              <p className="text-xs text-purple-600 mt-1">available</p>
             </CardContent>
           </Card>
 

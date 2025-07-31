@@ -127,7 +127,7 @@ export function DataImportExport() {
                 price: row.price || "0",
                 imageUrl: row.imageUrl || "",
                 categoryId: row.categoryId || "",
-                stock: row.stock || 0,
+
                 sku: row.sku || "",
                 isActive: row.isActive !== false,
                 isFeatured: row.isFeatured === true,
@@ -201,7 +201,7 @@ export function DataImportExport() {
             price: "29.99",
             imageUrl: "https://example.com/image.jpg",
             categoryId: "category-id-here",
-            stock: 100,
+
             sku: "SAMPLE-001",
             isActive: true,
             isFeatured: false,

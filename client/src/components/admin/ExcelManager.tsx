@@ -187,7 +187,7 @@ export default function ExcelManager() {
                 <ul className="list-disc ml-4 mt-2 space-y-1">
                   <li className="flex items-center gap-2">
                     <Package className="h-3 w-3" />
-                    <strong>Products:</strong> All product data including prices, stock, units of measure, categories
+                    <strong>Products:</strong> All product data including prices, units of measure, categories
                   </li>
                   <li className="flex items-center gap-2">
                     <FolderOpen className="h-3 w-3" />

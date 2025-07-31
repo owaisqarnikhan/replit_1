@@ -453,12 +453,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           price: cartItem.product.price,
         });
         
-        // Decrease stock quantity
-        const product = await storage.getProductById(cartItem.productId);
-        if (product) {
-          const newStock = Math.max(0, (product.stock || 0) - cartItem.quantity);
-          await storage.updateProduct(cartItem.productId, { stock: newStock });
-        }
+
       }
 
       // Clear cart

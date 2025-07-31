@@ -19,8 +19,8 @@ export function IndividualExcelManager() {
       id: 'products', 
       name: 'Products', 
       icon: Package,
-      description: 'Product catalog with prices, stock, and details',
-      fields: 'Name, Description, Price, Stock, SKU, Unit of Measure, Category ID, Image URL, etc.'
+      description: 'Product catalog with prices and details',
+      fields: 'Name, Description, Price, SKU, Unit of Measure, Category ID, Image URL, etc.'
     },
     { 
       id: 'categories', 

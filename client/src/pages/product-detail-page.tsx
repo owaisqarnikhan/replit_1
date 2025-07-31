@@ -103,9 +103,7 @@ export default function ProductDetailPage() {
   };
 
   const incrementQuantity = () => {
-    if (quantity < (product.stock || 0)) {
-      setQuantity(quantity + 1);
-    }
+    setQuantity(quantity + 1);
   };
 
   const decrementQuantity = () => {
@@ -185,15 +183,9 @@ export default function ProductDetailPage() {
               <Badge variant={product.productType === "sale" ? "default" : "secondary"}>
                 {product.productType === "sale" ? "For Sale" : "For Rent"}
               </Badge>
-              {(product.stock || 0) > 0 ? (
-                <Badge variant="outline" className="text-green-600 border-green-600">
-                  In Stock ({product.stock || 0})
-                </Badge>
-              ) : (
-                <Badge variant="destructive">
-                  Out of Stock
-                </Badge>
-              )}
+              <Badge variant="outline" className="text-green-600 border-green-600">
+                Available
+              </Badge>
             </div>
           </div>
 
@@ -265,8 +257,8 @@ export default function ProductDetailPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <Package className="w-5 h-5 text-gray-500" />
-                    <span className="text-gray-600">Stock:</span>
-                    <span className="font-medium">{product.stock || 0} {product.unitOfMeasure || 'units'}</span>
+                    <span className="text-gray-600">Unit:</span>
+                    <span className="font-medium">{product.unitOfMeasure || 'piece'}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <DollarSign className="w-5 h-5 text-gray-500" />
@@ -285,8 +277,7 @@ export default function ProductDetailPage() {
             </Card>
 
             {/* Add to Cart Section */}
-            {(product.stock || 0) > 0 && (
-              <Card>
+            <Card>
                 <CardContent className="p-6">
                   <div className="space-y-6">
                     <div className="flex items-center gap-4">
@@ -307,7 +298,7 @@ export default function ProductDetailPage() {
                           variant="outline"
                           className="h-10 w-10 p-0"
                           onClick={incrementQuantity}
-                          disabled={quantity >= (product.stock || 0)}
+                          disabled={false}
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
@@ -331,15 +322,8 @@ export default function ProductDetailPage() {
                   </div>
                 </CardContent>
               </Card>
-            )}
 
-            {(product.stock || 0) === 0 && (
-              <Card>
-                <CardContent className="p-6 text-center">
-                  <p className="text-red-600 font-medium text-lg">This product is currently out of stock</p>
-                </CardContent>
-              </Card>
-            )}
+
           </div>
         </div>
       </div>
