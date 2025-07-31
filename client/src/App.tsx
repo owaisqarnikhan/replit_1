@@ -12,6 +12,7 @@ import CategoriesPage from "@/pages/categories-page";
 import ProductDetailPage from "@/pages/product-detail-page";
 import CartPage from "@/pages/cart-page";
 import CheckoutPage from "@/pages/checkout-page";
+import WishlistPage from "@/pages/wishlist-page";
 import UserDashboard from "@/pages/user-dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
 import { ProtectedRoute } from "./lib/protected-route";
@@ -31,6 +32,7 @@ function Router() {
       <ProtectedRoute path="/products" component={ProductsPage} />
       <ProtectedRoute path="/products/:id" component={ProductDetailPage} />
       <ProtectedRoute path="/cart" component={CartPage} />
+      <ProtectedRoute path="/wishlist" component={WishlistPage} />
       <ProtectedRoute path="/checkout" component={CheckoutPage} />
       <ProtectedRoute path="/dashboard" component={UserDashboard} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />

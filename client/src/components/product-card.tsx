@@ -1,12 +1,12 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Star, Heart, ShoppingCart, Eye } from "lucide-react";
-import { useState } from "react";
-import type { Product } from "@shared/schema";
+import { useState, useEffect } from "react";
+import type { Product, WishlistItem } from "@shared/schema";
 
 interface ProductCardProps {
   product: Product;
@@ -18,6 +18,17 @@ interface ProductCardProps {
 export function ProductCard({ product, onViewDetails, onCardClick, showDetailsButton = true }: ProductCardProps) {
   const { toast } = useToast();
   const [isWishlisted, setIsWishlisted] = useState(false);
+
+  // Get wishlist items to check if this product is wishlisted
+  const { data: wishlistItems } = useQuery<(WishlistItem & { product: Product })[]>({
+    queryKey: ["/api/wishlist"],
+  });
+
+  // Update wishlist status when data changes
+  useEffect(() => {
+    const isProductWishlisted = wishlistItems?.some(item => item.productId === product.id) || false;
+    setIsWishlisted(isProductWishlisted);
+  }, [wishlistItems, product.id]);
 
   const addToCartMutation = useMutation({
     mutationFn: async () => {
@@ -48,13 +59,37 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
     addToCartMutation.mutate();
   };
 
+  const wishlistMutation = useMutation({
+    mutationFn: async (action: 'add' | 'remove') => {
+      if (action === 'add') {
+        const res = await apiRequest("POST", "/api/wishlist", {
+          productId: product.id,
+        });
+        return res.json();
+      } else {
+        const res = await apiRequest("DELETE", `/api/wishlist/${product.id}`);
+        return res.json();
+      }
+    },
+    onSuccess: (_, action) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+      toast({
+        title: action === 'add' ? "Added to wishlist" : "Removed from wishlist",
+        description: `${product.name} ${action === 'add' ? "added to" : "removed from"} your wishlist`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update wishlist",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
-    toast({
-      title: isWishlisted ? "Removed from wishlist" : "Added to wishlist",
-      description: `${product.name} ${isWishlisted ? "removed from" : "added to"} your wishlist`,
-    });
+    wishlistMutation.mutate(isWishlisted ? 'remove' : 'add');
   };
 
   const renderStars = (rating: number) => {
