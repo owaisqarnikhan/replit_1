@@ -48,11 +48,7 @@ export default function ProductsPage() {
     return matchesSearch && matchesCategory;
   }) || [];
 
-  // Debug logging
-  console.log('Current location:', location);
-  console.log('Selected category:', selectedCategory);
-  console.log('Total products:', products?.length);
-  console.log('Filtered products:', filteredProducts.length);
+
 
   return (
     <div className="bg-slate-50">
@@ -97,44 +93,18 @@ export default function ProductsPage() {
                 </div>
               )}
             </div>
-            <div className="sm:w-64">
-              <Select 
-                value={selectedCategory} 
-                onValueChange={(value) => {
-                  setSelectedCategory(value);
-                  // Update URL to reflect the selected category
-                  if (value === "all") {
-                    setLocation("/products");
-                  } else {
-                    setLocation(`/products?category=${value}`);
-                  }
-                }}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Filter by Category" />
+            <div className="sm:w-48">
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
-                <SelectContent className="max-h-60">
-                  <SelectItem value="all">
-                    <div className="flex items-center">
-                      <span className="font-medium">All Categories</span>
-                      <span className="ml-auto text-xs text-slate-500">
-                        {products?.length || 0} products
-                      </span>
-                    </div>
-                  </SelectItem>
-                  {categories?.map((category) => {
-                    const categoryProductCount = products?.filter(p => p.categoryId === category.id).length || 0;
-                    return (
-                      <SelectItem key={category.id} value={category.id}>
-                        <div className="flex items-center justify-between w-full">
-                          <span className="font-medium">{category.name}</span>
-                          <span className="ml-auto text-xs text-slate-500">
-                            {categoryProductCount} products
-                          </span>
-                        </div>
-                      </SelectItem>
-                    );
-                  })}
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories?.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
