@@ -272,11 +272,11 @@ export const siteSettings = pgTable("site_settings", {
       <p>Best regards,<br>{{siteName}} Team</p>
     </div>
   `),
-  // SMTP Configuration for SendGrid
-  smtpHost: text("smtp_host").default("smtp.sendgrid.net"),
+  // SMTP Configuration for Microsoft 365
+  smtpHost: text("smtp_host").default("smtp.office365.com"),
   smtpPort: integer("smtp_port").default(587),
-  smtpUser: text("smtp_user").default("apikey"),
-  smtpPassword: text("smtp_password").default(""), // SendGrid API Key
+  smtpUser: text("smtp_user").default("info@innovanceorbit.com"),
+  smtpPassword: text("smtp_password").default(""), // Microsoft 365 App Password
   smtpFromEmail: text("smtp_from_email").default("noreply@innovanceorbit.com"),
   smtpFromName: text("smtp_from_name").default("InnovanceOrbit"),
   emailEnabled: boolean("email_enabled").default(false),

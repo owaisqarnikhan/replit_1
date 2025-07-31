@@ -67,7 +67,7 @@ export async function sendOrderSubmissionEmail(
     const transporter = await createMicrosoft365Transporter();
     
     await transporter.sendMail({
-      from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || 'info@innovanceorbit.com'}>`,
+      from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || settings.smtpUser}>`,
       to: customerEmail,
       subject: `Order Submitted - Awaiting Approval - ${orderDetails.orderNumber}`,
       html: emailTemplate,

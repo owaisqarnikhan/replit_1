@@ -5,12 +5,22 @@ import { storage } from './storage';
 export async function createMicrosoft365Transporter() {
   const settings = await storage.getSiteSettings();
   
+  // Use admin-configured SMTP settings
+  const smtpUser = settings.smtpUser || 'info@innovanceorbit.com';
+  const smtpPassword = settings.smtpPassword;
+  
+  if (!smtpPassword) {
+    throw new Error('SMTP password not configured. Please set it in Admin Settings or environment variables.');
+  }
+
   // Primary Microsoft 365 configuration
   const primaryConfig = {
-    service: 'outlook', // Use service instead of host/port for better compatibility
+    host: settings.smtpHost || 'smtp.office365.com',
+    port: settings.smtpPort || 587,
+    secure: false, // STARTTLS
     auth: {
-      user: settings.smtpFromEmail || process.env.MICROSOFT365_EMAIL_USER,
-      pass: settings.smtpPassword || process.env.MICROSOFT365_EMAIL_PASSWORD,
+      user: smtpUser,
+      pass: smtpPassword,
     },
     tls: {
       ciphers: 'SSLv3',
@@ -18,14 +28,14 @@ export async function createMicrosoft365Transporter() {
     }
   };
 
-  // Fallback configuration with explicit settings
+  // Fallback configuration with alternative host
   const fallbackConfig = {
-    host: 'smtp-mail.outlook.com', // Alternative host
-    port: 587,
+    host: 'smtp-mail.outlook.com', // Alternative Microsoft 365 host
+    port: settings.smtpPort || 587,
     secure: false, // STARTTLS
     auth: {
-      user: settings.smtpFromEmail || process.env.MICROSOFT365_EMAIL_USER,
-      pass: settings.smtpPassword || process.env.MICROSOFT365_EMAIL_PASSWORD,
+      user: smtpUser,
+      pass: smtpPassword,
     },
     tls: {
       ciphers: 'SSLv3',
@@ -64,8 +74,8 @@ export async function testMicrosoft365Connection(): Promise<{ success: boolean; 
     const settings = await storage.getSiteSettings();
     
     const testEmail = {
-      from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail}>`,
-      to: settings.adminEmail || settings.smtpFromEmail || 'test@innovanceorbit.com',
+      from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || settings.smtpUser}>`,
+      to: settings.adminEmail || settings.smtpUser || 'info@innovanceorbit.com',
       subject: 'SMTP Test - InnovanceOrbit',
       text: 'This is a test email to verify SMTP configuration.',
       html: `
@@ -91,12 +101,12 @@ export async function testMicrosoft365Connection(): Promise<{ success: boolean; 
 export function validateEmailConfig(settings: any): { valid: boolean; errors: string[] } {
   const errors = [];
   
-  if (!settings.smtpFromEmail && !process.env.MICROSOFT365_EMAIL_USER) {
+  if (!settings.smtpFromEmail && !settings.smtpUser) {
     errors.push('SMTP From Email is required');
   }
   
-  if (!settings.smtpPassword && !process.env.MICROSOFT365_EMAIL_PASSWORD) {
-    errors.push('SMTP Password is required (use App Password, not regular password)');
+  if (!settings.smtpPassword) {
+    errors.push('SMTP Password is required (use App Password for MFA-enabled accounts)');
   }
   
   if (!settings.adminEmail) {

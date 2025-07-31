@@ -494,6 +494,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SMTP Test route
+  app.post("/api/test-smtp", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { testMicrosoft365Connection } = await import("./smtp-config");
+      const result = await testMicrosoft365Connection();
+      res.json(result);
+    } catch (error: any) {
+      res.json({
+        success: false,
+        message: error.message || 'Unknown error occurred'
+      });
+    }
+  });
+
   // Admin approval requests route
   app.get("/api/admin/approval-requests", async (req, res) => {
     if (!req.isAuthenticated() || !req.user?.isAdmin) {

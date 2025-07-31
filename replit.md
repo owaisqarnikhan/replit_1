@@ -50,7 +50,7 @@ Preferred communication style: Simple, everyday language.
 - **Neon**: Serverless PostgreSQL hosting.
 
 ### Email Services
-- **Microsoft 365 SMTP**: Professional email delivery (`smtp.office365.com`).
+- **Microsoft 365 SMTP**: Professional email delivery (`smtp.office365.com`) with admin-configurable settings through dashboard.
 
 ### UI Components
 - **Radix UI**: Accessible component primitives.
@@ -69,6 +69,8 @@ Preferred communication style: Simple, everyday language.
   - Order delivery confirmation (customer receives "delivered successfully" email)
 - ✅ **Payment Method Locking**: Payment options locked until admin approval, unlocked after approval
 - ✅ **Email Setup Guide**: Comprehensive EMAIL-SETUP-GUIDE.md with Microsoft 365 configuration instructions
+- ✅ **Admin Email Configuration**: Complete SMTP settings managed through admin dashboard with test functionality
+- ✅ **SendGrid Removal**: Completely removed SendGrid in favor of Microsoft 365 SMTP with database-stored configuration
 
 ### AWS PuTTY Deployment Ready:
 - ✅ **Complete AWS Deployment Guide**: Comprehensive step-by-step guide for deploying to AWS using PuTTY SSH client

@@ -214,7 +214,7 @@ export async function sendOrderApprovalEmail(
   try {
     const settings = await storage.getSiteSettings();
     
-    if (!settings.emailEnabled || (!settings.smtpPassword && !process.env.MICROSOFT365_EMAIL_PASSWORD)) {
+    if (!settings.emailEnabled || !settings.smtpPassword) {
       console.log('Email notifications disabled');
       return;
     }
@@ -280,7 +280,7 @@ export async function sendOrderRejectionEmail(
   try {
     const settings = await storage.getSiteSettings();
     
-    if (!settings.emailEnabled || (!settings.smtpPassword && !process.env.MICROSOFT365_EMAIL_PASSWORD)) {
+    if (!settings.emailEnabled || !settings.smtpPassword) {
       console.log('Email notifications disabled');
       return;
     }
@@ -350,7 +350,7 @@ export async function sendOrderCompletionEmail(
   try {
     const settings = await storage.getSiteSettings();
     
-    if (!settings.emailEnabled || (!settings.smtpPassword && !process.env.MICROSOFT365_EMAIL_PASSWORD)) {
+    if (!settings.emailEnabled || !settings.smtpPassword) {
       console.log('Email notifications disabled');
       return;
     }

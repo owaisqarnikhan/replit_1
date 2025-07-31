@@ -12,13 +12,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertSiteSettingsSchema, type InsertSiteSettings, type SiteSettings } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Settings, Palette, Mail, Upload, Save, Monitor } from "lucide-react";
+import { Settings, Palette, Mail, Upload, Save, Monitor, Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { themes, applyTheme, type ThemeName } from "@/lib/themes";
 
 export function SiteSettings() {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
+  const [isTestingEmail, setIsTestingEmail] = useState(false);
 
   const { data: settings, isLoading } = useQuery<SiteSettings>({
     queryKey: ["/api/settings"],
@@ -278,6 +279,35 @@ export function SiteSettings() {
       });
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleTestEmail = async () => {
+    setIsTestingEmail(true);
+    try {
+      const response = await apiRequest("POST", "/api/test-smtp", {});
+      const result = await response.json();
+      
+      if (result.success) {
+        toast({
+          title: "Test Email Sent",
+          description: result.message,
+        });
+      } else {
+        toast({
+          title: "Test Email Failed",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Test Email Failed",
+        description: "Failed to send test email. Please check your SMTP configuration.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTestingEmail(false);
     }
   };
 
@@ -1188,6 +1218,34 @@ export function SiteSettings() {
                     </FormItem>
                   )}
                 />
+
+                <div className="space-y-4 pt-6 border-t">
+                  <h3 className="text-lg font-medium">Email Testing</h3>
+                  <div className="bg-amber-50 p-4 rounded-lg border">
+                    <p className="text-sm text-amber-800 mb-3">
+                      Test your SMTP configuration by sending a test email. Make sure to save your settings first.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleTestEmail}
+                      disabled={isTestingEmail}
+                      className="w-full"
+                    >
+                      {isTestingEmail ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Sending Test Email...
+                        </>
+                      ) : (
+                        <>
+                          <Mail className="h-4 w-4 mr-2" />
+                          Send Test Email
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
               </TabsContent>
 
               <div className="flex justify-end pt-6 border-t">
