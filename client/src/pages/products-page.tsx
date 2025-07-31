@@ -26,6 +26,11 @@ export default function ProductsPage() {
     }
   }, [location]);
 
+  // Get the selected category name for display
+  const selectedCategoryName = selectedCategory !== "all" && categories 
+    ? categories.find(c => c.id === selectedCategory)?.name 
+    : null;
+
   const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
@@ -56,13 +61,20 @@ export default function ProductsPage() {
           
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
-            <div className="flex-1">
+            <div className="flex-1 relative">
               <Input
-                placeholder="Search products..."
+                placeholder={selectedCategoryName ? `Search in ${selectedCategoryName}...` : "Search products..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full"
               />
+              {selectedCategoryName && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {selectedCategoryName}
+                  </span>
+                </div>
+              )}
             </div>
             <div className="sm:w-48">
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
