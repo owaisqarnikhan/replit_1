@@ -70,7 +70,7 @@ export function BahrainPaymentMethods({
       if (selectedMethod === "benefit_pay") {
         const response = await apiRequest("POST", "/api/benefit-pay/create", {
           amount: total,
-          currency: "BHD",
+          currency: "USD",
           orderId,
           customerInfo: {
             name: `${shippingData.firstName} ${shippingData.lastName}`,

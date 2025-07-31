@@ -225,7 +225,7 @@ export default function OrdersPage() {
                           </div>
                           <div className="flex items-center space-x-1">
                             <DollarSign className="h-4 w-4" />
-                            <span>BD {order.total}</span>
+                            <span>${order.total}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Package className="h-4 w-4" />
@@ -286,7 +286,7 @@ export default function OrdersPage() {
                             </p>
                             <div className="flex items-center space-x-4 text-sm text-slate-600">
                               <span>Qty: {item.quantity}</span>
-                              <span>BD {item.price}</span>
+                              <span>${item.price}</span>
                               {item.product.unitOfMeasure && (
                                 <span>per {item.product.unitOfMeasure}</span>
                               )}

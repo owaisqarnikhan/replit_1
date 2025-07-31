@@ -197,7 +197,7 @@ export function OrderPaymentCheckout({ orderId }: OrderPaymentCheckoutProps) {
                           </div>
                           <div className="text-right">
                             <p className="font-medium text-slate-900">
-                              BD {(parseFloat(item.price) * item.quantity).toFixed(2)}
+                              ${(parseFloat(item.price) * item.quantity).toFixed(2)}
                             </p>
                           </div>
                         </div>
@@ -209,15 +209,15 @@ export function OrderPaymentCheckout({ orderId }: OrderPaymentCheckoutProps) {
                   <div className="border-t pt-4 space-y-2">
                     <div className="flex justify-between text-sm text-slate-600">
                       <span>Subtotal</span>
-                      <span>BD {order.subtotal}</span>
+                      <span>${order.subtotal}</span>
                     </div>
                     <div className="flex justify-between text-sm text-slate-600">
                       <span>Tax (10% VAT)</span>
-                      <span>BD {order.tax}</span>
+                      <span>${order.tax}</span>
                     </div>
                     <div className="flex justify-between text-lg font-semibold text-slate-900 border-t pt-2">
                       <span>Total</span>
-                      <span>BD {order.total}</span>
+                      <span>${order.total}</span>
                     </div>
                   </div>
                 </div>
