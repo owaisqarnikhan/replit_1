@@ -316,6 +316,8 @@ export default function CheckoutPage() {
                 shippingData={form.getValues()}
                 onPaymentSuccess={handlePaymentSuccess}
                 onPaymentError={handlePaymentError}
+                isLocked={true}
+                lockReason="Payment is locked until admin approval. You will receive an email notification once your order is approved."
               />
             )}
           </div>
