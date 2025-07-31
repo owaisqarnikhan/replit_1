@@ -173,7 +173,8 @@ export function NavigationHeader() {
                 <img 
                   src={siteSettings.logoUrl} 
                   alt={siteSettings.siteName || "Store"} 
-                  className="h-12 sm:h-14 lg:h-16 w-auto max-w-[150px] sm:max-w-[200px]"
+                  className="w-auto max-w-[150px] sm:max-w-[200px]"
+                  style={{ height: `${siteSettings.headerLogoHeight || 64}px` }}
                 />
               ) : (!siteSettings?.siteName || siteSettings.siteName.trim() === "") ? (
                 <Store className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />

@@ -257,6 +257,7 @@ export const siteSettings = pgTable("site_settings", {
   footerLeftImageWidth: integer("footer_left_image_width").default(200),
   paymentMethodsImageWidth: integer("payment_methods_image_width").default(250),
   loginPageLogoWidth: integer("login_page_logo_width").default(80),
+  headerLogoHeight: integer("header_logo_height").default(64), // Height in pixels for header logo
   socialFacebook: text("social_facebook"),
   socialTwitter: text("social_twitter"),
   socialInstagram: text("social_instagram"),

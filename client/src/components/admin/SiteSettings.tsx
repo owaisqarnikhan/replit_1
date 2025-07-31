@@ -43,6 +43,7 @@ export function SiteSettings() {
       footerLeftImageWidth: settings?.footerLeftImageWidth || 200,
       paymentMethodsImageWidth: settings?.paymentMethodsImageWidth || 250,
       loginPageLogoWidth: settings?.loginPageLogoWidth || 80,
+      headerLogoHeight: settings?.headerLogoHeight || 64,
       theme: settings?.theme || "default",
       primaryColor: settings?.primaryColor || "#2563eb",
       secondaryColor: settings?.secondaryColor || "#64748b",
@@ -385,6 +386,29 @@ export function SiteSettings() {
                         </FormControl>
                         <FormMessage />
                       </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="headerLogoHeight"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Header Logo Height (px)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            placeholder="64" 
+                            {...field} 
+                            value={field.value || 64}
+                            onChange={(e) => field.onChange(parseInt(e.target.value) || 64)}
+                          />
+                        </FormControl>
+                        <p className="text-sm text-muted-foreground">
+                          Control the height of the logo in the navigation header (recommended: 48-80px)
+                        </p>
+                        <FormMessage />
+                      </FormItem>  
                     )}
                   />
                 </div>
