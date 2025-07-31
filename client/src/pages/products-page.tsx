@@ -31,6 +31,8 @@ export default function ProductsPage() {
     const categoryParam = urlParams.get('category');
     if (categoryParam) {
       setSelectedCategory(categoryParam);
+    } else {
+      setSelectedCategory("all");
     }
   }, [location]);
 
@@ -45,6 +47,12 @@ export default function ProductsPage() {
     const matchesCategory = selectedCategory === "all" || product.categoryId === selectedCategory;
     return matchesSearch && matchesCategory;
   }) || [];
+
+  // Debug logging
+  console.log('Current location:', location);
+  console.log('Selected category:', selectedCategory);
+  console.log('Total products:', products?.length);
+  console.log('Filtered products:', filteredProducts.length);
 
   return (
     <div className="bg-slate-50">
@@ -176,7 +184,7 @@ export default function ProductsPage() {
       {/* Product Detail Modal */}
       {selectedProduct && (
         <ProductDetailModal
-          product={selectedProduct}
+          product={selectedProduct as Product}
           isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
