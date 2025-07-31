@@ -25,6 +25,14 @@ export const categories = pgTable("categories", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+export const unitsOfMeasure = pgTable("units_of_measure", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().unique(),
+  abbreviation: text("abbreviation").notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 export const products = pgTable("products", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
@@ -34,6 +42,7 @@ export const products = pgTable("products", {
   categoryId: varchar("category_id").references(() => categories.id),
   stock: integer("stock").default(0),
   sku: text("sku").unique().default(""),
+  unitOfMeasure: text("unit_of_measure").default("piece"), // piece, kg, liter, meter, box, pack, etc.
   isActive: boolean("is_active").default(true),
   isFeatured: boolean("is_featured").default(false),
   rating: decimal("rating", { precision: 3, scale: 2 }).default("0.00"),
@@ -100,10 +109,18 @@ export const categoriesRelations = relations(categories, ({ many }) => ({
   products: many(products),
 }));
 
+export const unitsOfMeasureRelations = relations(unitsOfMeasure, ({ many }) => ({
+  products: many(products),
+}));
+
 export const productsRelations = relations(products, ({ one, many }) => ({
   category: one(categories, {
     fields: [products.categoryId],
     references: [categories.id],
+  }),
+  unitOfMeasure: one(unitsOfMeasure, {
+    fields: [products.unitOfMeasure],
+    references: [unitsOfMeasure.name],
   }),
   cartItems: many(cartItems),
   wishlistItems: many(wishlistItems),
@@ -164,6 +181,11 @@ export const insertCategorySchema = createInsertSchema(categories).omit({
   createdAt: true,
 });
 
+export const insertUnitOfMeasureSchema = createInsertSchema(unitsOfMeasure).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
@@ -194,6 +216,8 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Category = typeof categories.$inferSelect;
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
+export type UnitOfMeasure = typeof unitsOfMeasure.$inferSelect;
+export type InsertUnitOfMeasure = z.infer<typeof insertUnitOfMeasureSchema>;
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type CartItem = typeof cartItems.$inferSelect;

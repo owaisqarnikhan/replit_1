@@ -32,6 +32,7 @@ interface Product {
   stock: number | null;
   sku: string | null;
   categoryId: string | null;
+  unitOfMeasure?: string | null;
   imageUrl?: string | null;
   isActive: boolean;
   isFeatured: boolean;
@@ -141,7 +142,7 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
               </Badge>
               {(product.stock || 0) > 0 ? (
                 <Badge variant="outline" className="text-green-600 border-green-600">
-                  In Stock ({product.stock || 0})
+                  In Stock ({product.stock || 0} {product.unitOfMeasure || 'units'})
                 </Badge>
               ) : (
                 <Badge variant="destructive">

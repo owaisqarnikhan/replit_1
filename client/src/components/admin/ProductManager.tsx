@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertProductSchema, type InsertProduct, type Product, type Category } from "@shared/schema";
+import { insertProductSchema, type InsertProduct, type Product, type Category, type UnitOfMeasure } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Plus, Edit, Trash2, ShoppingCart, Package, Upload } from "lucide-react";
@@ -39,6 +39,10 @@ export function ProductManager() {
     queryKey: ["/api/categories"],
   });
 
+  const { data: unitsOfMeasure } = useQuery<UnitOfMeasure[]>({
+    queryKey: ["/api/units-of-measure"],
+  });
+
   const form = useForm<EnhancedInsertProduct>({
     resolver: zodResolver(enhancedProductSchema),
     defaultValues: {
@@ -48,6 +52,7 @@ export function ProductManager() {
       imageUrl: "",
       categoryId: "",
       sku: "",
+      unitOfMeasure: "piece",
       isActive: true,
       isFeatured: false,
       productType: "sale",
@@ -181,6 +186,7 @@ export function ProductManager() {
       imageUrl: product.imageUrl || "",
       categoryId: product.categoryId || "",
       sku: product.sku || "",
+      unitOfMeasure: product.unitOfMeasure || "piece",
       isActive: product.isActive,
       isFeatured: product.isFeatured,
       productType: (product as any).productType || "sale",
@@ -321,19 +327,45 @@ export function ProductManager() {
                     />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Price</FormLabel>
-                        <FormControl>
-                          <Input type="number" step="0.01" placeholder="0.00" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Price</FormLabel>
+                          <FormControl>
+                            <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="unitOfMeasure"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Unit of Measure</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value || "piece"}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select unit" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {unitsOfMeasure?.map((unit) => (
+                                <SelectItem key={unit.id} value={unit.name}>
+                                  {unit.name} ({unit.abbreviation})
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   {productType === "rental" && (
                     <div className="grid grid-cols-2 gap-4">

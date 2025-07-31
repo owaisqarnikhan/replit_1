@@ -266,7 +266,7 @@ export default function ProductDetailPage() {
                   <div className="flex items-center gap-3">
                     <Package className="w-5 h-5 text-gray-500" />
                     <span className="text-gray-600">Stock:</span>
-                    <span className="font-medium">{product.stock || 0} units</span>
+                    <span className="font-medium">{product.stock || 0} {product.unitOfMeasure || 'units'}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <DollarSign className="w-5 h-5 text-gray-500" />
@@ -277,7 +277,7 @@ export default function ProductDetailPage() {
                     <Calendar className="w-5 h-5 text-gray-500" />
                     <span className="text-gray-600">Added:</span>
                     <span className="font-medium">
-                      {new Date(product.createdAt).toLocaleDateString()}
+                      {product.createdAt ? new Date(product.createdAt).toLocaleDateString() : 'N/A'}
                     </span>
                   </div>
                 </div>

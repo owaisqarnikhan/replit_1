@@ -8,6 +8,7 @@ import {
   orderItems,
   siteSettings,
   sliderImages,
+  unitsOfMeasure,
   type User, 
   type InsertUser,
   type Category,
@@ -25,7 +26,9 @@ import {
   type SiteSettings,
   type InsertSiteSettings,
   type SliderImage,
-  type InsertSliderImage
+  type InsertSliderImage,
+  type UnitOfMeasure,
+  type InsertUnitOfMeasure
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -53,6 +56,14 @@ export interface IStorage {
   createCategory(category: InsertCategory): Promise<Category>;
   updateCategory(id: string, category: Partial<InsertCategory>): Promise<Category>;
   deleteCategory(id: string): Promise<void>;
+
+  // Units of measure methods
+  getUnitsOfMeasure(): Promise<UnitOfMeasure[]>;
+  getActiveUnitsOfMeasure(): Promise<UnitOfMeasure[]>;
+  getUnitOfMeasureById(id: string): Promise<UnitOfMeasure | undefined>;
+  createUnitOfMeasure(unit: InsertUnitOfMeasure): Promise<UnitOfMeasure>;
+  updateUnitOfMeasure(id: string, unit: Partial<InsertUnitOfMeasure>): Promise<UnitOfMeasure>;
+  deleteUnitOfMeasure(id: string): Promise<void>;
 
   // Product methods
   getProducts(): Promise<Product[]>;
@@ -208,6 +219,41 @@ export class DatabaseStorage implements IStorage {
 
   async deleteCategory(id: string): Promise<void> {
     await db.delete(categories).where(eq(categories.id, id));
+  }
+
+  // Units of measure methods
+  async getUnitsOfMeasure(): Promise<UnitOfMeasure[]> {
+    return await db.select().from(unitsOfMeasure).orderBy(unitsOfMeasure.name);
+  }
+
+  async getActiveUnitsOfMeasure(): Promise<UnitOfMeasure[]> {
+    return await db.select().from(unitsOfMeasure).where(eq(unitsOfMeasure.isActive, true)).orderBy(unitsOfMeasure.name);
+  }
+
+  async getUnitOfMeasureById(id: string): Promise<UnitOfMeasure | undefined> {
+    const [unit] = await db.select().from(unitsOfMeasure).where(eq(unitsOfMeasure.id, id));
+    return unit || undefined;
+  }
+
+  async createUnitOfMeasure(unit: InsertUnitOfMeasure): Promise<UnitOfMeasure> {
+    const [newUnit] = await db
+      .insert(unitsOfMeasure)
+      .values(unit)
+      .returning();
+    return newUnit;
+  }
+
+  async updateUnitOfMeasure(id: string, unit: Partial<InsertUnitOfMeasure>): Promise<UnitOfMeasure> {
+    const [updated] = await db
+      .update(unitsOfMeasure)
+      .set(unit)
+      .where(eq(unitsOfMeasure.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteUnitOfMeasure(id: string): Promise<void> {
+    await db.delete(unitsOfMeasure).where(eq(unitsOfMeasure.id, id));
   }
 
   // Product methods

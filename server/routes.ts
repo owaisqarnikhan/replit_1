@@ -3,7 +3,7 @@ import express from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertWishlistItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema } from "@shared/schema";
+import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertWishlistItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema, insertUnitOfMeasureSchema } from "@shared/schema";
 import { sendOrderConfirmationEmail } from "./email";
 import { testSMTP } from "./test-smtp";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
@@ -714,6 +714,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       await storage.deleteCategory(req.params.id);
+      res.sendStatus(204);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Units of measure routes
+  app.get("/api/units-of-measure", async (req, res) => {
+    try {
+      const units = await storage.getActiveUnitsOfMeasure();
+      res.json(units);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/units-of-measure", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const units = await storage.getUnitsOfMeasure();
+      res.json(units);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/units-of-measure", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const unitData = insertUnitOfMeasureSchema.parse(req.body);
+      const unit = await storage.createUnitOfMeasure(unitData);
+      res.status(201).json(unit);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/units-of-measure/:id", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const unit = await storage.updateUnitOfMeasure(req.params.id, req.body);
+      res.json(unit);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/units-of-measure/:id", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      await storage.deleteUnitOfMeasure(req.params.id);
       res.sendStatus(204);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
