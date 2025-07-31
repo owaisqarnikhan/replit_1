@@ -68,7 +68,7 @@ export function NavigationHeader() {
     { label: "Dashboard", href: "/", icon: Store },
     { label: "Categories", href: "/categories", icon: Package },
     { label: "Products", href: "/products", icon: Package },
-    { label: "My Orders", href: "/dashboard", icon: Package },
+    { label: "My Orders", href: "/orders", icon: Package },
   ];
 
   const NavigationItems = ({ mobile = false }) => (
