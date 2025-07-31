@@ -16,7 +16,9 @@ async function createTransporter() {
     tls: {
       ciphers: 'SSLv3',
       rejectUnauthorized: false
-    }
+    },
+    debug: false, // Set to true for debugging
+    logger: false
   });
 }
 
@@ -45,6 +47,7 @@ export async function sendOrderConfirmationEmail(
     // Skip if email is not enabled or no password configured
     if (!settings.emailEnabled || (!settings.smtpPassword && !process.env.MICROSOFT365_EMAIL_PASSWORD)) {
       console.log('Email notifications disabled - no Microsoft 365 password configured');
+      console.log('To enable emails: Configure SMTP settings in Admin Dashboard > Settings or set MICROSOFT365_EMAIL_PASSWORD environment variable');
       return;
     }
     

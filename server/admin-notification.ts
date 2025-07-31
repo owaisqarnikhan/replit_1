@@ -47,7 +47,8 @@ export async function sendAdminOrderNotification(
     const settings = await storage.getSiteSettings();
     
     if (!settings.emailEnabled || (!settings.smtpPassword && !process.env.MICROSOFT365_EMAIL_PASSWORD)) {
-      console.log('Email notifications disabled');
+      console.log('Email notifications disabled - no Microsoft 365 password configured');
+      console.log('To enable admin notifications: Configure SMTP settings in Admin Dashboard > Settings');
       return;
     }
 
