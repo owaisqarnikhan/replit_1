@@ -84,6 +84,7 @@ export interface IStorage {
   getOrders(): Promise<Order[]>;
   getUserOrders(userId: string): Promise<(Order & { items: (OrderItem & { product: Product })[] })[]>;
   getOrderById(id: string): Promise<(Order & { items: (OrderItem & { product: Product })[] }) | undefined>;
+  getOrderWithItems(id: string): Promise<(Order & { items: (OrderItem & { product: Product })[] }) | undefined>;
   getOrdersWithDetails(): Promise<any[]>;
   getOrderWithDetails(id: string): Promise<any>;
   getUserById(id: string): Promise<User | undefined>;
@@ -812,6 +813,10 @@ export class DatabaseStorage implements IStorage {
       console.error('Error in getOrderById:', error);
       throw error;
     }
+  }
+
+  async getOrderWithItems(id: string): Promise<any> {
+    return this.getOrderById(id);
   }
 
   async createOrder(order: InsertOrder): Promise<Order> {

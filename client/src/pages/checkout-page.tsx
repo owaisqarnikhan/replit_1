@@ -9,13 +9,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useLocation } from "wouter";
+import { useLocation, useParams } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Lock } from "lucide-react";
 import { BahrainPaymentMethods } from "@/components/BahrainPaymentMethods";
 import { OrderApprovalModal } from "@/components/order-approval-modal";
+import { OrderPaymentCheckout } from "@/components/order-payment-checkout";
 import type { CartItem, Product } from "@shared/schema";
 
 const shippingSchema = z.object({
@@ -36,7 +37,13 @@ type CartItemWithProduct = CartItem & { product: Product };
 
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
+  const params = useParams();
   const { toast } = useToast();
+
+  // If orderId is provided, render order payment checkout
+  if (params.orderId) {
+    return <OrderPaymentCheckout orderId={params.orderId} />;
+  }
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [createdOrder, setCreatedOrder] = useState<{ id: string; total: string } | null>(null);
 

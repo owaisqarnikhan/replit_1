@@ -494,6 +494,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Order payment update route for users
+  app.put("/api/orders/:id/payment", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { paymentMethod, paymentIntentId, status } = req.body;
+      const orderId = req.params.id;
+      
+      // Get the order and verify it belongs to the user
+      const order = await storage.getOrderById(orderId);
+      if (!order || order.userId !== req.user!.id) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Verify the order is approved and can proceed to payment
+      if (order.adminApprovalStatus !== "approved") {
+        return res.status(400).json({ message: "Order is not approved for payment" });
+      }
+
+      // Update order with payment information
+      const updatedOrder = await storage.updateOrder(orderId, {
+        paymentMethod,
+        paymentIntentId,
+        status: status || "processing", // Update status to processing after payment
+      });
+
+      // Send payment completion email
+      try {
+        const { sendPaymentConfirmationEmail } = await import("./order-approval-workflow");
+        const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
+        
+        await sendPaymentConfirmationEmail(req.user!.email, {
+          orderNumber: order.id.slice(-8).toUpperCase(),
+          customerName: customerName,
+          total: order.total,
+          paymentMethod: paymentMethod,
+          estimatedDeliveryDays: 2
+        });
+      } catch (emailError) {
+        console.error('Failed to send payment confirmation email:', emailError);
+      }
+
+      res.json(updatedOrder);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Get single order by ID route
+  app.get("/api/orders/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const orderId = req.params.id;
+      const order = await storage.getOrderWithItems(orderId);
+      
+      if (!order || order.userId !== req.user!.id) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      res.json(order);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // SMTP Test route
   app.post("/api/test-smtp", async (req, res) => {
     if (!req.isAuthenticated() || !req.user?.isAdmin) {

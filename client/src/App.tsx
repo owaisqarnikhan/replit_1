@@ -36,6 +36,7 @@ function Router() {
       <ProtectedRoute path="/cart" component={CartPage} />
 
       <ProtectedRoute path="/orders" component={OrdersPage} />
+      <ProtectedRoute path="/checkout/:orderId" component={CheckoutPage} />
       <ProtectedRoute path="/checkout" component={CheckoutPage} />
       <ProtectedRoute path="/dashboard" component={UserDashboard} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />

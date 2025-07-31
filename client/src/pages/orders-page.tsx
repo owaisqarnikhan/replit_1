@@ -14,7 +14,9 @@ import {
   ArrowLeft,
   ShoppingBag,
   Calendar,
-  DollarSign
+  DollarSign,
+  CreditCard,
+  AlertCircle
 } from "lucide-react";
 import type { Order, OrderItem, Product } from "@shared/schema";
 
@@ -39,6 +41,23 @@ export default function OrdersPage() {
         return "bg-purple-100 text-purple-800 border-purple-200";
       case "cancelled":
         return "bg-red-100 text-red-800 border-red-200";
+      case "payment_pending":
+        return "bg-orange-100 text-orange-800 border-orange-200";
+      case "awaiting_approval":
+        return "bg-amber-100 text-amber-800 border-amber-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  const getApprovalStatusColor = (status: string) => {
+    switch (status) {
+      case "approved":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "rejected":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
@@ -56,14 +75,49 @@ export default function OrdersPage() {
         return <CheckCircle className="h-4 w-4" />;
       case "cancelled":
         return <X className="h-4 w-4" />;
+      case "payment_pending":
+        return <CreditCard className="h-4 w-4" />;
+      case "awaiting_approval":
+        return <Clock className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
     }
   };
 
+  const getApprovalStatusIcon = (status: string) => {
+    switch (status) {
+      case "approved":
+        return <CheckCircle className="h-4 w-4" />;
+      case "rejected":
+        return <X className="h-4 w-4" />;
+      case "pending":
+        return <Clock className="h-4 w-4" />;
+      default:
+        return <AlertCircle className="h-4 w-4" />;
+    }
+  };
+
   const formatStatus = (status: string | null | undefined) => {
     if (!status) return "Pending";
-    return status.charAt(0).toUpperCase() + status.slice(1);
+    return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
+  };
+
+  const canProceedToPayment = (order: OrderWithItems) => {
+    const adminApprovalStatus = (order as any).adminApprovalStatus;
+    const orderStatus = order.status;
+    return adminApprovalStatus === "approved" && 
+           (orderStatus === "awaiting_approval" || orderStatus === "payment_pending");
+  };
+
+  const getDisplayStatus = (order: OrderWithItems) => {
+    const adminApprovalStatus = (order as any).adminApprovalStatus;
+    const orderStatus = order.status;
+    
+    if (adminApprovalStatus === "pending") return "Awaiting Admin Approval";
+    if (adminApprovalStatus === "rejected") return "Rejected by Admin";
+    if (adminApprovalStatus === "approved" && orderStatus === "awaiting_approval") return "Payment Required";
+    
+    return formatStatus(orderStatus);
   };
 
   if (isLoading) {
@@ -180,13 +234,29 @@ export default function OrdersPage() {
                         </div>
                       </div>
                     </div>
-                    <Badge 
-                      className={`flex items-center space-x-1 px-3 py-1.5 border ${getStatusColor(order.status)}`}
-                      variant="outline"
-                    >
-                      {getStatusIcon(order.status)}
-                      <span className="font-medium">{formatStatus(order.status)}</span>
-                    </Badge>
+                    <div className="flex flex-col space-y-2">
+                      {/* Admin Approval Status */}
+                      <Badge 
+                        className={`flex items-center space-x-1 px-3 py-1.5 border ${getApprovalStatusColor((order as any).adminApprovalStatus)}`}
+                        variant="outline"
+                      >
+                        {getApprovalStatusIcon((order as any).adminApprovalStatus)}
+                        <span className="font-medium text-xs">
+                          {(order as any).adminApprovalStatus === "pending" ? "Awaiting Approval" : 
+                           (order as any).adminApprovalStatus === "approved" ? "Approved" : 
+                           (order as any).adminApprovalStatus === "rejected" ? "Rejected" : "Unknown"}
+                        </span>
+                      </Badge>
+                      
+                      {/* Order Status */}
+                      <Badge 
+                        className={`flex items-center space-x-1 px-3 py-1.5 border ${getStatusColor(order.status)}`}
+                        variant="outline"
+                      >
+                        {getStatusIcon(order.status)}
+                        <span className="font-medium text-xs">{getDisplayStatus(order)}</span>
+                      </Badge>
+                    </div>
                   </div>
                 </CardHeader>
 
@@ -262,10 +332,82 @@ export default function OrdersPage() {
                     )}
                   </div>
 
+                  {/* Admin Remarks */}
+                  {(order as any).adminRemarks && (
+                    <div className="mt-4 pt-4 border-t border-slate-200">
+                      <h4 className="font-medium text-slate-900 mb-2">Admin Note</h4>
+                      <div className="bg-gray-50 rounded-lg p-3">
+                        <p className="text-sm text-gray-700 italic">"{(order as any).adminRemarks}"</p>
+                      </div>
+                    </div>
+                  )}
+
                   {(order as any).orderNotes && (
                     <div className="mt-4 pt-4 border-t border-slate-200">
                       <h4 className="font-medium text-slate-900 mb-2">Order Notes</h4>
                       <p className="text-sm text-slate-600">{(order as any).orderNotes}</p>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  {canProceedToPayment(order) && (
+                    <div className="mt-6 pt-4 border-t border-slate-200">
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                        <div className="flex items-center">
+                          <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+                          <div>
+                            <h4 className="text-sm font-medium text-green-800">Order Approved!</h4>
+                            <p className="text-sm text-green-700 mt-1">
+                              Your order has been approved by admin. You can now proceed with payment.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end">
+                        <Button 
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          onClick={() => setLocation(`/checkout/${order.id}`)}
+                        >
+                          <CreditCard className="h-4 w-4 mr-2" />
+                          Proceed to Payment
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Pending Approval Message */}
+                  {(order as any).adminApprovalStatus === "pending" && (
+                    <div className="mt-6 pt-4 border-t border-slate-200">
+                      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div className="flex items-center">
+                          <Clock className="h-5 w-5 text-yellow-600 mr-2" />
+                          <div>
+                            <h4 className="text-sm font-medium text-yellow-800">Awaiting Admin Approval</h4>
+                            <p className="text-sm text-yellow-700 mt-1">
+                              Your order is being reviewed by our admin team. You'll receive an email notification once approved.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Rejected Order Message */}
+                  {(order as any).adminApprovalStatus === "rejected" && (
+                    <div className="mt-6 pt-4 border-t border-slate-200">
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div className="flex items-center">
+                          <X className="h-5 w-5 text-red-600 mr-2" />
+                          <div>
+                            <h4 className="text-sm font-medium text-red-800">Order Rejected</h4>
+                            <p className="text-sm text-red-700 mt-1">
+                              Unfortunately, this order was rejected by admin. 
+                              {(order as any).adminRemarks && " Please check the admin note above for details."}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </CardContent>
