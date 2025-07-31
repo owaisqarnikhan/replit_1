@@ -5,7 +5,7 @@ async function createTransporter() {
   const settings = await storage.getSiteSettings();
   
   // Use Microsoft 365 SMTP settings
-  return nodemailer.createTransporter({
+  return nodemailer.createTransport({
     host: 'smtp.office365.com',
     port: 587,
     secure: false,
