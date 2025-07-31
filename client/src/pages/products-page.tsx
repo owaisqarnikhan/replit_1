@@ -17,6 +17,14 @@ export default function ProductsPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+  });
+
+  const { data: categories } = useQuery<Category[]>({
+    queryKey: ["/api/categories"],
+  });
+
   // Handle category filtering from URL parameters
   useEffect(() => {
     const urlParams = new URLSearchParams(location.split('?')[1] || '');
@@ -31,14 +39,6 @@ export default function ProductsPage() {
     ? categories.find(c => c.id === selectedCategory)?.name 
     : null;
 
-  const { data: products, isLoading: productsLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
-  });
-
-  const { data: categories } = useQuery<Category[]>({
-    queryKey: ["/api/categories"],
-  });
-
   const filteredProducts = products?.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.description?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -52,12 +52,22 @@ export default function ProductsPage() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-4">
-            {selectedCategory !== "all" && categories 
-              ? `${categories.find(c => c.id === selectedCategory)?.name || ""} Products`
-              : "Products"
-            }
-          </h1>
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-3xl font-bold text-slate-900">
+              {selectedCategory !== "all" && categories 
+                ? `${categories.find(c => c.id === selectedCategory)?.name || ""} Products`
+                : "Products"
+              }
+            </h1>
+            {selectedCategoryName && (
+              <div className="hidden sm:flex items-center text-sm text-slate-600">
+                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clipRule="evenodd" />
+                </svg>
+                Filtered by: <span className="font-medium ml-1">{selectedCategoryName}</span>
+              </div>
+            )}
+          </div>
           
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
@@ -69,25 +79,54 @@ export default function ProductsPage() {
                 className="w-full"
               />
               {selectedCategoryName && (
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 shadow-sm">
+                    <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clipRule="evenodd" />
+                    </svg>
                     {selectedCategoryName}
                   </span>
                 </div>
               )}
             </div>
-            <div className="sm:w-48">
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="All Categories" />
+            <div className="sm:w-64">
+              <Select 
+                value={selectedCategory} 
+                onValueChange={(value) => {
+                  setSelectedCategory(value);
+                  // Update URL to reflect the selected category
+                  if (value === "all") {
+                    setLocation("/products");
+                  } else {
+                    setLocation(`/products?category=${value}`);
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Filter by Category" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {categories?.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="max-h-60">
+                  <SelectItem value="all">
+                    <div className="flex items-center">
+                      <span className="font-medium">All Categories</span>
+                      <span className="ml-auto text-xs text-slate-500">
+                        {products?.length || 0} products
+                      </span>
+                    </div>
+                  </SelectItem>
+                  {categories?.map((category) => {
+                    const categoryProductCount = products?.filter(p => p.categoryId === category.id).length || 0;
+                    return (
+                      <SelectItem key={category.id} value={category.id}>
+                        <div className="flex items-center justify-between w-full">
+                          <span className="font-medium">{category.name}</span>
+                          <span className="ml-auto text-xs text-slate-500">
+                            {categoryProductCount} products
+                          </span>
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
