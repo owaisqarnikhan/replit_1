@@ -6,6 +6,7 @@ import { storage } from "./storage";
 import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema, insertUnitOfMeasureSchema } from "@shared/schema";
 import { sendOrderConfirmationEmail } from "./email";
 import { testSMTP } from "./test-smtp";
+import { sendOrderSubmittedNotification, sendOrderApprovedNotification, sendOrderRejectedNotification } from "./sendgrid";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
 // import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { createBenefitPayTransaction, verifyBenefitPayTransaction, handleBenefitPayWebhook } from "./benefit-pay";
@@ -431,28 +432,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Clear cart
       await storage.clearCart(req.user!.id);
 
-      // Send confirmation email with order details
+      // Send order submission notification with approval workflow
       try {
         const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
-        const orderItems = cartItems.map(item => ({
-          name: item.product.name,
-          quantity: item.quantity,
-          price: item.product.price
-        }));
-
-        await sendOrderConfirmationEmail(req.user!.email, {
-          orderNumber: order.id,
+        
+        await sendOrderSubmittedNotification(
+          req.user!.email,
           customerName,
-          items: orderItems,
-          subtotal: subtotal.toFixed(2),
-          vatAmount: tax.toFixed(2),
-          vatPercentage: vatPercentage.toFixed(0),
-          total: order.total,
-          paymentMethod: order.paymentMethod || 'Unknown',
-          estimatedDeliveryDays: 2
-        });
+          order.id,
+          order.total
+        );
       } catch (emailError) {
-        console.error('Failed to send order confirmation email:', emailError);
+        console.error('Failed to send order submission notification:', emailError);
       }
 
       res.status(201).json(order);
@@ -494,26 +485,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: "payment_pending" // Move to payment pending after approval
       });
 
-      // Get order details for email
-      const orderWithDetails = await storage.getOrderWithDetails(orderId);
-      const user = await storage.getUserById(orderWithDetails.userId);
+      // Get order details for email notification
+      const order = await storage.getOrderById(orderId);
+      const user = await storage.getUser(order!.userId);
 
-      if (user && orderWithDetails) {
-        // Send approval email to customer
-        const { sendOrderApprovalEmail } = await import("./email");
-        await sendOrderApprovalEmail(user.email, {
-          orderNumber: orderWithDetails.id,
-          customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
-          total: orderWithDetails.total,
-          paymentMethod: orderWithDetails.paymentMethod || "Pending",
+      if (user && order) {
+        const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
+        
+        // Send approval notification using SendGrid
+        await sendOrderApprovedNotification(
+          user.email,
+          customerName,
+          order.id,
+          order.total,
           adminRemarks
-        });
+        );
       }
 
-      res.json({ success: true, message: "Order approved successfully" });
+      res.json({ message: "Order approved successfully", orderId });
     } catch (error: any) {
-      console.error('Order approval error:', error);
-      res.status(400).json({ message: error.message });
+      console.error('Error approving order:', error);
+      res.status(500).json({ message: error.message });
     }
   });
 
@@ -526,34 +518,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { adminRemarks } = req.body;
       const orderId = req.params.id;
       
-      // Update order approval status
+      // Update order approval status to rejected
       await storage.updateOrder(orderId, {
         adminApprovalStatus: "rejected",
         adminApprovedBy: req.user!.id,
         adminApprovedAt: new Date(),
         adminRemarks: adminRemarks || null,
-        status: "cancelled" // Cancel order after rejection
+        status: "cancelled" // Mark order as cancelled when rejected
       });
 
-      // Get order details for email
-      const orderWithDetails = await storage.getOrderWithDetails(orderId);
-      const user = await storage.getUserById(orderWithDetails.userId);
+      // Get order details for email notification
+      const order = await storage.getOrderById(orderId);
+      const user = await storage.getUser(order!.userId);
 
-      if (user && orderWithDetails) {
-        // Send rejection email to customer
-        const { sendOrderRejectionEmail } = await import("./email");
-        await sendOrderRejectionEmail(user.email, {
-          orderNumber: orderWithDetails.id,
-          customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
-          total: orderWithDetails.total,
+      if (user && order) {
+        const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
+        
+        // Send rejection notification using SendGrid
+        await sendOrderRejectedNotification(
+          user.email,
+          customerName,
+          order.id,
+          order.total,
           adminRemarks
-        });
+        );
       }
 
-      res.json({ success: true, message: "Order rejected successfully" });
+      res.json({ message: "Order rejected successfully", orderId });
     } catch (error: any) {
-      console.error('Order rejection error:', error);
-      res.status(400).json({ message: error.message });
+      console.error('Error rejecting order:', error);
+      res.status(500).json({ message: error.message });
     }
   });
 

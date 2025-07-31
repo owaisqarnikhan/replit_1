@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Lock } from "lucide-react";
 import { BahrainPaymentMethods } from "@/components/BahrainPaymentMethods";
+import { OrderApprovalModal } from "@/components/ui/order-approval-modal";
 import type { CartItem, Product } from "@shared/schema";
 
 const shippingSchema = z.object({
@@ -121,6 +122,8 @@ export default function CheckoutPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [currentOrderId, setCurrentOrderId] = useState<string>("");
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [createdOrder, setCreatedOrder] = useState<{ id: string; total: string } | null>(null);
 
   const { data: cartItems, isLoading } = useQuery<CartItemWithProduct[]>({
     queryKey: ["/api/cart"],
@@ -145,14 +148,16 @@ export default function CheckoutPage() {
       const res = await apiRequest("POST", "/api/orders", orderData);
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
-      toast({
-        title: "Order Placed Successfully!",
-        description: "You will receive a confirmation email shortly.",
+      
+      // Set the created order data and show approval modal
+      setCreatedOrder({
+        id: data.id,
+        total: data.total
       });
-      setLocation("/dashboard");
+      setShowApprovalModal(true);
     },
     onError: () => {
       toast({
@@ -212,6 +217,12 @@ export default function CheckoutPage() {
       paymentMethod: paymentData.method,
       paymentIntentId: paymentData.transactionId || paymentData.orderId,
     });
+  };
+
+  const handleApprovalModalClose = () => {
+    setShowApprovalModal(false);
+    setCreatedOrder(null);
+    setLocation("/orders"); // Redirect to orders page to see the pending order
   };
 
   const handlePaymentError = (error: string) => {
@@ -453,6 +464,16 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* Order Approval Modal */}
+      {createdOrder && (
+        <OrderApprovalModal
+          isOpen={showApprovalModal}
+          onClose={handleApprovalModalClose}
+          orderId={createdOrder.id}
+          orderTotal={createdOrder.total}
+        />
+      )}
     </div>
   );
 }
