@@ -128,46 +128,68 @@ export function NavigationHeader() {
       className="bg-white shadow-sm border-b sticky top-0 z-50 nav-header"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-24">
-          <div className="flex items-center space-x-8">
-            <div className="flex-shrink-0">
-              <Button
-                variant="ghost"
-                className="text-2xl font-bold hover:bg-transparent flex items-center space-x-3 transition-colors duration-200"
-                style={{ color: siteSettings?.headerTextColor || '#2563eb' }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = siteSettings?.tabTextColor || '#2563eb';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = siteSettings?.headerTextColor || '#2563eb';
-                }}
-                onClick={() => setLocation("/")}
-              >
-                {siteSettings?.logoUrl && siteSettings.logoUrl.trim() !== "" ? (
-                  <img 
-                    src={siteSettings.logoUrl} 
-                    alt={siteSettings.siteName || "Store"} 
-                    className="h-16 w-auto"
-                  />
-                ) : (!siteSettings?.siteName || siteSettings.siteName.trim() === "") ? (
-                  <Store className="w-12 h-12" />
-                ) : null}
-                {siteSettings?.siteName && siteSettings.siteName.trim() !== "" && (
-                  <span>{siteSettings.siteName}</span>
-                )}
-              </Button>
-            </div>
-            
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
+        <div className="grid grid-cols-3 items-center h-20 sm:h-24">
+          {/* Left Section - Navigation Tabs */}
+          <div className="flex items-center justify-start">
+            <nav className="hidden lg:flex space-x-4 xl:space-x-6">
               <NavigationItems />
             </nav>
+            
+            {/* Mobile Menu for left navigation */}
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="lg:hidden"
+                  style={{ color: siteSettings?.headerTextColor || '#374151' }}
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-64">
+                <div className="flex flex-col space-y-4 mt-6">
+                  <NavigationItems mobile />
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
 
-          <div className="flex items-center space-x-4">
+          {/* Center Section - Logo */}
+          <div className="flex items-center justify-center px-2">
+            <Button
+              variant="ghost"
+              className="text-lg sm:text-xl lg:text-2xl font-bold hover:bg-transparent flex items-center space-x-2 sm:space-x-3 transition-colors duration-200 px-2"
+              style={{ color: siteSettings?.headerTextColor || '#2563eb' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = siteSettings?.tabTextColor || '#2563eb';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = siteSettings?.headerTextColor || '#2563eb';
+              }}
+              onClick={() => setLocation("/")}
+            >
+              {siteSettings?.logoUrl && siteSettings.logoUrl.trim() !== "" ? (
+                <img 
+                  src={siteSettings.logoUrl} 
+                  alt={siteSettings.siteName || "Store"} 
+                  className="h-12 sm:h-14 lg:h-16 w-auto max-w-[150px] sm:max-w-[200px]"
+                />
+              ) : (!siteSettings?.siteName || siteSettings.siteName.trim() === "") ? (
+                <Store className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />
+              ) : null}
+              {siteSettings?.siteName && siteSettings.siteName.trim() !== "" && (
+                <span className="text-center truncate max-w-[120px] sm:max-w-[200px]">{siteSettings.siteName}</span>
+              )}
+            </Button>
+          </div>
+
+          {/* Right Section - User Actions */}
+          <div className="flex items-center justify-end space-x-2 sm:space-x-4">
             {/* Wishlist */}
             <Button
               variant="ghost"
+              size="icon"
               className="relative transition-colors duration-200"
               style={{ color: siteSettings?.headerTextColor || '#64748b' }}
               onMouseEnter={(e) => {
@@ -178,10 +200,10 @@ export function NavigationHeader() {
               }}
               onClick={() => setLocation("/wishlist")}
             >
-              <Heart className="h-5 w-5" />
+              <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
               {wishlistCount > 0 && (
                 <Badge 
-                  className="absolute -top-2 -right-2 text-xs px-1.5 py-0.5 min-w-[1.25rem] h-5 flex items-center justify-center"
+                  className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 text-xs px-1 sm:px-1.5 py-0.5 min-w-[1rem] sm:min-w-[1.25rem] h-4 sm:h-5 flex items-center justify-center"
                   style={{ 
                     backgroundColor: '#ec4899',
                     color: '#ffffff'
@@ -195,6 +217,7 @@ export function NavigationHeader() {
             {/* Shopping Cart */}
             <Button
               variant="ghost"
+              size="icon"
               className="relative transition-colors duration-200"
               style={{ color: siteSettings?.headerTextColor || '#64748b' }}
               onMouseEnter={(e) => {
@@ -205,10 +228,10 @@ export function NavigationHeader() {
               }}
               onClick={() => setLocation("/cart")}
             >
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
               {cartCount > 0 && (
                 <Badge 
-                  className="absolute -top-2 -right-2 text-xs px-1.5 py-0.5 min-w-[1.25rem] h-5 flex items-center justify-center"
+                  className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 text-xs px-1 sm:px-1.5 py-0.5 min-w-[1rem] sm:min-w-[1.25rem] h-4 sm:h-5 flex items-center justify-center"
                   style={{ 
                     backgroundColor: siteSettings?.accentColor || '#0ea5e9',
                     color: '#ffffff'
@@ -222,17 +245,17 @@ export function NavigationHeader() {
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2">
-                  <Avatar className="h-8 w-8">
+                <Button variant="ghost" className="flex items-center space-x-1 sm:space-x-2 px-1 sm:px-3">
+                  <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                     <AvatarFallback 
-                      className="text-white text-sm"
+                      className="text-white text-xs sm:text-sm"
                       style={{ backgroundColor: siteSettings?.primaryColor || '#2563eb' }}
                     >
                       {user?.username.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
                   <span 
-                    className="hidden sm:block font-medium"
+                    className="hidden md:block font-medium text-sm"
                     style={{ color: siteSettings?.headerTextColor || '#374151' }}
                   >
                     {user?.username || "User"}
@@ -265,24 +288,6 @@ export function NavigationHeader() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Mobile Menu */}
-            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="md:hidden"
-                  style={{ color: siteSettings?.headerTextColor || '#374151' }}
-                >
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-64">
-                <div className="flex flex-col space-y-4 mt-6">
-                  <NavigationItems mobile />
-                </div>
-              </SheetContent>
-            </Sheet>
           </div>
         </div>
       </div>
