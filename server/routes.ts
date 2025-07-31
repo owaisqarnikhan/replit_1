@@ -492,14 +492,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user && order) {
         const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         
-        // Send approval notification using SendGrid
-        await sendOrderApprovedNotification(
-          user.email,
-          customerName,
-          order.id,
-          order.total,
-          adminRemarks
-        );
+        // Send approval notification using Microsoft 365
+        const { sendOrderApprovalEmail } = await import("./email");
+        await sendOrderApprovalEmail(user.email, {
+          orderNumber: order.id.slice(0, 8),
+          customerName: customerName,
+          total: order.total,
+          paymentMethod: order.paymentMethod || "Benefit Pay",
+          adminRemarks: adminRemarks
+        });
       }
 
       res.json({ message: "Order approved successfully", orderId });
@@ -534,14 +535,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user && order) {
         const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         
-        // Send rejection notification using SendGrid
-        await sendOrderRejectedNotification(
-          user.email,
-          customerName,
-          order.id,
-          order.total,
-          adminRemarks
-        );
+        // Send rejection notification using Microsoft 365
+        const { sendOrderRejectionEmail } = await import("./email");
+        await sendOrderRejectionEmail(user.email, {
+          orderNumber: order.id.slice(0, 8),
+          customerName: customerName,
+          total: order.total,
+          adminRemarks: adminRemarks
+        });
       }
 
       res.json({ message: "Order rejected successfully", orderId });
