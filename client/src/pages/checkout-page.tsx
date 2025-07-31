@@ -37,7 +37,6 @@ type CartItemWithProduct = CartItem & { product: Product };
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [currentOrderId, setCurrentOrderId] = useState<string>("");
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [createdOrder, setCreatedOrder] = useState<{ id: string; total: string } | null>(null);
 
