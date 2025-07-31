@@ -489,7 +489,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const { sendOrderApprovalEmail } = await import("./email");
         await sendOrderApprovalEmail(user.email, {
           orderNumber: orderWithDetails.id,
-          customerName: user.name,
+          customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
           total: orderWithDetails.total,
           paymentMethod: orderWithDetails.paymentMethod || "Pending",
           adminRemarks
@@ -530,7 +530,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const { sendOrderRejectionEmail } = await import("./email");
         await sendOrderRejectionEmail(user.email, {
           orderNumber: orderWithDetails.id,
-          customerName: user.name,
+          customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
           total: orderWithDetails.total,
           adminRemarks
         });
@@ -567,7 +567,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const { sendOrderCompletionEmail } = await import("./email");
         await sendOrderCompletionEmail(user.email, {
           orderNumber: orderWithDetails.id,
-          customerName: user.name,
+          customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
           total: orderWithDetails.total,
           deliveredAt: deliveredAt.toLocaleDateString()
         });
