@@ -114,7 +114,7 @@ export function IndividualExcelManager() {
   const importMutation = useMutation({
     mutationFn: async ({ sheetType, file }: { sheetType: string; file: File }) => {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('excel', file);
       
       const response = await fetch(`/api/admin/import/excel/${sheetType}`, {
         method: 'POST',
