@@ -16,12 +16,17 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Plus, Edit, Trash2, ShoppingCart, Package, Upload } from "lucide-react";
 import { z } from "zod";
 
-// Enhanced product schema with product type
+// Enhanced product schema with product type and proper number validation
 const enhancedProductSchema = insertProductSchema.extend({
   productType: z.enum(["sale", "rental"]).default("sale"),
   rentalPeriod: z.string().optional(),
   rentalPrice: z.string().optional(),
-});
+}).transform((data) => ({
+  ...data,
+  // Convert string prices to numbers, handling empty strings
+  price: data.price === "" ? "0" : data.price,
+  rentalPrice: data.rentalPrice === "" ? undefined : data.rentalPrice,
+}));
 
 type EnhancedInsertProduct = z.infer<typeof enhancedProductSchema>;
 
@@ -102,7 +107,13 @@ export function ProductManager() {
 
   const createMutation = useMutation({
     mutationFn: async (data: EnhancedInsertProduct) => {
-      const response = await apiRequest("POST", "/api/products", data);
+      // Clean the data before sending to server
+      const cleanData = {
+        ...data,
+        price: data.price || "0",
+        rentalPrice: data.rentalPrice || undefined,
+      };
+      const response = await apiRequest("POST", "/api/products", cleanData);
       return response.json();
     },
     onSuccess: () => {
@@ -125,7 +136,13 @@ export function ProductManager() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: EnhancedInsertProduct }) => {
-      const response = await apiRequest("PUT", `/api/products/${id}`, data);
+      // Clean the data before sending to server
+      const cleanData = {
+        ...data,
+        price: data.price || "0",
+        rentalPrice: data.rentalPrice || undefined,
+      };
+      const response = await apiRequest("PUT", `/api/products/${id}`, cleanData);
       return response.json();
     },
     onSuccess: () => {

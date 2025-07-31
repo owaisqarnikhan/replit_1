@@ -206,7 +206,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const productData = insertProductSchema.parse(req.body);
+      // Clean numeric fields to handle empty strings
+      const cleanedBody = {
+        ...req.body,
+        price: req.body.price === "" ? "0" : req.body.price,
+        rentalPrice: req.body.rentalPrice === "" ? undefined : req.body.rentalPrice,
+      };
+      
+      const productData = insertProductSchema.parse(cleanedBody);
       const product = await storage.createProduct(productData);
       res.status(201).json(product);
     } catch (error: any) {
@@ -220,7 +227,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const product = await storage.updateProduct(req.params.id, req.body);
+      // Clean numeric fields to handle empty strings
+      const cleanedBody = {
+        ...req.body,
+        price: req.body.price === "" ? "0" : req.body.price,
+        rentalPrice: req.body.rentalPrice === "" ? undefined : req.body.rentalPrice,
+      };
+      
+      const product = await storage.updateProduct(req.params.id, cleanedBody);
       res.json(product);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
