@@ -6,7 +6,7 @@ export async function createMicrosoft365Transporter() {
   const settings = await storage.getSiteSettings();
   
   // Use admin-configured SMTP settings
-  const smtpUser = settings.smtpUser || 'info@innovanceorbit.com';
+  const smtpUser = settings.smtpUser || 'itsupport@bayg.bh';
   const smtpPassword = settings.smtpPassword;
   
   if (!smtpPassword) {
@@ -62,7 +62,16 @@ export async function createMicrosoft365Transporter() {
       return fallbackTransporter;
     } catch (fallbackError: any) {
       console.error('Microsoft 365 SMTP Configuration Error:', fallbackError.message);
-      throw new Error(`SMTP Setup Required: ${fallbackError.message}`);
+      
+      // Provide specific guidance for common SMTP authentication issues
+      if (fallbackError.message.includes('Authentication unsuccessful') || 
+          fallbackError.message.includes('SmtpClientAuthentication is disabled')) {
+        throw new Error(`SMTP Authentication Disabled: Your Microsoft 365 tenant has SMTP authentication disabled. Please enable it in the Microsoft 365 Admin Center under Security & Compliance > Basic Authentication policies, or contact your IT administrator.`);
+      } else if (fallbackError.message.includes('Invalid login')) {
+        throw new Error(`Invalid Credentials: Please verify your email address and app password are correct.`);
+      } else {
+        throw new Error(`SMTP Setup Required: ${fallbackError.message}`);
+      }
     }
   }
 }

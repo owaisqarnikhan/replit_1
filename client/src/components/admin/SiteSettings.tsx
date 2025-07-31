@@ -1079,6 +1079,16 @@ export function SiteSettings() {
                   </ol>
                 </div>
 
+                <div className="bg-amber-50 p-4 rounded-lg border">
+                  <h3 className="text-sm font-medium text-amber-900 mb-2">SMTP Authentication Issues?</h3>
+                  <p className="text-sm text-amber-700 mb-2">
+                    If you get "Authentication unsuccessful" errors, your Microsoft 365 tenant may have SMTP authentication disabled.
+                  </p>
+                  <p className="text-sm text-amber-700">
+                    Contact your IT administrator to enable SMTP authentication in the Microsoft 365 Admin Center under Security &amp; Compliance &gt; Basic Authentication policies.
+                  </p>
+                </div>
+
                 <FormField
                   control={form.control}
                   name="emailEnabled"

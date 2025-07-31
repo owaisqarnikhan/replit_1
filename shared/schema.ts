@@ -275,10 +275,10 @@ export const siteSettings = pgTable("site_settings", {
   // SMTP Configuration for Microsoft 365
   smtpHost: text("smtp_host").default("smtp.office365.com"),
   smtpPort: integer("smtp_port").default(587),
-  smtpUser: text("smtp_user").default("info@innovanceorbit.com"),
-  smtpPassword: text("smtp_password").default(""), // Microsoft 365 App Password
-  smtpFromEmail: text("smtp_from_email").default("noreply@innovanceorbit.com"),
-  smtpFromName: text("smtp_from_name").default("InnovanceOrbit"),
+  smtpUser: text("smtp_user").default("itsupport@bayg.bh"),
+  smtpPassword: text("smtp_password").default("cnvjyhfsxwrzsrrx"), // Microsoft 365 App Password
+  smtpFromEmail: text("smtp_from_email").default("itsupport@bayg.bh"),
+  smtpFromName: text("smtp_from_name").default("Rate Card - Bahrain Asian Youth Games 2025"),
   emailEnabled: boolean("email_enabled").default(false),
   
   // Login Page Specific Settings
