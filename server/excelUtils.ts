@@ -302,11 +302,11 @@ export function parseExcelFile(buffer: Buffer): {
 
 // Individual sheet export functions
 export async function exportProductsToExcel(): Promise<Buffer> {
-  const storage = new DatabaseStorage();
+  const { storage } = await import('./storage');
   const products = await storage.getProducts();
   
   const workbook = XLSX.utils.book_new();
-  const worksheet = XLSX.utils.json_to_sheet(products.map(product => ({
+  const worksheet = XLSX.utils.json_to_sheet(products.map((product: any) => ({
     ID: product.id,
     Name: product.name,
     Description: product.description,
@@ -330,11 +330,11 @@ export async function exportProductsToExcel(): Promise<Buffer> {
 }
 
 export async function exportCategoriesToExcel(): Promise<Buffer> {
-  const storage = new DatabaseStorage();
+  const { storage } = await import('./storage');
   const categories = await storage.getCategories();
   
   const workbook = XLSX.utils.book_new();
-  const worksheet = XLSX.utils.json_to_sheet(categories.map(category => ({
+  const worksheet = XLSX.utils.json_to_sheet(categories.map((category: any) => ({
     ID: category.id,
     Name: category.name,
     Description: category.description,
@@ -346,11 +346,11 @@ export async function exportCategoriesToExcel(): Promise<Buffer> {
 }
 
 export async function exportUsersToExcel(): Promise<Buffer> {
-  const storage = new DatabaseStorage();
+  const { storage } = await import('./storage');
   const users = await storage.getUsers();
   
   const workbook = XLSX.utils.book_new();
-  const worksheet = XLSX.utils.json_to_sheet(users.map(user => ({
+  const worksheet = XLSX.utils.json_to_sheet(users.map((user: any) => ({
     ID: user.id,
     Username: user.username,
     Email: user.email,
@@ -364,11 +364,11 @@ export async function exportUsersToExcel(): Promise<Buffer> {
 }
 
 export async function exportOrdersToExcel(): Promise<Buffer> {
-  const storage = new DatabaseStorage();
+  const { storage } = await import('./storage');
   const orders = await storage.getOrders();
   
   const workbook = XLSX.utils.book_new();
-  const worksheet = XLSX.utils.json_to_sheet(orders.map(order => ({
+  const worksheet = XLSX.utils.json_to_sheet(orders.map((order: any) => ({
     ID: order.id,
     'User ID': order.userId,
     Status: order.status,
@@ -383,11 +383,11 @@ export async function exportOrdersToExcel(): Promise<Buffer> {
 }
 
 export async function exportOrderItemsToExcel(): Promise<Buffer> {
-  const storage = new DatabaseStorage();
+  const { storage } = await import('./storage');
   const orderItems = await storage.getOrderItems();
   
   const workbook = XLSX.utils.book_new();
-  const worksheet = XLSX.utils.json_to_sheet(orderItems.map(item => ({
+  const worksheet = XLSX.utils.json_to_sheet(orderItems.map((item: any) => ({
     ID: item.id,
     'Order ID': item.orderId,
     'Product ID': item.productId,
@@ -400,11 +400,11 @@ export async function exportOrderItemsToExcel(): Promise<Buffer> {
 }
 
 export async function exportUnitsToExcel(): Promise<Buffer> {
-  const storage = new DatabaseStorage();
+  const { storage } = await import('./storage');
   const units = await storage.getUnitsOfMeasure();
   
   const workbook = XLSX.utils.book_new();
-  const worksheet = XLSX.utils.json_to_sheet(units.map(unit => ({
+  const worksheet = XLSX.utils.json_to_sheet(units.map((unit: any) => ({
     ID: unit.id,
     Name: unit.name,
     Abbreviation: unit.abbreviation,
@@ -416,7 +416,7 @@ export async function exportUnitsToExcel(): Promise<Buffer> {
 }
 
 export async function exportSiteSettingsToExcel(): Promise<Buffer> {
-  const storage = new DatabaseStorage();
+  const { storage } = await import('./storage');
   const settings = await storage.getSiteSettings();
   
   const workbook = XLSX.utils.book_new();
@@ -450,15 +450,15 @@ export async function exportSiteSettingsToExcel(): Promise<Buffer> {
 }
 
 export async function exportSliderImagesToExcel(): Promise<Buffer> {
-  const storage = new DatabaseStorage();
+  const { storage } = await import('./storage');
   const sliderImages = await storage.getSliderImages();
   
   const workbook = XLSX.utils.book_new();
-  const worksheet = XLSX.utils.json_to_sheet(sliderImages.map(slide => ({
+  const worksheet = XLSX.utils.json_to_sheet(sliderImages.map((slide: any) => ({
     ID: slide.id,
     Title: slide.title,
     'Image URL': slide.imageUrl,
-    'Link URL': slide.linkUrl,
+    'Link URL': slide.linkUrl || '',
     'Is Active': slide.isActive,
     'Display Order': slide.sortOrder
   })));

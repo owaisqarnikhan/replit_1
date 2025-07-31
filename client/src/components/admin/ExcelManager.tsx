@@ -27,7 +27,7 @@ export default function ExcelManager() {
 
   const exportMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch("/api/admin/export/excel", {
+      const response = await fetch("/api/admin/export/excel/bulk", {
         method: "GET",
         credentials: "include",
       });

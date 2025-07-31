@@ -1044,7 +1044,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Excel import/export routes
-  app.get("/api/admin/export/excel", async (req, res) => {
+  app.get("/api/admin/export/excel/bulk", async (req, res) => {
     if (!req.isAuthenticated() || !req.user?.isAdmin) {
       return res.sendStatus(401);
     }
