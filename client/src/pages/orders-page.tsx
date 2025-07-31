@@ -133,7 +133,7 @@ export default function OrdersPage() {
               <p className="text-slate-600 mb-8">
                 You haven't placed any orders yet. Start shopping to see your orders here.
               </p>
-              <div className="space-y-3">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   onClick={() => setLocation("/products")} 
                   className="w-full sm:w-auto"
