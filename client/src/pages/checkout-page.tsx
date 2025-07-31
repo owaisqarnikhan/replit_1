@@ -317,7 +317,7 @@ export default function CheckoutPage() {
                 onPaymentSuccess={handlePaymentSuccess}
                 onPaymentError={handlePaymentError}
                 isLocked={true}
-                lockReason="Payment is locked until admin approval. You will receive an email notification once your order is approved."
+                lockReason="Payment is locked until admin approval. Admin has been notified and you will receive an email notification once your order is approved."
               />
             )}
           </div>

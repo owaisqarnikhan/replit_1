@@ -432,6 +432,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Clear cart
       await storage.clearCart(req.user!.id);
 
+      // Send admin notification email about new order
+      try {
+        const { sendAdminOrderNotification } = await import("./admin-notification");
+        const user = req.user!;
+        const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
+        
+        await sendAdminOrderNotification({
+          orderNumber: order.id.slice(0, 8),
+          customerName: customerName,
+          customerEmail: user.email,
+          total: order.total,
+          items: cartItems.map(item => ({
+            productName: item.product.name,
+            quantity: item.quantity,
+            price: (parseFloat(item.product.price) * item.quantity).toFixed(2)
+          })),
+          shippingAddress: shippingAddress
+        });
+      } catch (emailError) {
+        console.error('Failed to send admin notification:', emailError);
+        // Don't fail the order creation if email fails
+      }
+
       // Send order submission notification with approval workflow
       try {
         const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
@@ -446,7 +469,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.error('Failed to send order submission notification:', emailError);
       }
 
-      res.status(201).json(order);
+      res.status(201).json({ 
+        order, 
+        message: "Order submitted for admin approval. Admin has been notified and you will receive an email once approved." 
+      });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
