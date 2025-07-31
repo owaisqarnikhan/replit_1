@@ -47,7 +47,6 @@ export function ProductManager() {
       price: "0",
       imageUrl: "",
       categoryId: "",
-      stock: 0,
       sku: "",
       isActive: true,
       isFeatured: false,
@@ -181,7 +180,6 @@ export function ProductManager() {
       price: product.price,
       imageUrl: product.imageUrl || "",
       categoryId: product.categoryId || "",
-      stock: product.stock || 0,
       sku: product.sku || "",
       isActive: product.isActive,
       isFeatured: product.isFeatured,
@@ -323,40 +321,19 @@ export function ProductManager() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="price"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Price</FormLabel>
-                          <FormControl>
-                            <Input type="number" step="0.01" placeholder="0.00" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="stock"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Stock</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="0" 
-                              {...field}
-                              onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                              value={field.value ?? 0}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Price</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   {productType === "rental" && (
                     <div className="grid grid-cols-2 gap-4">
