@@ -19,6 +19,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import { ProtectedRoute } from "./lib/protected-route";
 import Footer from "@/components/footer";
 import { useTheme } from "./hooks/use-theme";
+import { useLocation } from "wouter";
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {
   useTheme(); // This will automatically apply the theme from settings
@@ -44,18 +45,27 @@ function Router() {
   );
 }
 
+function AppContent() {
+  const [location] = useLocation();
+  const isAuthPage = location === "/auth";
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-1">
+        <Router />
+      </div>
+      {!isAuthPage && <Footer />}
+    </div>
+  );
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <ThemeWrapper>
           <TooltipProvider>
-            <div className="min-h-screen flex flex-col">
-              <div className="flex-1">
-                <Router />
-              </div>
-              <Footer />
-            </div>
+            <AppContent />
             <Toaster />
           </TooltipProvider>
         </ThemeWrapper>
