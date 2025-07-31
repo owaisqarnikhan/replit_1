@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Download, Upload, FileSpreadsheet, Database, Users, Package, ShoppingCart, Settings, Image, Ruler } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -134,10 +134,36 @@ export function IndividualExcelManager() {
         title: "Import Successful",
         description: data.message || `${sheetType} data imported successfully`,
       });
+      
       // Clear the file input
       setImportFiles(prev => ({ ...prev, [sheetType]: null }));
       if (fileInputRefs.current[sheetType]) {
         fileInputRefs.current[sheetType]!.value = '';
+      }
+      
+      // Invalidate relevant caches to refresh data in admin sections
+      if (sheetType === 'categories') {
+        queryClient.invalidateQueries({ queryKey: ['/api/categories'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/admin/categories'] });
+      } else if (sheetType === 'products') {
+        queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/products/featured'] });
+      } else if (sheetType === 'users') {
+        queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      } else if (sheetType === 'orders') {
+        queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/admin/stats'] });
+      } else if (sheetType === 'order-items') {
+        queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/admin/stats'] });
+      } else if (sheetType === 'units') {
+        queryClient.invalidateQueries({ queryKey: ['/api/units-of-measure'] });
+      } else if (sheetType === 'site-settings') {
+        queryClient.invalidateQueries({ queryKey: ['/api/settings'] });
+      } else if (sheetType === 'slider-images') {
+        queryClient.invalidateQueries({ queryKey: ['/api/slider-images'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/slider-images/active'] });
       }
     },
     onError: (error: any, { sheetType }) => {
