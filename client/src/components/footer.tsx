@@ -12,54 +12,54 @@ export default function Footer() {
 
   return (
     <footer 
-      className="text-white relative bg-cover bg-center bg-no-repeat min-h-[200px]"
+      className="text-white relative bg-cover bg-center bg-no-repeat min-h-[200px] w-full flex-shrink-0 mt-auto"
       style={{
         backgroundImage: `url('${settings?.footerBackgroundUrl || '/uploads/footer-background.png'}')`,
       }}
     >
       <div className="absolute inset-0 bg-slate-900/85"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Company Info - Custom Image */}
-          <div className="col-span-1 lg:col-span-1">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-1">
             {settings?.footerLeftImage ? (
-              <div className="mb-6">
+              <div className="mb-4 sm:mb-6">
                 <img 
                   src={settings.footerLeftImage} 
                   alt="Company Image" 
-                  className="h-auto rounded" 
-                  style={{ maxWidth: `${settings.footerLeftImageWidth || 200}px` }}
+                  className="h-auto rounded max-w-full" 
+                  style={{ maxWidth: `${Math.min(settings.footerLeftImageWidth || 200, 180)}px` }}
                 />
               </div>
             ) : (
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold">{settings?.siteName || "InnovanceOrbit"}</h3>
+              <div className="mb-4 sm:mb-6">
+                <h3 className="text-xl sm:text-2xl font-bold">{settings?.siteName || "InnovanceOrbit"}</h3>
               </div>
             )}
             {settings?.footerDescription && (
-              <p className="text-slate-300 mb-6 max-w-md">
+              <p className="text-slate-300 mb-4 sm:mb-6 text-sm sm:text-base max-w-md">
                 {settings.footerDescription}
               </p>
             )}
             
             {/* Contact Info */}
-            <div className="space-y-2">
+            <div className="space-y-2 text-sm sm:text-base">
               {settings?.contactEmail && (
                 <div className="flex items-center space-x-2">
-                  <Mail className="h-4 w-4 text-primary" />
-                  <span className="text-slate-300">{settings.contactEmail}</span>
+                  <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
+                  <span className="text-slate-300 break-all">{settings.contactEmail}</span>
                 </div>
               )}
               {settings?.contactPhone && (
                 <div className="flex items-center space-x-2">
-                  <Phone className="h-4 w-4 text-primary" />
+                  <Phone className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0" />
                   <span className="text-slate-300">{settings.contactPhone}</span>
                 </div>
               )}
               {settings?.contactAddress && (
-                <div className="flex items-center space-x-2">
-                  <MapPin className="h-4 w-4 text-primary" />
-                  <span className="text-slate-300">{settings.contactAddress}</span>
+                <div className="flex items-start space-x-2">
+                  <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-slate-300 text-sm sm:text-base">{settings.contactAddress}</span>
                 </div>
               )}
 
@@ -149,7 +149,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t-2 border-slate-600 mt-8 pt-8 text-center">
+        <div className="border-t-2 border-slate-600 mt-6 pt-6 text-center">
           <p className="text-slate-400">
             {settings?.copyrightText || `© ${currentYear} InnovanceOrbit. All rights reserved.`}
           </p>

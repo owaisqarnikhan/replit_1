@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import { NavigationHeader } from "@/components/navigation-header";
-import Footer from "@/components/footer";
 import { ProductCard } from "@/components/product-card";
 
 import { ImageSlider } from "@/components/image-slider";
@@ -26,7 +25,7 @@ export default function HomePage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="bg-slate-50">
       <NavigationHeader />
       
       {/* Image Slider Section */}
@@ -236,7 +235,6 @@ export default function HomePage() {
       </section>
 
       
-      <Footer />
     </div>
   );
 }

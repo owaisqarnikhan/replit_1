@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { NavigationHeader } from "@/components/navigation-header";
-import Footer from "@/components/footer";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "wouter";
@@ -14,7 +14,7 @@ export default function CategoriesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="bg-slate-50">
       <NavigationHeader />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -103,7 +103,6 @@ export default function CategoriesPage() {
         )}
       </div>
       
-      <Footer />
     </div>
   );
 }

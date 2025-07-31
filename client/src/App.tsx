@@ -46,8 +46,13 @@ function App() {
       <AuthProvider>
         <ThemeWrapper>
           <TooltipProvider>
+            <div className="min-h-screen flex flex-col">
+              <div className="flex-1">
+                <Router />
+              </div>
+              <Footer />
+            </div>
             <Toaster />
-            <Router />
           </TooltipProvider>
         </ThemeWrapper>
       </AuthProvider>
