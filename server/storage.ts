@@ -218,6 +218,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteCategory(id: string): Promise<void> {
+    // First, check if any products are using this category
+    const productsInCategory = await db.select().from(products).where(eq(products.categoryId, id));
+    
+    if (productsInCategory.length > 0) {
+      throw new Error(`Cannot delete category. ${productsInCategory.length} products are assigned to this category. Please reassign or delete those products first.`);
+    }
+    
     await db.delete(categories).where(eq(categories.id, id));
   }
 
@@ -299,6 +306,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProduct(id: string): Promise<void> {
+    // First, delete any order items that reference this product
+    await db.delete(orderItems).where(eq(orderItems.productId, id));
+    
+    // Then delete the product
     await db.delete(products).where(eq(products.id, id));
   }
 
