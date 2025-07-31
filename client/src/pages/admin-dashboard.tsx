@@ -19,8 +19,10 @@ import {
   Package, 
   Users,
   FileSpreadsheet,
-  Settings
+  Settings,
+  CheckCircle
 } from "lucide-react";
+import { AdminRequestSection } from "@/components/admin/admin-request-section";
 
 interface AdminStats {
   revenue: string;
@@ -129,8 +131,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* Management Tabs */}
-        <Tabs defaultValue="orders" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9">
+        <Tabs defaultValue="approvals" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-10">
+            <TabsTrigger value="approvals" className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4" />
+              Approvals
+            </TabsTrigger>
             <TabsTrigger value="orders" className="flex items-center gap-2">
               <ShoppingBag className="h-4 w-4" />
               Orders
@@ -168,6 +174,10 @@ export default function AdminDashboard() {
               Settings
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="approvals">
+            <AdminRequestSection />
+          </TabsContent>
 
           <TabsContent value="orders">
             <OrderManager />

@@ -434,12 +434,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send admin notification email about new order
       try {
-        const { sendAdminOrderNotification } = await import("./admin-notification");
+        const { sendAdminOrderNotification } = await import("./order-approval-workflow");
         const user = req.user!;
         const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         
         await sendAdminOrderNotification({
-          orderNumber: order.id.slice(0, 8),
+          orderNumber: order.id.slice(-8).toUpperCase(),
           customerName: customerName,
           customerEmail: user.email,
           total: order.total,
@@ -457,20 +457,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send order submission notification with approval workflow
       try {
+        const { sendOrderSubmissionEmail } = await import("./order-approval-workflow");
         const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
         
-        await sendOrderSubmittedNotification(
-          req.user!.email,
-          customerName,
-          order.id,
-          order.total
-        );
+        await sendOrderSubmissionEmail(req.user!.email, {
+          orderNumber: order.id.slice(-8).toUpperCase(),
+          customerName: customerName,
+          total: order.total,
+          estimatedDeliveryDays: 2
+        });
       } catch (emailError) {
         console.error('Failed to send order submission notification:', emailError);
       }
 
       res.status(201).json({ 
-        order, 
+        id: order.id,
+        total: order.total,
         message: "Order submitted for admin approval. Admin has been notified and you will receive an email once approved." 
       });
     } catch (error: any) {
@@ -489,6 +491,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(order);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Admin approval requests route
+  app.get("/api/admin/approval-requests", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const orders = await storage.getOrdersWithDetails();
+      res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   });
 
@@ -519,9 +535,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         
         // Send approval notification using Microsoft 365
-        const { sendOrderApprovalEmail } = await import("./email");
+        const { sendOrderApprovalEmail } = await import("./order-approval-workflow");
         await sendOrderApprovalEmail(user.email, {
-          orderNumber: order.id.slice(0, 8),
+          orderNumber: order.id.slice(-8).toUpperCase(),
           customerName: customerName,
           total: order.total,
           paymentMethod: order.paymentMethod || "Benefit Pay",
@@ -562,9 +578,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         
         // Send rejection notification using Microsoft 365
-        const { sendOrderRejectionEmail } = await import("./email");
+        const { sendOrderRejectionEmail } = await import("./order-approval-workflow");
         await sendOrderRejectionEmail(user.email, {
-          orderNumber: order.id.slice(0, 8),
+          orderNumber: order.id.slice(-8).toUpperCase(),
           customerName: customerName,
           total: order.total,
           adminRemarks: adminRemarks
@@ -599,9 +615,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (user && orderWithDetails) {
         // Send completion email to customer
-        const { sendOrderCompletionEmail } = await import("./email");
-        await sendOrderCompletionEmail(user.email, {
-          orderNumber: orderWithDetails.id,
+        const { sendDeliveryConfirmationEmail } = await import("./order-approval-workflow");
+        await sendDeliveryConfirmationEmail(user.email, {
+          orderNumber: orderWithDetails.id.slice(-8).toUpperCase(),
           customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
           total: orderWithDetails.total,
           deliveredAt: deliveredAt.toLocaleDateString()

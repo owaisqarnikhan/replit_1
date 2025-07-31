@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Loader2, Lock } from "lucide-react";
 import { BahrainPaymentMethods } from "@/components/BahrainPaymentMethods";
-import { OrderApprovalModal } from "@/components/ui/order-approval-modal";
+import { OrderApprovalModal } from "@/components/order-approval-modal";
 import type { CartItem, Product } from "@shared/schema";
 
 const shippingSchema = z.object({
@@ -121,18 +121,21 @@ export default function CheckoutPage() {
   }
 
   const onSubmit = (shippingData: ShippingData) => {
-    // Generate a unique order ID
-    const orderId = `ORD_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    setCurrentOrderId(orderId);
+    // Create order immediately and submit for approval
+    createOrderMutation.mutate({
+      shippingAddress: shippingData,
+      status: "awaiting_approval", // Set order status to awaiting approval
+      adminApprovalStatus: "pending", // Set approval status to pending
+    });
   };
 
   const handlePaymentSuccess = (paymentData: any) => {
-    const shippingData = form.getValues();
-    createOrderMutation.mutate({
-      shippingAddress: shippingData,
-      paymentMethod: paymentData.method,
-      paymentIntentId: paymentData.transactionId || paymentData.orderId,
+    // This will be called later when order is approved and customer completes payment
+    toast({
+      title: "Payment Successful",
+      description: "Your order has been confirmed and is being processed.",
     });
+    setLocation("/orders");
   };
 
   const handleApprovalModalClose = () => {
@@ -292,34 +295,40 @@ export default function CheckoutPage() {
               </CardContent>
             </Card>
 
-            {/* Continue to Payment Button */}
-            {!currentOrderId && (
-              <Card>
-                <CardContent className="pt-6">
-                  <Button 
-                    onClick={form.handleSubmit(onSubmit)}
-                    disabled={!form.formState.isValid}
-                    className="w-full"
-                    size="lg"
-                  >
-                    Continue to Payment
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* International Payment Methods */}
-            {currentOrderId && (
-              <BahrainPaymentMethods
-                total={total}
-                orderId={currentOrderId}
-                shippingData={form.getValues()}
-                onPaymentSuccess={handlePaymentSuccess}
-                onPaymentError={handlePaymentError}
-                isLocked={true}
-                lockReason="Payment is locked until admin approval. Admin has been notified and you will receive an email notification once your order is approved."
-              />
-            )}
+            {/* Submit Order for Approval Button */}
+            <Card>
+              <CardContent className="pt-6">
+                <Button 
+                  onClick={form.handleSubmit(onSubmit)}
+                  disabled={createOrderMutation.isPending || !form.formState.isValid}
+                  className="w-full"
+                  size="lg"
+                >
+                  {createOrderMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Submitting Order...
+                    </>
+                  ) : (
+                    "Submit Order for Approval"
+                  )}
+                </Button>
+                <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <div className="flex items-start space-x-3">
+                    <Lock className="h-5 w-5 text-amber-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-amber-800">Order Approval Process</h4>
+                      <div className="text-sm text-amber-700 mt-1 space-y-1">
+                        <p>• Your order will be submitted for admin approval</p>
+                        <p>• Payment methods are locked until approved</p>
+                        <p>• You'll receive email notifications for each step</p>
+                        <p>• Approval typically takes 24 hours or less</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Order Summary */}

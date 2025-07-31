@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ShoppingBag, DollarSign, Package, Truck, CheckCircle, User } from "lucide-react";
+import { ShoppingBag, DollarSign, Package, Truck, CheckCircle, User, Clock } from "lucide-react";
+import { UserRequestSection } from "@/components/user-request-section";
 import { useState } from "react";
 import type { Order, OrderItem, Product } from "@shared/schema";
 
@@ -72,6 +73,14 @@ export default function UserDashboard() {
                   >
                     <ShoppingBag className="mr-3 h-4 w-4" />
                     Dashboard
+                  </Button>
+                  <Button
+                    variant={activeTab === "requests" ? "default" : "ghost"}
+                    className="w-full justify-start"
+                    onClick={() => setActiveTab("requests")}
+                  >
+                    <Clock className="mr-3 h-4 w-4" />
+                    Order Requests
                   </Button>
                   <Button
                     variant={activeTab === "orders" ? "default" : "ghost"}
@@ -247,6 +256,10 @@ export default function UserDashboard() {
                   )}
                 </CardContent>
               </Card>
+            )}
+
+            {activeTab === "requests" && (
+              <UserRequestSection />
             )}
 
             {activeTab === "profile" && (
