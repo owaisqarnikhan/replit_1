@@ -1063,7 +1063,7 @@ export function SiteSettings() {
                       <FormControl>
                         <input
                           type="checkbox"
-                          checked={field.value}
+                          checked={field.value || false}
                           onChange={field.onChange}
                           className="w-4 h-4"
                         />
