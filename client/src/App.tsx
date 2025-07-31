@@ -12,7 +12,7 @@ import CategoriesPage from "@/pages/categories-page";
 import ProductDetailPage from "@/pages/product-detail-page";
 import CartPage from "@/pages/cart-page";
 import CheckoutPage from "@/pages/checkout-page";
-import WishlistPage from "@/pages/wishlist-page";
+
 import OrdersPage from "@/pages/orders-page";
 import UserDashboard from "@/pages/user-dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
@@ -34,7 +34,7 @@ function Router() {
       <ProtectedRoute path="/products" component={ProductsPage} />
       <ProtectedRoute path="/products/:id" component={ProductDetailPage} />
       <ProtectedRoute path="/cart" component={CartPage} />
-      <ProtectedRoute path="/wishlist" component={WishlistPage} />
+
       <ProtectedRoute path="/orders" component={OrdersPage} />
       <ProtectedRoute path="/checkout" component={CheckoutPage} />
       <ProtectedRoute path="/dashboard" component={UserDashboard} />

@@ -14,7 +14,6 @@ import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { 
   ShoppingCart, 
-  Heart,
   User, 
   Package, 
   Settings, 
@@ -24,10 +23,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import type { CartItem, WishlistItem, Product, SiteSettings } from "@shared/schema";
+import type { CartItem, Product, SiteSettings } from "@shared/schema";
 
 type CartItemWithProduct = CartItem & { product: Product };
-type WishlistItemWithProduct = WishlistItem & { product: Product };
 
 export function NavigationHeader() {
   const { user, logoutMutation } = useAuth();
@@ -40,17 +38,13 @@ export function NavigationHeader() {
     enabled: !!user,
   });
 
-  const { data: wishlistItems } = useQuery<WishlistItemWithProduct[]>({
-    queryKey: ["/api/wishlist"],
-    enabled: !!user,
-  });
+
 
   const { data: siteSettings } = useQuery<SiteSettings>({
     queryKey: ["/api/settings"],
   });
 
   const cartCount = cartItems?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-  const wishlistCount = wishlistItems?.length || 0;
 
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
@@ -187,33 +181,7 @@ export function NavigationHeader() {
 
           {/* Right Section - User Actions */}
           <div className="flex items-center justify-end space-x-2 sm:space-x-4">
-            {/* Wishlist */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative transition-colors duration-200"
-              style={{ color: siteSettings?.headerTextColor || '#64748b' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = siteSettings?.tabTextColor || '#2563eb';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = siteSettings?.headerTextColor || '#64748b';
-              }}
-              onClick={() => setLocation("/wishlist")}
-            >
-              <Heart className="h-4 w-4 sm:h-5 sm:w-5" />
-              {wishlistCount > 0 && (
-                <Badge 
-                  className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 text-xs px-1 sm:px-1.5 py-0.5 min-w-[1rem] sm:min-w-[1.25rem] h-4 sm:h-5 flex items-center justify-center"
-                  style={{ 
-                    backgroundColor: '#ec4899',
-                    color: '#ffffff'
-                  }}
-                >
-                  {wishlistCount > 99 ? "99+" : wishlistCount}
-                </Badge>
-              )}
-            </Button>
+
 
             {/* Shopping Cart */}
             <Button

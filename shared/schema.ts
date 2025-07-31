@@ -61,12 +61,7 @@ export const cartItems = pgTable("cart_items", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
-export const wishlistItems = pgTable("wishlist_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").references(() => users.id).notNull(),
-  productId: varchar("product_id").references(() => products.id).notNull(),
-  createdAt: timestamp("created_at").default(sql`now()`),
-});
+
 
 export const orders = pgTable("orders", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -101,7 +96,6 @@ export const orderItems = pgTable("order_items", {
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   cartItems: many(cartItems),
-  wishlistItems: many(wishlistItems),
   orders: many(orders),
 }));
 
@@ -123,7 +117,6 @@ export const productsRelations = relations(products, ({ one, many }) => ({
     references: [unitsOfMeasure.name],
   }),
   cartItems: many(cartItems),
-  wishlistItems: many(wishlistItems),
   orderItems: many(orderItems),
 }));
 
@@ -138,16 +131,7 @@ export const cartItemsRelations = relations(cartItems, ({ one }) => ({
   }),
 }));
 
-export const wishlistItemsRelations = relations(wishlistItems, ({ one }) => ({
-  user: one(users, {
-    fields: [wishlistItems.userId],
-    references: [users.id],
-  }),
-  product: one(products, {
-    fields: [wishlistItems.productId],
-    references: [products.id],
-  }),
-}));
+
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
   user: one(users, {
@@ -196,10 +180,7 @@ export const insertCartItemSchema = createInsertSchema(cartItems).omit({
   createdAt: true,
 });
 
-export const insertWishlistItemSchema = createInsertSchema(wishlistItems).omit({
-  id: true,
-  createdAt: true,
-});
+
 
 export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
@@ -222,8 +203,8 @@ export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type CartItem = typeof cartItems.$inferSelect;
 export type InsertCartItem = z.infer<typeof insertCartItemSchema>;
-export type WishlistItem = typeof wishlistItems.$inferSelect;
-export type InsertWishlistItem = z.infer<typeof insertWishlistItemSchema>;
+
+
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type OrderItem = typeof orderItems.$inferSelect;
