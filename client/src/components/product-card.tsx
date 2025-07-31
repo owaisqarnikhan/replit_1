@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Star, Heart, ShoppingCart, Eye } from "lucide-react";
-import { useState, useEffect } from "react";
-import type { Product, WishlistItem } from "@shared/schema";
+import { Star, ShoppingCart, Eye } from "lucide-react";
+
+import type { Product } from "@shared/schema";
 
 interface ProductCardProps {
   product: Product;
@@ -17,18 +17,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onViewDetails, onCardClick, showDetailsButton = true }: ProductCardProps) {
   const { toast } = useToast();
-  const [isWishlisted, setIsWishlisted] = useState(false);
 
-  // Get wishlist items to check if this product is wishlisted
-  const { data: wishlistItems } = useQuery<(WishlistItem & { product: Product })[]>({
-    queryKey: ["/api/wishlist"],
-  });
-
-  // Update wishlist status when data changes
-  useEffect(() => {
-    const isProductWishlisted = wishlistItems?.some(item => item.productId === product.id) || false;
-    setIsWishlisted(isProductWishlisted);
-  }, [wishlistItems, product.id]);
 
   const addToCartMutation = useMutation({
     mutationFn: async () => {
@@ -59,38 +48,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
     addToCartMutation.mutate();
   };
 
-  const wishlistMutation = useMutation({
-    mutationFn: async (action: 'add' | 'remove') => {
-      if (action === 'add') {
-        const res = await apiRequest("POST", "/api/wishlist", {
-          productId: product.id,
-        });
-        return res.json();
-      } else {
-        const res = await apiRequest("DELETE", `/api/wishlist/${product.id}`);
-        return res.json();
-      }
-    },
-    onSuccess: (_, action) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
-      toast({
-        title: action === 'add' ? "Added to wishlist" : "Removed from wishlist",
-        description: `${product.name} ${action === 'add' ? "added to" : "removed from"} your wishlist`,
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to update wishlist",
-        variant: "destructive",
-      });
-    },
-  });
 
-  const handleWishlistToggle = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    wishlistMutation.mutate(isWishlisted ? 'remove' : 'add');
-  };
 
   const renderStars = (rating: number) => {
     const stars = [];
@@ -162,21 +120,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
           )}
         </div>
         
-        {/* Wishlist Button */}
-        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110">
-          <Button
-            size="icon"
-            variant="secondary"
-            className="w-10 h-10 rounded-full shadow-lg hover:shadow-xl bg-white/90 backdrop-blur-sm hover:bg-white transition-all duration-200 border border-white/50"
-            onClick={handleWishlistToggle}
-          >
-            <Heart 
-              className={`w-5 h-5 transition-all duration-200 ${
-                isWishlisted ? "fill-red-500 text-red-500 scale-110" : "text-slate-500 hover:text-red-500 hover:scale-110"
-              }`} 
-            />
-          </Button>
-        </div>
+
 
         {/* Stock indicator - removed */}
         {false && (
@@ -233,10 +177,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
               
               <Button 
                 className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  addToCartMutation.mutate();
-                }}
+                onClick={handleAddToCart}
                 disabled={addToCartMutation.isPending}
               >
                 {addToCartMutation.isPending ? (
@@ -255,10 +196,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
           ) : (
             <Button 
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group disabled:opacity-50 disabled:hover:scale-100"
-              onClick={(e) => {
-                e.stopPropagation();
-                addToCartMutation.mutate();
-              }}
+              onClick={handleAddToCart}
               disabled={addToCartMutation.isPending}
             >
               {addToCartMutation.isPending ? (

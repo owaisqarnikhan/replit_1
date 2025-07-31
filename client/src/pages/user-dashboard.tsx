@@ -21,7 +21,7 @@ export default function UserDashboard() {
   const stats = {
     totalOrders: orders?.length || 0,
     totalSpent: orders?.reduce((sum, order) => sum + parseFloat(order.total), 0) || 0,
-    wishlistItems: 0, // Placeholder
+
   };
 
   const getStatusColor = (status: string) => {
@@ -99,7 +99,7 @@ export default function UserDashboard() {
             {activeTab === "dashboard" && (
               <>
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <Card>
                     <CardContent className="p-6 text-center">
                       <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
@@ -118,15 +118,7 @@ export default function UserDashboard() {
                       <p className="text-slate-600">Total Spent</p>
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Heart className="h-6 w-6 text-slate-900" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-slate-900">{stats.wishlistItems}</h3>
-                      <p className="text-slate-600">Wishlist Items</p>
-                    </CardContent>
-                  </Card>
+
                 </div>
 
                 {/* Recent Orders */}
