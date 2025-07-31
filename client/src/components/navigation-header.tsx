@@ -61,7 +61,6 @@ export function NavigationHeader() {
   const navItems = [
     { label: "Dashboard", href: "/", icon: Store },
     { label: "Categories", href: "/categories", icon: Package },
-    { label: "Shop by Category", href: "/category-products", icon: Package },
     { label: "Products", href: "/products", icon: Package },
     { label: "My Orders", href: "/orders", icon: Package },
   ];
