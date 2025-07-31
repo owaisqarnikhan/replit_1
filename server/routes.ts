@@ -5,7 +5,7 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema, insertUnitOfMeasureSchema } from "@shared/schema";
 import { sendOrderConfirmationEmail } from "./email";
-import { testSMTP } from "./test-smtp";
+import { testMicrosoft365Connection } from "./smtp-config";
 import { sendOrderSubmittedNotification, sendOrderApprovedNotification, sendOrderRejectedNotification } from "./sendgrid";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
 // import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
@@ -622,13 +622,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const result = await testSMTP();
+      const result = await testMicrosoft365Connection();
       res.json(result);
     } catch (error: any) {
-      console.error('SMTP test error:', error);
+      console.error('Microsoft 365 SMTP test error:', error);
       res.status(500).json({ 
         success: false, 
-        message: error.message || "SMTP test failed" 
+        message: error.message || "Microsoft 365 SMTP test failed" 
       });
     }
   });

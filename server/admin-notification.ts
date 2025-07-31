@@ -1,23 +1,5 @@
 import { storage } from "./storage";
-import nodemailer from "nodemailer";
-
-async function createTransporter() {
-  const settings = await storage.getSiteSettings();
-  
-  // Use Microsoft 365 SMTP settings
-  return nodemailer.createTransport({
-    host: 'smtp.office365.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: settings.smtpFromEmail || process.env.MICROSOFT365_EMAIL_USER,
-      pass: settings.smtpPassword || process.env.MICROSOFT365_EMAIL_PASSWORD
-    },
-    tls: {
-      ciphers: 'SSLv3'
-    }
-  });
-}
+import { createMicrosoft365Transporter, validateEmailConfig } from './smtp-config';
 
 
 // Send admin notification when new order is submitted for approval
@@ -46,8 +28,9 @@ export async function sendAdminOrderNotification(
   try {
     const settings = await storage.getSiteSettings();
     
-    if (!settings.emailEnabled || (!settings.smtpPassword && !process.env.MICROSOFT365_EMAIL_PASSWORD)) {
-      console.log('Email notifications disabled - no Microsoft 365 password configured');
+    const emailValidation = validateEmailConfig(settings);
+    if (!settings.emailEnabled || !emailValidation.valid) {
+      console.log('Admin email notifications disabled:', emailValidation.errors.join(', '));
       console.log('To enable admin notifications: Configure SMTP settings in Admin Dashboard > Settings');
       return;
     }
@@ -129,7 +112,7 @@ export async function sendAdminOrderNotification(
       </div>
     `;
 
-    const transporter = await createTransporter();
+    const transporter = await createMicrosoft365Transporter();
     
     await transporter.sendMail({
       from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || 'info@innovanceorbit.com'}>`,

@@ -1,26 +1,5 @@
-import nodemailer from 'nodemailer';
 import { storage } from './storage';
-
-// Create transporter function for Microsoft 365 SMTP
-async function createTransporter() {
-  const settings = await storage.getSiteSettings();
-  
-  return nodemailer.createTransport({
-    host: settings.smtpHost || 'smtp.office365.com',
-    port: settings.smtpPort || 587,
-    secure: false, // STARTTLS
-    auth: {
-      user: settings.smtpUser || settings.smtpFromEmail,
-      pass: settings.smtpPassword || process.env.MICROSOFT365_EMAIL_PASSWORD,
-    },
-    tls: {
-      ciphers: 'SSLv3',
-      rejectUnauthorized: false
-    },
-    debug: false, // Set to true for debugging
-    logger: false
-  });
-}
+import { createMicrosoft365Transporter, validateEmailConfig } from './smtp-config';
 
 export async function sendOrderConfirmationEmail(
   customerEmail: string,
@@ -44,10 +23,11 @@ export async function sendOrderConfirmationEmail(
     // Get site settings for template and admin email
     const settings = await storage.getSiteSettings();
     
-    // Skip if email is not enabled or no password configured
-    if (!settings.emailEnabled || (!settings.smtpPassword && !process.env.MICROSOFT365_EMAIL_PASSWORD)) {
-      console.log('Email notifications disabled - no Microsoft 365 password configured');
-      console.log('To enable emails: Configure SMTP settings in Admin Dashboard > Settings or set MICROSOFT365_EMAIL_PASSWORD environment variable');
+    const emailValidation = validateEmailConfig(settings);
+    if (!settings.emailEnabled || !emailValidation.valid) {
+      console.log('Email notifications disabled:', emailValidation.errors.join(', '));
+      console.log('To enable emails: Configure SMTP settings in Admin Dashboard > Settings');
+      console.log('Required: Microsoft 365 email and app password');
       return;
     }
     
@@ -158,9 +138,9 @@ export async function sendOrderConfirmationEmail(
     const fromEmail = settings.smtpFromEmail || settings.contactEmail || 'noreply@innovanceorbit.com';
     const fromName = settings.smtpFromName || settings.siteName || 'InnovanceOrbit';
 
-    // Use Hostinger SMTP for sending emails
+    // Use Microsoft 365 SMTP for sending emails
     console.log('Sending emails via Microsoft 365 SMTP...');
-    const smtpTransporter = await createTransporter();
+    const smtpTransporter = await createMicrosoft365Transporter();
     
     // Send to customer
     await smtpTransporter.sendMail({
@@ -211,7 +191,7 @@ export async function sendOrderConfirmationEmail(
 
 export async function testEmailConnection(): Promise<boolean> {
   try {
-    const emailTransporter = await createTransporter();
+    const emailTransporter = await createMicrosoft365Transporter();
     await emailTransporter.verify();
     return true;
   } catch (error) {
@@ -272,7 +252,7 @@ export async function sendOrderApprovalEmail(
       </div>
     `;
 
-    const transporter = await createTransporter();
+    const transporter = await createMicrosoft365Transporter();
     
     await transporter.sendMail({
       from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || 'info@innovanceorbit.com'}>`,
@@ -342,7 +322,7 @@ export async function sendOrderRejectionEmail(
       </div>
     `;
 
-    const transporter = await createTransporter();
+    const transporter = await createMicrosoft365Transporter();
     
     await transporter.sendMail({
       from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || 'info@innovanceorbit.com'}>`,
@@ -410,7 +390,7 @@ export async function sendOrderCompletionEmail(
       </div>
     `;
 
-    const transporter = await createTransporter();
+    const transporter = await createMicrosoft365Transporter();
     
     await transporter.sendMail({
       from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || 'info@innovanceorbit.com'}>`,
