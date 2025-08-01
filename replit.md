@@ -14,9 +14,9 @@ Preferred communication style: Simple, everyday language.
 - **UI Framework**: Shadcn/ui built on Radix UI primitives
 - **Styling**: Tailwind CSS with CSS variables
 - **State Management**: TanStack Query (React Query)
-- **Routing**: Wouter
+- **Routing**: Wouter with dynamic category routing (`/category/:categoryId`)
 - **Forms**: React Hook Form with Zod validation
-- **UI/UX Decisions**: Responsive design for mobile and desktop, dark/light theme support, accessible components. Geometric artwork is integrated across hero sections, admin dashboard, promotional banners, and as a custom footer background. Card components use glass-morphism, gradients, and modern animations. Prominent corner geometric designs are used in image sliders and promotional banners. Header and footer logos are enhanced for better brand prominence. Featured Products and Shop by Category sections are visually redesigned with gradient backgrounds and modern typography.
+- **UI/UX Decisions**: Responsive design for mobile and desktop, dark/light theme support, accessible components. Geometric artwork is integrated across hero sections, admin dashboard, promotional banners, and as a custom footer background. Card components use glass-morphism, gradients, and modern animations. Prominent corner geometric designs are used in image sliders and promotional banners. Header and footer logos are enhanced for better brand prominence. Featured Products and Shop by Category sections are visually redesigned with gradient backgrounds and modern typography. Individual category pages automatically created for each category with dedicated URLs.
 
 ### Backend Architecture
 - **Runtime**: Node.js with TypeScript
@@ -32,7 +32,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Key Features and Specifications
 - **Authentication System**: Login-only access for predefined users, session-based authentication, secure password hashing.
-- **E-commerce Features**: Product catalog with categories, shopping cart, order management, email notifications for order confirmations.
+- **E-commerce Features**: Product catalog with categories, shopping cart, order management, email notifications for order confirmations. Dynamic individual category pages with automatic URL generation (`/category/[categoryId]`) that display category-specific products, search functionality, and category details.
 - **Payment Integration**: Support for Benefit Pay and Cash on Delivery. Multi-payment gateway architecture to support regional payment preferences (K-Net and Benefit Debit are planned). Stripe and PayPal are integrated for international payments.
 - **Email System**: SMTP integration using Nodemailer for order confirmations. Supports customizable HTML email templates.
 - **Admin Management**: Comprehensive footer management (description, copyright, quick links, services, social media, dynamic background image). Full CRUD operations for slider images. Comprehensive unit of measure system with 16 predefined units and CRUD operations. Enhanced Excel data management system for individual sheet export/import for 8 data types (Products, Categories, Users, Orders, Order Items, Units of Measure, Site Settings, Slider Images). Database export/import functionality.
