@@ -6,7 +6,7 @@ import { storage } from "./storage";
 import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema, insertUnitOfMeasureSchema } from "@shared/schema";
 import { sendOrderConfirmationEmail } from "./email";
 import { testMicrosoft365Connection } from "./smtp-config";
-import { sendOrderSubmittedNotification, sendOrderApprovedNotification, sendOrderRejectedNotification } from "./sendgrid";
+// import { sendOrderSubmittedNotification, sendOrderApprovedNotification, sendOrderRejectedNotification } from "./sendgrid";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
 // import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { createBenefitPayTransaction, verifyBenefitPayTransaction, handleBenefitPayWebhook } from "./benefit-pay";
@@ -448,12 +448,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           customerName: customerName,
           customerEmail: user.email,
           total: order.total,
+          shippingAddress: "", // Add missing required field
           items: cartItems.map(item => ({
             productName: item.product.name,
             quantity: item.quantity,
             price: (parseFloat(item.product.price) * item.quantity).toFixed(2)
-          })),
-
+          }))
         });
       } catch (emailError) {
         console.error('Failed to send admin notification:', emailError);
@@ -468,8 +468,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await sendOrderSubmissionEmail(req.user!.email, {
           orderNumber: order.id.slice(-8).toUpperCase(),
           customerName: customerName,
-          total: order.total,
-          estimatedDeliveryDays: 2
+          total: order.total
         });
       } catch (emailError) {
         console.error('Failed to send order submission notification:', emailError);
@@ -536,8 +535,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           orderNumber: order.id.slice(-8).toUpperCase(),
           customerName: customerName,
           total: order.total,
-          paymentMethod: paymentMethod,
-          estimatedDeliveryDays: 2
+          paymentMethod: paymentMethod
         });
       } catch (emailError) {
         console.error('Failed to send payment confirmation email:', emailError);
@@ -698,8 +696,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Update order status to delivered
       await storage.updateOrder(orderId, {
-        status: "delivered",
-        deliveredAt
+        status: "delivered"
       });
 
       // Get order details for email
