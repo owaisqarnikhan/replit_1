@@ -12,7 +12,6 @@ export async function sendOrderSubmissionEmail(
     orderNumber: string;
     customerName: string;
     total: string;
-    estimatedDeliveryDays: number;
   }
 ): Promise<void> {
   try {
@@ -39,7 +38,7 @@ export async function sendOrderSubmissionEmail(
             <h3 style="color: #92400e; margin-top: 0; font-size: 18px;">Order Status: Awaiting Approval</h3>
             <p style="color: #92400e; margin: 10px 0;">Order Number: <strong>${orderDetails.orderNumber}</strong></p>
             <p style="color: #92400e; margin: 10px 0;">Order Total: <strong>$${orderDetails.total}</strong></p>
-            <p style="color: #92400e; margin: 10px 0;">Estimated Delivery: <strong>${orderDetails.estimatedDeliveryDays} business days after approval</strong></p>
+
           </div>
           
           <div style="background: #ede9fe; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #7c3aed;">
@@ -266,7 +265,6 @@ export async function sendPaymentConfirmationEmail(
     customerName: string;
     total: string;
     paymentMethod: string;
-    estimatedDeliveryDays: number;
   }
 ): Promise<void> {
   try {
@@ -299,9 +297,9 @@ export async function sendPaymentConfirmationEmail(
           
           <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #22c55e;">
             <h4 style="color: #166534; margin-top: 0;">What's Next?</h4>
-            <p style="color: #166534; margin: 10px 0;">• Your order is now being prepared for shipment</p>
-            <p style="color: #166534; margin: 10px 0;">• Estimated delivery: <strong>${orderDetails.estimatedDeliveryDays} business days</strong></p>
-            <p style="color: #166534; margin: 10px 0;">• You'll receive tracking information once shipped</p>
+            <p style="color: #166534; margin: 10px 0;">• Your order is now being prepared for pickup/delivery</p>
+            <p style="color: #166534; margin: 10px 0;">• We'll contact you when ready</p>
+            <p style="color: #166534; margin: 10px 0;">• Thank you for your business!</p>
           </div>
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">

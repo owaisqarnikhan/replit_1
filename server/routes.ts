@@ -120,9 +120,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Cash on Delivery route
   app.post("/api/cash-on-delivery", async (req, res) => {
     try {
-      const { orderId, amount, shippingAddress } = req.body;
+      const { orderId, amount } = req.body;
       
-      if (!orderId || !amount || !shippingAddress) {
+      if (!orderId || !amount) {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
@@ -132,7 +132,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: "pending_payment",
         paymentMethod: "cash_on_delivery",
         amount,
-        shippingAddress,
         createdAt: new Date().toISOString(),
       };
 
@@ -391,7 +390,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const { shippingAddress, paymentMethod, paymentIntentId } = req.body;
+      const { customerInfo, paymentMethod, paymentIntentId } = req.body;
       
       // Get cart items
       const cartItems = await storage.getCartItems(req.user!.id);
@@ -407,23 +406,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
       const vatPercentage = 10.00;
       const tax = subtotal * (vatPercentage / 100); // 10% VAT
-      const shipping = 0; // Free shipping
-      const total = subtotal + tax + shipping;
+      const total = subtotal + tax;
 
       // Create order with approval workflow - always starts as pending approval
       const order = await storage.createOrder({
         userId: req.user!.id,
         subtotal: subtotal.toFixed(2),
         tax: tax.toFixed(2),
-        shipping: shipping.toFixed(2),
+
         total: total.toFixed(2),
         vatPercentage: vatPercentage.toFixed(2),
         paymentMethod,
         paymentIntentId,
-        shippingAddress,
         status: "pending", // Order status starts as pending
         adminApprovalStatus: "pending", // Always requires admin approval
-        estimatedDeliveryDays: 2, // Default 2-day arrangement period
       });
 
       // Create order items and update stock
@@ -457,7 +453,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             quantity: item.quantity,
             price: (parseFloat(item.product.price) * item.quantity).toFixed(2)
           })),
-          shippingAddress: shippingAddress
+
         });
       } catch (emailError) {
         console.error('Failed to send admin notification:', emailError);

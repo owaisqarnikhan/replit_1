@@ -224,31 +224,7 @@ export function OrderPaymentCheckout({ orderId }: OrderPaymentCheckoutProps) {
               </CardContent>
             </Card>
 
-            {/* Shipping Information */}
-            {(order as any).shippingAddress && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Shipping Address</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-sm text-slate-600 space-y-1">
-                    {typeof (order as any).shippingAddress === 'string' ? (
-                      <p>{(order as any).shippingAddress}</p>
-                    ) : (
-                      <>
-                        <p className="font-medium text-slate-900">
-                          {((order as any).shippingAddress as any)?.firstName} {((order as any).shippingAddress as any)?.lastName}
-                        </p>
-                        <p>{((order as any).shippingAddress as any)?.address}</p>
-                        <p>{((order as any).shippingAddress as any)?.city}, {((order as any).shippingAddress as any)?.state} {((order as any).shippingAddress as any)?.zipCode}</p>
-                        <p>{((order as any).shippingAddress as any)?.email}</p>
-                        <p>{((order as any).shippingAddress as any)?.phone}</p>
-                      </>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+
           </div>
 
           {/* Payment Section */}

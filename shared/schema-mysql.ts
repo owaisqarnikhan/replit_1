@@ -88,8 +88,7 @@ export const orders = mysqlTable("orders", {
   paymentStatus: mysqlEnum("payment_status", ["pending", "completed", "failed", "refunded"]).default("pending"),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   paypalOrderId: text("paypal_order_id"),
-  shippingAddress: json("shipping_address"),
-  billingAddress: json("billing_address"),
+
   orderNotes: text("order_notes").default(""),
   adminNotes: text("admin_notes").default(""),
   createdAt: timestamp("created_at").defaultNow(),

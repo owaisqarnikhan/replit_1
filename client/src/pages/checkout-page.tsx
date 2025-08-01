@@ -1,39 +1,29 @@
 import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { NavigationHeader } from "@/components/navigation-header";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useLocation, useParams } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Lock } from "lucide-react";
-import { BahrainPaymentMethods } from "@/components/BahrainPaymentMethods";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useLocation, useParams } from "wouter";
+import { NavigationHeader } from "@/components/navigation-header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { OrderApprovalModal } from "@/components/order-approval-modal";
 import { OrderPaymentCheckout } from "@/components/order-payment-checkout";
 import type { CartItem, Product } from "@shared/schema";
 
-const shippingSchema = z.object({
+const customerInfoSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Valid email is required"),
   phone: z.string().min(1, "Phone number is required"),
-  address: z.string().min(1, "Address is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  zipCode: z.string().min(1, "ZIP code is required"),
 });
 
-type ShippingData = z.infer<typeof shippingSchema>;
+type CustomerInfoData = z.infer<typeof customerInfoSchema>;
 type CartItemWithProduct = CartItem & { product: Product };
-
-// Stripe checkout removed - using international payment methods instead
 
 export default function CheckoutPage() {
   const [, setLocation] = useLocation();
@@ -44,6 +34,7 @@ export default function CheckoutPage() {
   if (params.orderId) {
     return <OrderPaymentCheckout orderId={params.orderId} />;
   }
+
   const [showApprovalModal, setShowApprovalModal] = useState(false);
   const [createdOrder, setCreatedOrder] = useState<{ id: string; total: string } | null>(null);
 
@@ -51,17 +42,13 @@ export default function CheckoutPage() {
     queryKey: ["/api/cart"],
   });
 
-  const form = useForm<ShippingData>({
-    resolver: zodResolver(shippingSchema),
+  const form = useForm<CustomerInfoData>({
+    resolver: zodResolver(customerInfoSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
       email: "",
       phone: "",
-      address: "",
-      city: "",
-      state: "",
-      zipCode: "",
     },
   });
 
@@ -74,7 +61,6 @@ export default function CheckoutPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       
-      // Set the created order data and show approval modal
       setCreatedOrder({
         id: data.id,
         total: data.total
@@ -83,21 +69,32 @@ export default function CheckoutPage() {
     },
     onError: () => {
       toast({
-        title: "Order Failed",
-        description: "Please try again or contact support.",
+        title: "Error",
+        description: "Failed to create order. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  // Stripe payment intent mutation removed - using Bahrain payment methods
+  if (!cartItems || cartItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <NavigationHeader />
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+          <h1 className="text-2xl font-bold text-slate-900 mb-4">Cart is Empty</h1>
+          <p className="text-slate-600 mb-8">Add some products to your cart before checkout.</p>
+          <Button onClick={() => setLocation("/products")}>
+            Continue Shopping
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
-  const subtotal = cartItems?.reduce(
-    (sum, item) => sum + parseFloat(item.product.price) * item.quantity,
-    0
-  ) || 0;
+  const subtotal = cartItems.reduce((total, item) => {
+    return total + (parseFloat(item.product.price) * item.quantity);
+  }, 0);
 
-  // Using 10% VAT as requested
   const tax = subtotal * 0.10;
   const total = subtotal + tax;
 
@@ -111,7 +108,6 @@ export default function CheckoutPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-4">
                 <div className="h-64 bg-white rounded-lg"></div>
-                <div className="h-48 bg-white rounded-lg"></div>
               </div>
               <div className="h-96 bg-white rounded-lg"></div>
             </div>
@@ -121,41 +117,18 @@ export default function CheckoutPage() {
     );
   }
 
-  if (!cartItems || cartItems.length === 0) {
-    setLocation("/cart");
-    return null;
-  }
-
-  const onSubmit = (shippingData: ShippingData) => {
-    // Create order immediately and submit for approval
+  const onSubmit = (customerData: CustomerInfoData) => {
     createOrderMutation.mutate({
-      shippingAddress: shippingData,
-      status: "awaiting_approval", // Set order status to awaiting approval
-      adminApprovalStatus: "pending", // Set approval status to pending
+      customerInfo: customerData,
+      status: "awaiting_approval",
+      adminApprovalStatus: "pending",
     });
-  };
-
-  const handlePaymentSuccess = (paymentData: any) => {
-    // This will be called later when order is approved and customer completes payment
-    toast({
-      title: "Payment Successful",
-      description: "Your order has been confirmed and is being processed.",
-    });
-    setLocation("/orders");
   };
 
   const handleApprovalModalClose = () => {
     setShowApprovalModal(false);
     setCreatedOrder(null);
-    setLocation("/orders"); // Redirect to orders page to see the pending order
-  };
-
-  const handlePaymentError = (error: string) => {
-    toast({
-      title: "Payment Failed",
-      description: error,
-      variant: "destructive",
-    });
+    setLocation("/orders");
   };
 
   return (
@@ -168,10 +141,9 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Checkout Form */}
           <div className="space-y-8">
-            {/* Shipping Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Shipping Information</CardTitle>
+                <CardTitle>Customer Information</CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -234,164 +206,55 @@ export default function CheckoutPage() {
                     )}
                   </div>
                   
-                  <div>
-                    <Label htmlFor="address">Street Address</Label>
-                    <Input
-                      id="address"
-                      {...form.register("address")}
-                      className="mt-1"
-                    />
-                    {form.formState.errors.address && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {form.formState.errors.address.message}
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="city">City</Label>
-                      <Input
-                        id="city"
-                        {...form.register("city")}
-                        className="mt-1"
-                      />
-                      {form.formState.errors.city && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {form.formState.errors.city.message}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="state">State</Label>
-                      <Select value={form.watch("state")} onValueChange={(value) => form.setValue("state", value)}>
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select State" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Bahrain">Bahrain</SelectItem>
-                          <SelectItem value="UAE">UAE</SelectItem>
-                          <SelectItem value="Saudi Arabia">Saudi Arabia</SelectItem>
-                          <SelectItem value="Kuwait">Kuwait</SelectItem>
-                          <SelectItem value="Qatar">Qatar</SelectItem>
-                          <SelectItem value="Oman">Oman</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {form.formState.errors.state && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {form.formState.errors.state.message}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <Label htmlFor="zipCode">ZIP Code</Label>
-                      <Input
-                        id="zipCode"
-                        {...form.register("zipCode")}
-                        className="mt-1"
-                      />
-                      {form.formState.errors.zipCode && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {form.formState.errors.zipCode.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                  <Button
+                    type="submit"
+                    className="w-full mt-8"
+                    disabled={createOrderMutation.isPending}
+                  >
+                    {createOrderMutation.isPending ? "Submitting Order..." : "Submit Order for Approval"}
+                  </Button>
                 </form>
-              </CardContent>
-            </Card>
-
-            {/* Submit Order for Approval Button */}
-            <Card>
-              <CardContent className="pt-6">
-                <Button 
-                  onClick={form.handleSubmit(onSubmit)}
-                  disabled={createOrderMutation.isPending || !form.formState.isValid}
-                  className="w-full"
-                  size="lg"
-                >
-                  {createOrderMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Submitting Order...
-                    </>
-                  ) : (
-                    "Submit Order for Approval"
-                  )}
-                </Button>
-                <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                  <div className="flex items-start space-x-3">
-                    <Lock className="h-5 w-5 text-amber-600 mt-0.5" />
-                    <div>
-                      <h4 className="font-semibold text-amber-800">Order Approval Process</h4>
-                      <div className="text-sm text-amber-700 mt-1 space-y-1">
-                        <p>• Your order will be submitted for admin approval</p>
-                        <p>• Payment methods are locked until approved</p>
-                        <p>• You'll receive email notifications for each step</p>
-                        <p>• Approval typically takes 24 hours or less</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Order Summary */}
           <div>
-            <Card className="sticky top-8">
+            <Card>
               <CardHeader>
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4 mb-6">
+                <div className="space-y-4">
                   {cartItems.map((item) => (
-                    <div key={item.id} className="flex items-center space-x-4">
-                      {item.product.imageUrl ? (
-                        <img 
-                          src={item.product.imageUrl} 
-                          alt={item.product.name}
-                          className="w-16 h-16 object-cover rounded-lg"
-                        />
-                      ) : (
-                        <div className="w-16 h-16 bg-slate-200 rounded-lg flex items-center justify-center">
-                          <span className="text-slate-500 text-xs">{item.product.name.charAt(0)}</span>
-                        </div>
-                      )}
+                    <div key={item.id} className="flex justify-between items-center py-2 border-b border-slate-200">
                       <div className="flex-1">
-                        <h3 className="font-medium text-slate-900">{item.product.name}</h3>
-                        <p className="text-slate-600 text-sm">Qty: {item.quantity}</p>
+                        <h4 className="font-medium text-slate-900">{item.product.name}</h4>
+                        <p className="text-sm text-slate-600">Quantity: {item.quantity}</p>
                       </div>
-                      <span className="font-semibold text-slate-900">
-                        ${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
-                      </span>
+                      <div className="text-right">
+                        <p className="font-medium text-slate-900">
+                          ${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
+                        </p>
+                      </div>
                     </div>
                   ))}
-                </div>
-                
-                <div className="space-y-2 pt-4 border-t border-slate-200">
-                  <div className="flex justify-between text-slate-600">
-                    <span>Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-slate-600">
-                    <span>Shipping</span>
-                    <span>Free</span>
-                  </div>
-                  <div className="flex justify-between text-slate-600">
-                    <span>VAT (10%)</span>
-                    <span>${tax.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-lg font-bold text-slate-900 pt-2 border-t border-slate-200">
-                    <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                  
+                  <div className="space-y-2 pt-4 border-t border-slate-200">
+                    <div className="flex justify-between text-slate-600">
+                      <span>Subtotal</span>
+                      <span>${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-slate-600">
+                      <span>VAT (10%)</span>
+                      <span>${tax.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-lg font-bold text-slate-900 pt-2 border-t border-slate-200">
+                      <span>Total</span>
+                      <span>${total.toFixed(2)}</span>
+                    </div>
                   </div>
                 </div>
-                
-                <p className="text-center text-sm text-slate-500 mt-4">
-                  <Lock className="inline h-4 w-4 mr-1" />
-                  Secure payments powered by international payment gateways
-                </p>
               </CardContent>
             </Card>
           </div>
@@ -399,12 +262,12 @@ export default function CheckoutPage() {
       </div>
 
       {/* Order Approval Modal */}
-      {createdOrder && (
+      {showApprovalModal && createdOrder && (
         <OrderApprovalModal
           isOpen={showApprovalModal}
           onClose={handleApprovalModalClose}
           orderId={createdOrder.id}
-          orderTotal={createdOrder.total}
+          total={createdOrder.total}
         />
       )}
     </div>

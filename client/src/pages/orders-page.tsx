@@ -303,8 +303,8 @@ export default function OrdersPage() {
                     </div>
                   </div>
 
-                  {/* Payment & Shipping Info */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-slate-200">
+                  {/* Payment Info */}
+                  <div className="mt-6 pt-6 border-t border-slate-200">
                     <div>
                       <h4 className="font-medium text-slate-900 mb-2">Payment Method</h4>
                       <p className="text-sm text-slate-600">
@@ -314,22 +314,6 @@ export default function OrdersPage() {
                         Status: <span className="font-medium">{formatStatus((order as any).paymentStatus)}</span>
                       </p>
                     </div>
-                    
-                    {(order as any).shippingAddress && (
-                      <div>
-                        <h4 className="font-medium text-slate-900 mb-2">Shipping Address</h4>
-                        <div className="text-sm text-slate-600 space-y-1">
-                          {typeof (order as any).shippingAddress === 'string' ? (
-                            <p>{(order as any).shippingAddress}</p>
-                          ) : (
-                            <>
-                              <p>{((order as any).shippingAddress as any)?.street}</p>
-                              <p>{((order as any).shippingAddress as any)?.city}, {((order as any).shippingAddress as any)?.country}</p>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   {/* Admin Remarks */}

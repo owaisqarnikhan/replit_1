@@ -258,21 +258,7 @@ export function OrderManager() {
                           </div>
                         </div>
 
-                        {/* Shipping Address */}
-                        {order.shippingAddress && (
-                          <div>
-                            <h4 className="font-medium text-gray-900 mb-2 flex items-center">
-                              <MapPin className="w-4 h-4 mr-2" />
-                              Shipping Address
-                            </h4>
-                            <div className="bg-gray-50 p-3 rounded text-sm text-gray-600">
-                              <p>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
-                              <p>{order.shippingAddress.address}</p>
-                              <p>{order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}</p>
-                              <p>Phone: {order.shippingAddress.phone}</p>
-                            </div>
-                          </div>
-                        )}
+
 
                         {/* Order Items */}
                         <div>

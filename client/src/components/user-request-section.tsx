@@ -29,7 +29,7 @@ interface Order {
   adminApprovedAt?: string;
   adminRemarks?: string;
   paymentMethod?: string;
-  shippingAddress: any;
+  customerInfo?: any;
   createdAt: string;
   items?: Array<{
     id: string;
