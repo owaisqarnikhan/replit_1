@@ -291,13 +291,7 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
               </Card>
             )}
 
-            {(product.stock || 0) === 0 && (
-              <Card>
-                <CardContent className="p-4 text-center">
-                  <p className="text-red-600 font-medium">This product is currently out of stock</p>
-                </CardContent>
-              </Card>
-            )}
+
           </div>
         </div>
       </DialogContent>

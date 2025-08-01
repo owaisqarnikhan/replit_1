@@ -42,7 +42,7 @@ export const products = mysqlTable("products", {
   name: text("name").notNull(),
   description: text("description").default(""),
   price: varchar("price", { length: 20 }).notNull(), // Store as string for precision
-  stock: int("stock").default(0),
+
   sku: text("sku").default(""),
   categoryId: varchar("category_id", { length: 36 }),
   imageUrl: text("image_url").default(""),

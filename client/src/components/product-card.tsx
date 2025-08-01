@@ -122,14 +122,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
         
 
 
-        {/* Stock indicator - removed */}
-        {false && (
-          <div className="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center">
-            <Badge variant="destructive" className="text-white text-lg px-4 py-2 font-bold shadow-lg">
-              Out of Stock
-            </Badge>
-          </div>
-        )}
+
       </div>
       
       <CardContent className="p-6 bg-gradient-to-b from-transparent to-slate-50/30 flex flex-col">
