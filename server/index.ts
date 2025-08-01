@@ -44,12 +44,12 @@ app.use((req, res, next) => {
     await db.execute('SELECT 1 as test');
     log("Database connection successful");
     
-    // Seed predefined user accounts on startup
-    await seedUsers();
-    
-    // Seed permission system
+    // Seed permission system first (creates roles)
     const { seedPermissions } = await import("./seed-permissions");
     await seedPermissions();
+    
+    // Seed predefined user accounts after roles are created
+    await seedUsers();
     
     const server = await registerRoutes(app);
 

@@ -237,6 +237,155 @@ export async function seedPermissions() {
       console.log("✓ Created Admin role");
     }
 
+    // 4.5. Create default User role
+    console.log("Creating User role...");
+    const [userRole] = await db
+      .select()
+      .from(roles)
+      .where(eq(roles.name, "user"));
+
+    let userRoleId = userRole?.id;
+
+    if (!userRole) {
+      const [newUserRole] = await db.insert(roles).values({
+        name: "user",
+        displayName: "User",
+        description: "Standard user access with basic permissions",
+        isSystemRole: false,
+        isActive: true
+      }).returning();
+      userRoleId = newUserRole.id;
+      console.log("✓ Created User role");
+    }
+
+    // 5.1. Assign basic permissions to User role (if needed)
+    if (userRoleId) {
+      console.log("Assigning basic permissions to User role...");
+      
+      // Define basic permissions for regular users
+      const userPermissions = [
+        "products.view",  // View products
+        "categories.view", // View categories
+        "orders.view",    // View their own orders
+      ];
+      
+      const allPermissions = await db.select().from(permissions);
+      let assignedCount = 0;
+      
+      for (const permissionName of userPermissions) {
+        const permission = allPermissions.find(p => p.name === permissionName);
+        if (!permission) continue;
+        
+        const [existing] = await db
+          .select()
+          .from(rolePermissions)
+          .where(and(
+            eq(rolePermissions.roleId, userRoleId),
+            eq(rolePermissions.permissionId, permission.id)
+          ));
+
+        if (!existing) {
+          await db.insert(rolePermissions).values({
+            roleId: userRoleId,
+            permissionId: permission.id
+          });
+          assignedCount++;
+        }
+      }
+      
+      if (assignedCount > 0) {
+        console.log(`✓ Assigned ${assignedCount} basic permissions to User role`);
+      }
+    }
+
+    // 5.2. Assign intermediate permissions to Admin role
+    if (adminRoleId) {
+      console.log("Assigning admin permissions to Admin role...");
+      
+      // Define admin permissions (moderate level access)
+      const adminPermissions = [
+        // User management (limited)
+        "users.view",
+        "users.edit",
+        
+        // Product management (full)
+        "products.view",
+        "products.create", 
+        "products.edit",
+        "products.delete",
+        "products.manage",
+        
+        // Order management (full)
+        "orders.view",
+        "orders.approve",
+        "orders.reject", 
+        "orders.process",
+        "orders.manage",
+        
+        // Category management (full)
+        "categories.view",
+        "categories.create",
+        "categories.edit", 
+        "categories.delete",
+        "categories.manage",
+        
+        // Units management (full)
+        "units.view",
+        "units.create",
+        "units.edit",
+        "units.delete",
+        "units.manage",
+        
+        // Slider management (full)
+        "slider.view",
+        "slider.create",
+        "slider.edit",
+        "slider.delete",
+        "slider.manage",
+        
+        // Settings (limited)
+        "settings.view",
+        "settings.edit",
+        
+        // Reports (view only)
+        "reports.view",
+        "reports.export",
+        
+        // Email (limited)
+        "email.view",
+        "email.edit",
+        "email.test"
+      ];
+      
+      const allPermissions = await db.select().from(permissions);
+      let assignedCount = 0;
+      
+      for (const permissionName of adminPermissions) {
+        const permission = allPermissions.find(p => p.name === permissionName);
+        if (!permission) continue;
+        
+        const [existing] = await db
+          .select()
+          .from(rolePermissions)
+          .where(and(
+            eq(rolePermissions.roleId, adminRoleId),
+            eq(rolePermissions.permissionId, permission.id)
+          ));
+
+        if (!existing) {
+          await db.insert(rolePermissions).values({
+            roleId: adminRoleId,
+            permissionId: permission.id
+          });
+          assignedCount++;
+        }
+      }
+      
+      if (assignedCount > 0) {
+        console.log(`✓ Assigned ${assignedCount} admin permissions to Admin role`);
+      }
+    }
+
     // 5. Assign ALL permissions to Super Admin role
     if (superAdminRoleId) {
       console.log("Assigning all permissions to Super Admin...");
@@ -289,6 +438,7 @@ export async function seedPermissions() {
       success: true,
       superAdminRoleId,
       adminRoleId,
+      userRoleId,
       modulesCount: PERMISSION_MODULES.length,
       permissionsCount: PERMISSIONS.length
     };
