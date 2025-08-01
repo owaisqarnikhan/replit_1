@@ -41,6 +41,10 @@ app.use((req, res, next) => {
   // Seed predefined user accounts on startup
   await seedUsers();
   
+  // Seed permission system
+  const { seedPermissions } = await import("./seed-permissions");
+  await seedPermissions();
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

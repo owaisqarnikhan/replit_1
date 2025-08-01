@@ -12,6 +12,7 @@ import { SiteSettings } from "@/components/admin/SiteSettings";
 import DatabaseManager from "@/components/admin/DatabaseManager";
 import ExcelManager from "@/components/admin/ExcelManager";
 import { UnitsOfMeasureManager } from "@/components/admin/UnitsOfMeasureManager";
+import RolePermissionManager from "@/components/admin/RolePermissionManager";
 import { 
   DollarSign, 
   ShoppingCart, 
@@ -20,7 +21,8 @@ import {
   Users,
   FileSpreadsheet,
   Settings,
-  CheckCircle
+  CheckCircle,
+  Shield
 } from "lucide-react";
 import { AdminRequestSection } from "@/components/admin/admin-request-section";
 
@@ -32,6 +34,7 @@ interface AdminStats {
 }
 
 export default function AdminDashboard() {
+  const { data: user } = useQuery({ queryKey: ["/api/user"] });
   const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
     queryKey: ["/api/admin/stats"],
   });
@@ -132,7 +135,7 @@ export default function AdminDashboard() {
 
         {/* Management Tabs */}
         <Tabs defaultValue="approvals" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-10">
+          <TabsList className={`grid w-full ${user?.isSuperAdmin ? 'grid-cols-11' : 'grid-cols-10'}`}>
             <TabsTrigger value="approvals" className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4" />
               Approvals
@@ -157,6 +160,12 @@ export default function AdminDashboard() {
               <Users className="h-4 w-4" />
               Users
             </TabsTrigger>
+            {user?.isSuperAdmin && (
+              <TabsTrigger value="permissions" className="flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                Roles
+              </TabsTrigger>
+            )}
             <TabsTrigger value="excel" className="flex items-center gap-2">
               <FileSpreadsheet className="h-4 w-4" />
               Excel
@@ -198,6 +207,12 @@ export default function AdminDashboard() {
           <TabsContent value="users">
             <UserManager />
           </TabsContent>
+
+          {user?.isSuperAdmin && (
+            <TabsContent value="permissions">
+              <RolePermissionManager />
+            </TabsContent>
+          )}
 
           <TabsContent value="excel">
             <ExcelManager />

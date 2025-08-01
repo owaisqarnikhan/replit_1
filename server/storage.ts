@@ -8,6 +8,10 @@ import {
   siteSettings,
   sliderImages,
   unitsOfMeasure,
+  roles,
+  permissionModules,
+  permissions,
+  rolePermissions,
   type User, 
   type InsertUser,
   type Category,
@@ -25,7 +29,11 @@ import {
   type SliderImage,
   type InsertSliderImage,
   type UnitOfMeasure,
-  type InsertUnitOfMeasure
+  type InsertUnitOfMeasure,
+  type Role,
+  type PermissionModule,
+  type Permission,
+  type RolePermission
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -903,6 +911,59 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSliderImage(id: string): Promise<void> {
     await db.delete(sliderImages).where(eq(sliderImages.id, id));
+  }
+  // Permission system methods
+  async getAllRoles(): Promise<Role[]> {
+    return await db.select().from(roles).orderBy(roles.name);
+  }
+
+  async getRoleById(id: string): Promise<Role | undefined> {
+    const [role] = await db.select().from(roles).where(eq(roles.id, id));
+    return role || undefined;
+  }
+
+  async getAllPermissionModules(): Promise<PermissionModule[]> {
+    return await db.select().from(permissionModules).orderBy(permissionModules.sortOrder);
+  }
+
+  async getPermissionsByModule(moduleId: string): Promise<Permission[]> {
+    return await db.select().from(permissions).where(eq(permissions.moduleId, moduleId));
+  }
+
+  async getRolePermissions(roleId: string): Promise<Permission[]> {
+    const result = await db
+      .select({
+        id: permissions.id,
+        moduleId: permissions.moduleId,
+        name: permissions.name,
+        displayName: permissions.displayName,
+        description: permissions.description,
+        action: permissions.action,
+        createdAt: permissions.createdAt,
+      })
+      .from(permissions)
+      .innerJoin(rolePermissions, eq(permissions.id, rolePermissions.permissionId))
+      .where(eq(rolePermissions.roleId, roleId));
+    
+    return result;
+  }
+
+  async assignPermissionsToRole(roleId: string, permissionIds: string[]): Promise<void> {
+    // First remove all existing permissions for this role
+    await db.delete(rolePermissions).where(eq(rolePermissions.roleId, roleId));
+    
+    // Then add the new permissions
+    if (permissionIds.length > 0) {
+      const insertData = permissionIds.map(permissionId => ({
+        roleId,
+        permissionId
+      }));
+      await db.insert(rolePermissions).values(insertData);
+    }
+  }
+
+  async assignRoleToUser(userId: string, roleId: string): Promise<void> {
+    await db.update(users).set({ roleId }).where(eq(users.id, userId));
   }
 }
 

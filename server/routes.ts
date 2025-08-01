@@ -1469,6 +1469,207 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Permission Management Routes (Super Admin only)
+  app.get("/api/admin/roles", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const roles = await storage.getAllRoles();
+      res.json(roles);
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+      res.status(500).json({ message: "Failed to fetch roles" });
+    }
+  });
+
+  app.get("/api/admin/permission-modules", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const modules = await storage.getAllPermissionModules();
+      res.json(modules);
+    } catch (error) {
+      console.error("Error fetching permission modules:", error);
+      res.status(500).json({ message: "Failed to fetch permission modules" });
+    }
+  });
+
+  app.get("/api/admin/permissions/:moduleId", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const { moduleId } = req.params;
+      const permissions = await storage.getPermissionsByModule(moduleId);
+      res.json(permissions);
+    } catch (error) {
+      console.error("Error fetching permissions:", error);
+      res.status(500).json({ message: "Failed to fetch permissions" });
+    }
+  });
+
+  app.get("/api/admin/role-permissions/:roleId", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const { roleId } = req.params;
+      const permissions = await storage.getRolePermissions(roleId);
+      res.json(permissions);
+    } catch (error) {
+      console.error("Error fetching role permissions:", error);
+      res.status(500).json({ message: "Failed to fetch role permissions" });
+    }
+  });
+
+  app.post("/api/admin/assign-permissions", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const { roleId, permissionIds } = req.body;
+      await storage.assignPermissionsToRole(roleId, permissionIds);
+      res.json({ message: "Permissions assigned successfully" });
+    } catch (error) {
+      console.error("Error assigning permissions:", error);
+      res.status(500).json({ message: "Failed to assign permissions" });
+    }
+  });
+
+  app.post("/api/admin/assign-role", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const { userId, roleId } = req.body;
+      await storage.assignRoleToUser(userId, roleId);
+      res.json({ message: "Role assigned successfully" });
+    } catch (error) {
+      console.error("Error assigning role:", error);
+      res.status(500).json({ message: "Failed to assign role" });
+    }
+  });
+
+  app.get("/api/user/permissions", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    
+    try {
+      const { getUserPermissions } = await import("./seed-permissions");
+      const permissions = await getUserPermissions(req.user.id);
+      res.json({ permissions });
+    } catch (error) {
+      console.error("Error fetching user permissions:", error);
+      res.status(500).json({ message: "Failed to fetch user permissions" });
+    }
+  });
+
+  // Role and Permission Management Routes (Super Admin Only)
+  app.get("/api/admin/roles", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const roles = await storage.getAllRoles();
+      res.json(roles);
+    } catch (error: any) {
+      console.error("Error fetching roles:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch roles" });
+    }
+  });
+
+  app.get("/api/admin/permission-modules", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const modules = await storage.getAllPermissionModules();
+      res.json(modules);
+    } catch (error: any) {
+      console.error("Error fetching permission modules:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch permission modules" });
+    }
+  });
+
+  app.get("/api/admin/permissions/:moduleId", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const permissions = await storage.getPermissionsByModule(req.params.moduleId);
+      res.json(permissions);
+    } catch (error: any) {
+      console.error("Error fetching permissions:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch permissions" });
+    }
+  });
+
+  app.get("/api/admin/role-permissions/:roleId", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const permissions = await storage.getRolePermissions(req.params.roleId);
+      res.json(permissions);
+    } catch (error: any) {
+      console.error("Error fetching role permissions:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch role permissions" });
+    }
+  });
+
+  app.post("/api/admin/assign-permissions", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const { roleId, permissionIds } = req.body;
+      
+      if (!roleId || !Array.isArray(permissionIds)) {
+        return res.status(400).json({ message: "Role ID and permission IDs array are required" });
+      }
+
+      await storage.assignPermissionsToRole(roleId, permissionIds);
+      res.json({ message: "Permissions assigned successfully" });
+    } catch (error: any) {
+      console.error("Error assigning permissions:", error);
+      res.status(500).json({ message: error.message || "Failed to assign permissions" });
+    }
+  });
+
+  app.post("/api/admin/assign-role", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const { userId, roleId } = req.body;
+      
+      if (!userId || !roleId) {
+        return res.status(400).json({ message: "User ID and Role ID are required" });
+      }
+
+      await storage.assignRoleToUser(userId, roleId);
+      res.json({ message: "Role assigned successfully" });
+    } catch (error: any) {
+      console.error("Error assigning role:", error);
+      res.status(500).json({ message: error.message || "Failed to assign role" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
