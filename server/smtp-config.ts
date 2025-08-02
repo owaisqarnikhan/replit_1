@@ -57,7 +57,7 @@ export async function createSMTPTransporter() {
   }
 
   try {
-    const transporter = nodemailer.createTransporter(config);
+    const transporter = nodemailer.createTransport(config);
     await transporter.verify();
     console.log(`${provider.toUpperCase()} SMTP connected successfully`);
     return transporter;
