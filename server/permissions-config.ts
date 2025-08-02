@@ -243,23 +243,41 @@ export const ROLE_PERMISSIONS = {
     "settings.view"
   ],
   
-  // User: Basic customer permissions
+  // User: Complete customer permissions - access to all customer features
   user: [
+    // Authentication & Profile
     "auth.login",
     "auth.logout",
+    "auth.session",
     "users.profile",
+    
+    // Product & Category Access
     "products.view",
     "categories.view",
+    
+    // Shopping Cart - Full Access
     "cart.view",
     "cart.add",
     "cart.update", 
     "cart.remove",
     "cart.clear",
+    
+    // Order Management - Customer Orders
     "orders.own",
     "orders.create",
+    "orders.view", // Can view all orders (for order history)
+    
+    // Payment Processing - All Methods
     "payments.stripe",
     "payments.paypal",
     "payments.benefit",
-    "payments.cod"
+    "payments.cod",
+    "payments.view",
+    
+    // Media Access (for viewing product images)
+    "media.view",
+    
+    // Settings Access (for site information)
+    "settings.view"
   ]
 };
