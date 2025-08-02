@@ -26,14 +26,21 @@ export function usePermissions() {
   };
 
   // Check if user has any admin-level permissions (to show Manager Panel)
+  // Only check for create, edit, delete, and management permissions - not view permissions that customers also have
   const hasManagerAccess = (): boolean => {
     const adminPermissions = [
-      "users.view", "users.create", "users.edit", "users.delete", "users.full",
-      "products.view", "products.create", "products.edit", "products.delete", "products.full",
-      "categories.view", "categories.create", "categories.edit", "categories.delete", "categories.full",
-      "orders.view", "orders.create", "orders.edit", "orders.delete", "orders.full", "orders.approve",
-      "settings.view", "settings.edit", "settings.full",
-      "roles.view", "roles.create", "roles.edit", "roles.delete", "roles.full"
+      "users.create", "users.edit", "users.delete", "users.manage",
+      "products.create", "products.edit", "products.delete", "products.manage", "products.featured", "products.pricing",
+      "categories.create", "categories.edit", "categories.delete", "categories.manage",
+      "orders.edit", "orders.delete", "orders.manage", "orders.approve", "orders.reject", "orders.process", "orders.complete",
+      "settings.edit", "settings.manage", "settings.smtp", "settings.footer",
+      "roles.create", "roles.edit", "roles.delete", "roles.manage", "roles.assign", "roles.permissions",
+      "email.edit", "email.manage", "email.test", "email.send", "email.notifications",
+      "media.upload", "media.delete", "media.manage",
+      "slider.create", "slider.edit", "slider.delete", "slider.manage", "slider.order",
+      "units.create", "units.edit", "units.delete", "units.manage",
+      "reports.export", "reports.analytics", "reports.manage", "reports.statistics",
+      "database.export", "database.import", "database.backup", "database.restore", "database.excel"
     ];
     
     return hasAnyPermission(adminPermissions);
