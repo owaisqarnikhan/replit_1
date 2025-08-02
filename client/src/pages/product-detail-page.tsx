@@ -1,6 +1,5 @@
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { NavigationHeader } from "@/components/navigation-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -58,7 +57,6 @@ export default function ProductDetailPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <NavigationHeader />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-200 rounded w-32 mb-8"></div>
@@ -80,7 +78,6 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <NavigationHeader />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Button variant="outline" onClick={() => setLocation("/products")} className="mb-8">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -148,8 +145,6 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <NavigationHeader />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Button variant="outline" onClick={() => setLocation("/products")} className="mb-8">
           <ArrowLeft className="w-4 h-4 mr-2" />

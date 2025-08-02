@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { NavigationHeader } from "@/components/navigation-header";
 import { ProductCard } from "@/components/product-card";
 import { ProductDetailModal } from "@/components/ProductDetailModal";
 import { Card, CardContent } from "@/components/ui/card";
@@ -38,7 +37,6 @@ export default function CategoryDetailPage() {
   if (!currentCategory && categories) {
     return (
       <div className="bg-slate-50 min-h-screen">
-        <NavigationHeader />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <Package className="w-24 h-24 text-slate-300 mx-auto mb-4" />
@@ -55,8 +53,6 @@ export default function CategoryDetailPage() {
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      <NavigationHeader />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <Button 

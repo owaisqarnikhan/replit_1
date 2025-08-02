@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { NavigationHeader } from "@/components/navigation-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -123,7 +122,6 @@ export default function OrdersPage() {
   if (isLoading) {
     return (
       <div className="bg-slate-50">
-        <NavigationHeader />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="space-y-6">
             <Skeleton className="h-8 w-48" />
@@ -145,8 +143,6 @@ export default function OrdersPage() {
 
   return (
     <div className="bg-slate-50">
-      <NavigationHeader />
-      
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

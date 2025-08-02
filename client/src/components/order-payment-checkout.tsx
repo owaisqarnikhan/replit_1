@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { NavigationHeader } from "@/components/navigation-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -67,7 +66,6 @@ export function OrderPaymentCheckout({ orderId }: OrderPaymentCheckoutProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <NavigationHeader />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-slate-200 rounded w-48 mb-8"></div>
@@ -86,7 +84,6 @@ export function OrderPaymentCheckout({ orderId }: OrderPaymentCheckoutProps) {
   if (!order) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <NavigationHeader />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-16">
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
@@ -110,7 +107,6 @@ export function OrderPaymentCheckout({ orderId }: OrderPaymentCheckoutProps) {
   if (!canProceedToPayment) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <NavigationHeader />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-16">
             <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
@@ -136,8 +132,6 @@ export function OrderPaymentCheckout({ orderId }: OrderPaymentCheckoutProps) {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <NavigationHeader />
-      
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
