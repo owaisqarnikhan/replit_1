@@ -225,74 +225,87 @@ export default function AdminDashboard() {
 
         {/* Management Tabs */}
         <Tabs defaultValue="approvals" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
+          <div className="overflow-x-auto">
+            <TabsList className="inline-flex h-auto w-auto min-w-full p-1 bg-muted rounded-md justify-start md:justify-center flex-nowrap md:flex-wrap gap-1">
             {hasPermission("orders.approve") && (
-              <TabsTrigger value="approvals" className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4" />
-                Approvals
+              <TabsTrigger value="approvals" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 whitespace-nowrap text-xs sm:text-sm">
+                <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Approvals</span>
+                <span className="xs:hidden">App</span>
               </TabsTrigger>
             )}
             {hasPermission("orders.view") && (
-              <TabsTrigger value="orders" className="flex items-center gap-2">
-                <ShoppingBag className="h-4 w-4" />
-                Orders
+              <TabsTrigger value="orders" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 whitespace-nowrap text-xs sm:text-sm">
+                <ShoppingBag className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Orders</span>
+                <span className="xs:hidden">Ord</span>
               </TabsTrigger>
             )}
             {hasPermission("categories.view") && (
-              <TabsTrigger value="categories" className="flex items-center gap-2">
-                <ShoppingCart className="h-4 w-4" />
-                Categories
+              <TabsTrigger value="categories" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 whitespace-nowrap text-xs sm:text-sm">
+                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Categories</span>
+                <span className="xs:hidden">Cat</span>
               </TabsTrigger>
             )}
             {hasPermission("products.view") && (
-              <TabsTrigger value="products" className="flex items-center gap-2">
-                <Package className="h-4 w-4" />
-                Products
+              <TabsTrigger value="products" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 whitespace-nowrap text-xs sm:text-sm">
+                <Package className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Products</span>
+                <span className="xs:hidden">Prod</span>
               </TabsTrigger>
             )}
             {hasPermission("slider.view") && (
-              <TabsTrigger value="slider" className="flex items-center gap-2">
-                <FileSpreadsheet className="h-4 w-4" />
-                Slider
+              <TabsTrigger value="slider" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 whitespace-nowrap text-xs sm:text-sm">
+                <FileSpreadsheet className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Slider</span>
+                <span className="xs:hidden">Sld</span>
               </TabsTrigger>
             )}
             {hasPermission("users.view") && (
-              <TabsTrigger value="users" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Users
+              <TabsTrigger value="users" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 whitespace-nowrap text-xs sm:text-sm">
+                <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Users</span>
+                <span className="xs:hidden">Usr</span>
               </TabsTrigger>
             )}
             {(user as any)?.isSuperAdmin && (
-              <TabsTrigger value="permissions" className="flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Roles
+              <TabsTrigger value="permissions" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 whitespace-nowrap text-xs sm:text-sm">
+                <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Roles</span>
+                <span className="xs:hidden">Rol</span>
               </TabsTrigger>
             )}
             {hasPermission("database.export") && (
-              <TabsTrigger value="excel" className="flex items-center gap-2">
-                <FileSpreadsheet className="h-4 w-4" />
-                Excel
+              <TabsTrigger value="excel" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 whitespace-nowrap text-xs sm:text-sm">
+                <FileSpreadsheet className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Excel</span>
+                <span className="xs:hidden">Exc</span>
               </TabsTrigger>
             )}
             {hasPermission("database.export") && (
-              <TabsTrigger value="database" className="flex items-center gap-2">
-                <FileSpreadsheet className="h-4 w-4" />
-                Database
+              <TabsTrigger value="database" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 whitespace-nowrap text-xs sm:text-sm">
+                <FileSpreadsheet className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Database</span>
+                <span className="xs:hidden">DB</span>
               </TabsTrigger>
             )}
             {hasPermission("units.view") && (
-              <TabsTrigger value="units" className="flex items-center gap-2">
-                <Package className="h-4 w-4" />
-                Units
+              <TabsTrigger value="units" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 whitespace-nowrap text-xs sm:text-sm">
+                <Package className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Units</span>
+                <span className="xs:hidden">Un</span>
               </TabsTrigger>
             )}
             {hasPermission("settings.view") && (
-              <TabsTrigger value="settings" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Settings
+              <TabsTrigger value="settings" className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 whitespace-nowrap text-xs sm:text-sm">
+                <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">Settings</span>
+                <span className="xs:hidden">Set</span>
               </TabsTrigger>
             )}
-          </TabsList>
+            </TabsList>
+          </div>
 
           {hasPermission("orders.approve") && (
             <TabsContent value="approvals">
