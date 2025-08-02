@@ -236,7 +236,30 @@ export function NavigationHeader() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                {!user?.isAdmin && !hasManagerAccess() && (
+                {/* Super Admin Panel */}
+                {user?.isSuperAdmin && (
+                  <>
+                    <DropdownMenuItem onClick={() => setLocation("/admin")}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Super Admin Panel
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+
+                {/* Manager Panel */}
+                {!user?.isSuperAdmin && hasManagerAccess() && (
+                  <>
+                    <DropdownMenuItem onClick={() => setLocation("/admin")}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Manager Panel
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+
+                {/* Regular User Panel */}
+                {!user?.isSuperAdmin && !hasManagerAccess() && (
                   <>
                     <DropdownMenuItem onClick={() => setLocation("/dashboard")}>
                       <User className="mr-2 h-4 w-4" />
@@ -245,17 +268,6 @@ export function NavigationHeader() {
                     <DropdownMenuItem onClick={() => setLocation("/orders")}>
                       <Package className="mr-2 h-4 w-4" />
                       My Orders
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                  </>
-                )}
-                
-                {/* Admin/Manager Panel Access */}
-                {(user?.isAdmin || hasManagerAccess()) && (
-                  <>
-                    <DropdownMenuItem onClick={() => setLocation("/admin")}>
-                      <Settings className="mr-2 h-4 w-4" />
-                      {user?.isSuperAdmin ? "Super Admin Panel" : "Manager Panel"}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                   </>

@@ -25,25 +25,28 @@ export function usePermissions() {
     return permissionList.some(permission => permissions.includes(permission));
   };
 
-  // Check if user has any admin-level permissions (to show Manager Panel)
-  // Only check for create, edit, delete, and management permissions - not view permissions that customers also have
+  // Check if user has manager role access
+  // This is now a simpler check - if they have more than just basic user permissions, they're a manager
   const hasManagerAccess = (): boolean => {
-    const adminPermissions = [
-      "users.create", "users.edit", "users.delete", "users.manage",
-      "products.create", "products.edit", "products.delete", "products.manage", "products.featured", "products.pricing",
-      "categories.create", "categories.edit", "categories.delete", "categories.manage",
-      "orders.edit", "orders.delete", "orders.manage", "orders.approve", "orders.reject", "orders.process", "orders.complete",
-      "settings.edit", "settings.manage", "settings.smtp", "settings.footer",
-      "roles.create", "roles.edit", "roles.delete", "roles.manage", "roles.assign", "roles.permissions",
-      "email.edit", "email.manage", "email.test", "email.send", "email.notifications",
-      "media.upload", "media.delete", "media.manage",
-      "slider.create", "slider.edit", "slider.delete", "slider.manage", "slider.order",
-      "units.create", "units.edit", "units.delete", "units.manage",
-      "reports.export", "reports.analytics", "reports.manage", "reports.statistics",
-      "database.export", "database.import", "database.backup", "database.restore", "database.excel"
+    // Basic permissions that all users have
+    const basicUserPermissions = [
+      "auth.login", "auth.logout", "auth.session",
+      "products.view", "categories.view", 
+      "orders.view_own", "cart.view", "cart.add", "cart.update", "cart.remove", "cart.clear",
+      "payment.stripe", "payment.paypal", "payment.benefit", "payment.cod", "payment.history",
+      "profile.edit"
     ];
     
-    return hasAnyPermission(adminPermissions);
+    // If user has permissions beyond basic user permissions, they are a manager
+    const hasManagementPermissions = permissions.some(permission => 
+      !basicUserPermissions.includes(permission) && 
+      !permission.startsWith("orders.view_own") && 
+      !permission.startsWith("cart.") &&
+      !permission.startsWith("payment.") &&
+      permission !== "profile.edit"
+    );
+    
+    return hasManagementPermissions || permissions.includes("users.view") || permissions.includes("orders.view");
   };
 
   return {
