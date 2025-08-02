@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { NavigationHeader } from "@/components/navigation-header";
 import { ProductCard } from "@/components/product-card";
 import { ProductDetailModal } from "@/components/ProductDetailModal";
 import { Card, CardContent } from "@/components/ui/card";
@@ -52,8 +51,6 @@ export default function ProductsPage() {
 
   return (
     <div className="bg-slate-50">
-      <NavigationHeader />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">

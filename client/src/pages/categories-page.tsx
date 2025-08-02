@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { NavigationHeader } from "@/components/navigation-header";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,8 +14,6 @@ export default function CategoriesPage() {
 
   return (
     <div className="bg-slate-50">
-      <NavigationHeader />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900 mb-4">Shop by Category</h1>

@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { NavigationHeader } from "@/components/navigation-header";
 import { ProductCard } from "@/components/product-card";
 
 import { ImageSlider } from "@/components/image-slider";
@@ -26,8 +25,6 @@ export default function HomePage() {
 
   return (
     <div className="bg-slate-50">
-      <NavigationHeader />
-      
       {/* Image Slider Section */}
       <section className="w-full">
         <ImageSlider 

@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useLocation, useParams } from "wouter";
-import { NavigationHeader } from "@/components/navigation-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,7 +78,6 @@ export default function CheckoutPage() {
   if (!cartItems || cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <NavigationHeader />
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
           <h1 className="text-2xl font-bold text-slate-900 mb-4">Cart is Empty</h1>
           <p className="text-slate-600 mb-8">Add some products to your cart before checkout.</p>
@@ -101,7 +99,6 @@ export default function CheckoutPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <NavigationHeader />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
             <div className="h-8 bg-slate-200 rounded w-48 mb-8"></div>
@@ -133,8 +130,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <NavigationHeader />
-      
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold text-slate-900 mb-8">Checkout</h1>
         

@@ -20,6 +20,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import ProfilePage from "@/pages/profile-page";
 import { ProtectedRoute } from "./lib/protected-route";
 import Footer from "@/components/footer";
+import { NavigationHeader } from "@/components/navigation-header";
 import { useTheme } from "./hooks/use-theme";
 import { useLocation } from "wouter";
 
@@ -56,6 +57,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {!isAuthPage && <NavigationHeader />}
       <div className="flex-1">
         <Router />
       </div>

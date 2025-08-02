@@ -51,7 +51,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <NavigationHeader />
       <div className="container mx-auto px-4 py-8">
         <div className="relative mb-8 p-6 bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl overflow-hidden">
           <div 

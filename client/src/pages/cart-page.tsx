@@ -1,5 +1,4 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { NavigationHeader } from "@/components/navigation-header";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -68,7 +67,6 @@ export default function CartPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <NavigationHeader />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Skeleton className="h-8 w-48 mb-8" />
           <Card>
@@ -94,7 +92,6 @@ export default function CartPage() {
   if (!cartItems || cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50">
-        <NavigationHeader />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-16">
             <ShoppingBag className="w-24 h-24 text-slate-300 mx-auto mb-4" />
@@ -112,8 +109,6 @@ export default function CartPage() {
 
   return (
     <div className="bg-slate-50">
-      <NavigationHeader />
-      
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-3xl font-bold text-slate-900 mb-8">Shopping Cart</h1>
         
