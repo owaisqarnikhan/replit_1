@@ -121,28 +121,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Cash on Delivery route
   app.post("/api/cash-on-delivery", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
     try {
-      const { orderId, amount } = req.body;
+      const { orderId, amount, shippingAddress } = req.body;
       
       if (!orderId || !amount) {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
-      // For cash on delivery, we just need to create the order with pending payment
-      const codOrder = {
-        orderId,
-        status: "pending_payment",
+      // Get the order and verify it belongs to the user
+      const order = await storage.getOrderById(orderId);
+      if (!order || order.userId !== req.user!.id) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+
+      // Verify the order is approved and can proceed to payment
+      if (order.adminApprovalStatus !== "approved") {
+        return res.status(400).json({ error: "Order is not approved for payment" });
+      }
+
+      // Update order with cash on delivery payment method
+      const updatedOrder = await storage.updateOrder(orderId, {
         paymentMethod: "cash_on_delivery",
-        amount,
-        createdAt: new Date().toISOString(),
-      };
+        status: "processing", // Update status to processing for COD
+        shippingAddress: shippingAddress ? JSON.stringify(shippingAddress) : order.shippingAddress,
+      });
+
+      // Send payment confirmation email
+      try {
+        const { sendPaymentConfirmationEmail } = await import("./order-approval-workflow");
+        const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
+        
+        await sendPaymentConfirmationEmail(req.user!.email, {
+          orderNumber: order.id.slice(-8).toUpperCase(),
+          customerName: customerName,
+          total: order.total,
+          paymentMethod: "Cash on Delivery"
+        });
+      } catch (emailError) {
+        console.error('Failed to send payment confirmation email:', emailError);
+      }
 
       res.json({
         success: true,
-        order: codOrder,
-        message: "Cash on delivery order created successfully",
+        order: updatedOrder,
+        message: "Cash on delivery order confirmed successfully",
       });
     } catch (error: any) {
+      console.error('Cash on delivery error:', error);
       res.status(500).json({ error: "Failed to process cash on delivery" });
     }
   });
