@@ -136,8 +136,12 @@ cd /var/www/bayg
 npm install
 npm install postgres pg
 
-# Build application
-npm run build
+# Build application (with error handling)
+npm run build || {
+    echo "Build failed, trying manual build..."
+    npx vite build
+    npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+}
 
 # Create production environment file
 cat > .env.production << 'EOF'
@@ -176,8 +180,8 @@ export const db = drizzle(sql, { schema });
 export const pool = sql;
 EOF
 
-# Rebuild with updated database config
-npm run build
+# Rebuild with updated database config and error handling
+npm run build || npx vite build && npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
 
 # Create PM2 ecosystem configuration
 cat > ecosystem.config.js << 'EOF'
@@ -293,7 +297,7 @@ pm2 logs bayg-ecommerce
 
 # Update application
 cd /var/www/bayg
-npm run build
+npm run build || npx vite build && npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
 pm2 restart bayg-ecommerce
 
 # Database backup

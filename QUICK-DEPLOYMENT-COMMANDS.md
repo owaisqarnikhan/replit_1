@@ -86,7 +86,10 @@ cd /var/www/bayg
 # Upload your BAYG project files here, then:
 npm install
 npm install postgres pg
-npm run build
+
+# Verify installation and build
+npx vite --version
+npm run build || npx vite build && npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
 ```
 
 ### **Step 6: Environment Configuration**

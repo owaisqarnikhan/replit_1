@@ -208,8 +208,14 @@ npm install
 # Install additional PostgreSQL driver
 npm install postgres pg
 
-# Build the application
-npm run build
+# Verify Vite is available
+npx vite --version
+
+# Build the application (with fallback methods)
+npm run build || {
+    echo "Build failed, trying alternative build method..."
+    npx vite build && npx esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+}
 
 # Verify build completed
 ls -la dist/
