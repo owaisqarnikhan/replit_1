@@ -44,58 +44,67 @@ export default function AuthPage() {
   // Registration removed - login only
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left side - Forms */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-white">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-white dark:bg-gray-900">
+        <div className="w-full max-w-md space-y-6 sm:space-y-8">
           <div className="text-center">
             {settings?.loginPageLogo && settings.loginPageLogo.trim() !== "" && (
               <img 
                 src={settings.loginPageLogo} 
                 alt={settings.loginPageTitle || "Login"} 
-                className="w-auto mx-auto mb-6"
-                style={{ height: `${settings.loginPageLogoWidth || 80}px` }}
+                className="w-auto mx-auto mb-4 sm:mb-6 max-w-full h-auto"
+                style={{ 
+                  height: `${Math.min(settings.loginPageLogoWidth || 80, 120)}px`,
+                  maxHeight: '120px'
+                }}
               />
             )}
             {settings?.loginPageTitle && settings.loginPageTitle.trim() !== "" && (
-              <h1 className="text-3xl font-bold text-slate-900">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
                 {settings.loginPageTitle}
               </h1>
             )}
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Sign In to Your Account</CardTitle>
+          <Card className="shadow-lg border-0 sm:border bg-white dark:bg-gray-800">
+            <CardHeader className="pb-4 sm:pb-6">
+              <CardTitle className="text-lg sm:text-xl text-center dark:text-white">
+                Sign In to Your Account
+              </CardTitle>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
+            <CardContent className="pt-0">
+              <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4 sm:space-y-5">
                 <div>
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="username" className="text-sm font-medium dark:text-gray-200">
+                    Username
+                  </Label>
                   <Input
                     id="username"
                     {...loginForm.register("username")}
-                    className="mt-1"
+                    className="mt-2 h-11 text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     placeholder="Enter your username"
                   />
                   {loginForm.formState.errors.username && (
-                    <p className="text-sm text-red-500 mt-1">
+                    <p className="text-sm text-red-500 mt-2">
                       {loginForm.formState.errors.username.message}
                     </p>
                   )}
                 </div>
                 
                 <div>
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-sm font-medium dark:text-gray-200">
+                    Password
+                  </Label>
                   <Input
                     id="password"
                     type="password"
                     {...loginForm.register("password")}
-                    className="mt-1"
+                    className="mt-2 h-11 text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                     placeholder="Enter your password"
                   />
                   {loginForm.formState.errors.password && (
-                    <p className="text-sm text-red-500 mt-1">
+                    <p className="text-sm text-red-500 mt-2">
                       {loginForm.formState.errors.password.message}
                     </p>
                   )}
@@ -103,7 +112,7 @@ export default function AuthPage() {
                 
                 <Button 
                   type="submit" 
-                  className="w-full" 
+                  className="w-full h-11 text-base font-medium mt-6" 
                   disabled={loginMutation.isPending}
                 >
                   {loginMutation.isPending ? (
@@ -117,8 +126,8 @@ export default function AuthPage() {
                 </Button>
               </form>
               
-              <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <p className="text-sm text-amber-800">
+              <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <p className="text-sm text-amber-800 dark:text-amber-200">
                   <strong>Need an account?</strong> Contact your store administrator for access credentials.
                 </p>
               </div>
@@ -127,9 +136,9 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {/* Right side - Full Image */}
+      {/* Right side - Background Image (hidden on mobile, visible on large screens) */}
       <div 
-        className="flex-1 relative overflow-hidden"
+        className="hidden lg:flex lg:flex-1 relative overflow-hidden"
         style={{
           backgroundImage: `url('/uploads/login-separator.png')`,
           backgroundSize: 'cover',
@@ -137,6 +146,8 @@ export default function AuthPage() {
           backgroundRepeat: 'no-repeat'
         }}
       >
+        {/* Optional overlay for better contrast */}
+        <div className="absolute inset-0 bg-black/10"></div>
       </div>
     </div>
   );
