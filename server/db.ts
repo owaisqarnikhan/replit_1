@@ -1,9 +1,6 @@
-import { neon, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import * as schema from "@shared/schema";
-
-// Configure Neon for HTTP connection (more stable)
-neonConfig.fetchConnectionCache = true;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -11,8 +8,8 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Use HTTP connection instead of WebSocket for better stability
-const sql = neon(process.env.DATABASE_URL);
+// Use standard PostgreSQL connection for local database
+const sql = postgres(process.env.DATABASE_URL);
 export const db = drizzle(sql, { schema });
 
 // Create a simple connection for session store

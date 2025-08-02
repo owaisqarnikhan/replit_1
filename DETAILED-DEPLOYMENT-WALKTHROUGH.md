@@ -237,7 +237,7 @@ NODE_ENV=production
 PORT=5000
 
 # Database Configuration (use the password you set earlier)
-DATABASE_URL=postgresql://dbuser:your_secure_password@localhost:5432/innovanceorbit
+DATABASE_URL="postgresql://dbuser:YourNewPassword123@localhost:5432/innovanceorbit
 PGHOST=localhost
 PGPORT=5432
 PGDATABASE=innovanceorbit
