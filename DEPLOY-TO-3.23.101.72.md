@@ -1,20 +1,29 @@
-# BAYG - Quick AWS Ubuntu Deployment Commands
+# BAYG Deployment to AWS Server 3.23.101.72
 
-## 🚀 **Essential Commands Only** (Copy & Paste Ready)
+## 🚀 **Ready-to-Use Commands for Your Server**
 
-### **Step 1: System Setup**
+Connect to your AWS server and run these commands:
+
 ```bash
-# Update system and install essentials
+ssh -i your-key.pem ubuntu@3.23.101.72
+```
+
+---
+
+## **Complete Deployment Script**
+
+```bash
+#!/bin/bash
+# BAYG deployment script for 3.23.101.72
+set -e
+
+echo "🚀 Deploying BAYG to AWS server 3.23.101.72..."
+
+# Update system
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl wget git unzip build-essential
 
-# Verify ubuntu user (default on AWS EC2)
-whoami  # Should show: ubuntu
-```
-
-### **Step 2: Install PostgreSQL**
-```bash
-# Install and setup PostgreSQL
+# Install PostgreSQL
 sudo apt install -y postgresql postgresql-contrib
 sudo systemctl start postgresql
 sudo systemctl enable postgresql
@@ -28,30 +37,28 @@ ALTER USER dbuser CREATEDB;
 GRANT ALL ON SCHEMA public TO dbuser;
 \q
 EOF
-```
 
-### **Step 3: Install Node.js & PM2**
-```bash
-# Install Node.js 20 LTS
+# Install Node.js 20
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 
 # Install PM2
 sudo npm install -g pm2
-```
 
-### **Step 4: Install & Configure Nginx**
-```bash
 # Install Nginx
 sudo apt install -y nginx
 sudo systemctl start nginx
 sudo systemctl enable nginx
 
-# Create BAYG Nginx config
+# Create application directory
+sudo mkdir -p /var/www/bayg
+sudo chown -R ubuntu:ubuntu /var/www/bayg
+
+# Configure Nginx
 sudo tee /etc/nginx/sites-available/bayg << 'EOF'
 server {
     listen 80;
-    server_name 3.23.101.72 your-domain.com www.your-domain.com;
+    server_name 3.23.101.72;
     
     location / {
         proxy_pass http://localhost:5000;
@@ -71,28 +78,34 @@ EOF
 
 # Enable site
 sudo ln -s /etc/nginx/sites-available/bayg /etc/nginx/sites-enabled/
-sudo rm /etc/nginx/sites-enabled/default
+sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl reload nginx
+
+# Setup firewall
+sudo ufw --force enable
+sudo ufw allow ssh
+sudo ufw allow 'Nginx Full'
+
+echo "✅ Server setup complete!"
 ```
 
-### **Step 5: Deploy BAYG Application**
+---
+
+## **Application Setup (After uploading BAYG files)**
+
 ```bash
-# Create application directory
-sudo mkdir -p /var/www/bayg
-sudo chown -R ubuntu:ubuntu /var/www/bayg
 cd /var/www/bayg
 
-# Upload your BAYG project files here, then:
+# Install dependencies
 npm install
 npm install postgres pg
-npm run build
-```
 
-### **Step 6: Environment Configuration**
-```bash
-# Create production environment
-cat > /var/www/bayg/.env.production << 'EOF'
+# Build application
+npm run build
+
+# Create environment file
+cat > .env.production << 'EOF'
 NODE_ENV=production
 PORT=5000
 DATABASE_URL=postgresql://dbuser:SecurePass123!@localhost:5432/bayg
@@ -102,15 +115,13 @@ SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
 SMTP_PASSWORD=your-gmail-app-password
 APP_URL=http://3.23.101.72
+UPLOAD_PATH=/var/www/bayg/uploads
 EOF
 
-chmod 600 /var/www/bayg/.env.production
-```
+chmod 600 .env.production
 
-### **Step 7: Update Database Config**
-```bash
-# Update server/db.ts for PostgreSQL
-cat > /var/www/bayg/server/db.ts << 'EOF'
+# Update database config
+cat > server/db.ts << 'EOF'
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from "@shared/schema";
@@ -124,14 +135,11 @@ export const db = drizzle(sql, { schema });
 export const pool = sql;
 EOF
 
-# Rebuild application
+# Rebuild
 npm run build
-```
 
-### **Step 8: Start with PM2**
-```bash
 # Create PM2 config
-cat > /var/www/bayg/ecosystem.config.js << 'EOF'
+cat > ecosystem.config.js << 'EOF'
 module.exports = {
   apps: [{
     name: 'bayg-ecommerce',
@@ -147,55 +155,54 @@ module.exports = {
 EOF
 
 # Start application
+mkdir -p logs
 export DATABASE_URL="postgresql://dbuser:SecurePass123!@localhost:5432/bayg"
 export NODE_ENV=production
 pm2 start ecosystem.config.js --env production
 pm2 save
 pm2 startup
+
+# Verify deployment
+pm2 status
+curl -I http://localhost:5000
+curl -I http://3.23.101.72
 ```
 
-### **Step 9: Setup SSL (Optional)**
-```bash
-# Install Certbot
-sudo apt install -y certbot python3-certbot-nginx
+---
 
-# SSL setup (optional for IP addresses)
-# If you have a domain, replace with your domain:
-# sudo certbot --nginx -d your-domain.com -d www.your-domain.com
-```
+## **Access Your BAYG Platform**
 
-### **Step 10: Setup Firewall**
-```bash
-# Configure firewall
-sudo ufw enable
-sudo ufw allow ssh
-sudo ufw allow 'Nginx Full'
-```
+**🌐 URL**: http://3.23.101.72
 
-## ✅ **Verification Commands**
+**🔑 Login Credentials**:
+- **Super Admin**: admin / admin123
+- **Manager**: manager / manager123  
+- **Customer**: user / user123
+
+---
+
+## **Quick Verification**
+
 ```bash
-# Check services
+# Check all services
 sudo systemctl status nginx
 sudo systemctl status postgresql
 pm2 status
 
-# Test application
-curl http://localhost:5000
-curl http://3.23.101.72
-
-# Check logs
+# View logs
 pm2 logs bayg-ecommerce
+
+# Test endpoints
+curl http://3.23.101.72
 ```
 
-## 🔑 **BAYG Login Credentials**
-- **Admin**: admin / admin123 (admin@bayg.com)
-- **Manager**: manager / manager123 (manager@bayg.com)
-- **Customer**: user / user123
+---
 
-## 📝 **Important Notes**
-1. Replace `your-domain.com` with your actual domain
-2. Replace `your-email@gmail.com` and `your-gmail-app-password` with your Gmail credentials
-3. Change default passwords after first login
-4. Upload your BAYG project files to `/var/www/bayg/` before running npm commands
+## **Next Steps**
 
-Your BAYG e-commerce platform is now deployed and running!
+1. **Upload BAYG Files**: Transfer your project files to `/var/www/bayg/`
+2. **Configure Gmail**: Update `.env.production` with your Gmail credentials
+3. **Change Passwords**: Update default user passwords after first login
+4. **Setup Domain** (Optional): Point your domain to 3.23.101.72
+
+Your BAYG e-commerce platform will be live at **http://3.23.101.72**!

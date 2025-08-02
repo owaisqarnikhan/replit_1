@@ -118,7 +118,7 @@ sudo systemctl status nginx
 sudo tee /etc/nginx/sites-available/bayg << 'EOF'
 server {
     listen 80;
-    server_name your-domain.com www.your-domain.com;
+    server_name 3.23.101.72 your-domain.com www.your-domain.com;
 
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
@@ -241,11 +241,11 @@ SMTP_USER=your-email@gmail.com
 SMTP_PASSWORD=your-gmail-app-password
 
 # Application Configuration
-APP_URL=http://your-domain.com
+APP_URL=http://3.23.101.72
 UPLOAD_PATH=/var/www/bayg/uploads
 
 # Security
-CORS_ORIGIN=http://your-domain.com
+CORS_ORIGIN=http://3.23.101.72
 EOF
 
 # Set proper permissions
@@ -354,8 +354,9 @@ pm2 startup
 # Install Certbot for SSL certificates
 sudo apt install -y certbot python3-certbot-nginx
 
-# Obtain SSL certificate (replace with your domain)
-sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+# For IP address, SSL setup is optional
+# If you have a domain, replace with your domain:
+# sudo certbot --nginx -d your-domain.com -d www.your-domain.com
 
 # Test automatic renewal
 sudo certbot renew --dry-run
@@ -470,7 +471,7 @@ psql -h localhost -U dbuser -d bayg -c "SELECT 1;"
 
 # Test application endpoints
 curl -I http://localhost:5000
-curl -I https://your-domain.com
+curl -I http://3.23.101.72
 
 # Check application logs
 pm2 logs bayg-ecommerce --lines 50

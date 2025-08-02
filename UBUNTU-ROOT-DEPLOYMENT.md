@@ -64,7 +64,7 @@ echo "🔧 Configuring Nginx for BAYG..."
 sudo tee /etc/nginx/sites-available/bayg << 'EOF'
 server {
     listen 80;
-    server_name your-domain.com www.your-domain.com;
+    server_name 3.23.101.72 your-domain.com www.your-domain.com;
     
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
@@ -149,7 +149,7 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
 SMTP_PASSWORD=your-gmail-app-password
-APP_URL=http://your-domain.com
+APP_URL=http://3.23.101.72
 UPLOAD_PATH=/var/www/bayg/uploads
 EOF
 
@@ -230,8 +230,9 @@ curl -I http://localhost:5000
 # Install Certbot
 sudo apt install -y certbot python3-certbot-nginx
 
-# Get SSL certificate (replace with your domain)
-sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+# SSL setup (optional for IP addresses)
+# If you have a domain, replace with your domain:
+# sudo certbot --nginx -d your-domain.com -d www.your-domain.com
 
 # Test automatic renewal
 sudo certbot renew --dry-run
@@ -252,7 +253,7 @@ psql -h localhost -U dbuser -d bayg -c "SELECT 1;"
 
 # Test application
 curl -I http://localhost:5000
-curl -I http://your-domain.com
+curl -I http://3.23.101.72
 
 # View application logs
 pm2 logs bayg-ecommerce
