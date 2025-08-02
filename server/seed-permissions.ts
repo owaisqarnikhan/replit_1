@@ -398,7 +398,7 @@ export async function seedPermissions() {
         .set({ 
           isSuperAdmin: false, 
           roleId: adminRoleId,
-          isAdmin: true // Keep this for backward compatibility
+          isAdmin: false // Remove admin flag - use role-based permissions only
         })
         .where(eq(users.username, "manager"));
       
