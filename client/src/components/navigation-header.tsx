@@ -60,16 +60,24 @@ export function NavigationHeader() {
     });
   };
 
-  const navItems = [
-    { label: "Dashboard", href: "/", icon: Store },
-    { label: "Categories", href: "/categories", icon: Package },
-    { label: "Products", href: "/products", icon: Package },
-    { label: "My Orders", href: "/orders", icon: Package },
-  ];
+  const getNavigationItems = () => {
+    const baseItems = [
+      { label: "Dashboard", href: "/", icon: Store },
+      { label: "Categories", href: "/categories", icon: Package },
+      { label: "Products", href: "/products", icon: Package },
+    ];
+
+    // Only show "My Orders" for regular customers, not admin/manager
+    if (!user?.isAdmin && !hasManagerAccess()) {
+      baseItems.push({ label: "My Orders", href: "/orders", icon: Package });
+    }
+
+    return baseItems;
+  };
 
   const NavigationItems = ({ mobile = false }) => (
     <>
-      {navItems.map((item) => {
+      {getNavigationItems().map((item) => {
         const Icon = item.icon;
         return (
           <Button
