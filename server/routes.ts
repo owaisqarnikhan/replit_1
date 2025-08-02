@@ -587,9 +587,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin approval requests route
+  // Admin approval requests route (accessible to managers and super admins)
   app.get("/api/admin/approval-requests", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    // Check if user has permission to view orders
+    const { userHasPermission } = await import("./seed-comprehensive-permissions");
+    const hasOrderViewPermission = await userHasPermission(req.user!.id, "orders.view");
+    if (!req.user?.isAdmin && !hasOrderViewPermission) {
       return res.sendStatus(401);
     }
 
@@ -601,9 +608,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin order approval routes
+  // Admin order approval routes (accessible to managers and super admins)
   app.put("/api/admin/orders/:id/approve", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    // Check if user has permission to approve orders
+    const { userHasPermission } = await import("./seed-comprehensive-permissions");
+    const hasApprovePermission = await userHasPermission(req.user!.id, "orders.approve") || 
+                                 await userHasPermission(req.user!.id, "orders.view");
+    if (!req.user?.isAdmin && !hasApprovePermission) {
       return res.sendStatus(401);
     }
 
@@ -646,7 +661,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.put("/api/admin/orders/:id/reject", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    // Check if user has permission to reject orders
+    const { userHasPermission } = await import("./seed-comprehensive-permissions");
+    const hasRejectPermission = await userHasPermission(req.user!.id, "orders.reject") || 
+                               await userHasPermission(req.user!.id, "orders.view");
+    if (!req.user?.isAdmin && !hasRejectPermission) {
       return res.sendStatus(401);
     }
 
@@ -688,7 +711,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.put("/api/admin/orders/:id/complete", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    // Check if user has permission to complete orders
+    const { userHasPermission } = await import("./seed-comprehensive-permissions");
+    const hasCompletePermission = await userHasPermission(req.user!.id, "orders.complete") || 
+                                  await userHasPermission(req.user!.id, "orders.view");
+    if (!req.user?.isAdmin && !hasCompletePermission) {
       return res.sendStatus(401);
     }
 
