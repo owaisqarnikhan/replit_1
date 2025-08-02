@@ -1,5 +1,5 @@
 import { storage } from './storage';
-import { createMicrosoft365Transporter, validateEmailConfig } from './smtp-config';
+import { createSMTPTransporter, validateEmailConfig } from './smtp-config';
 
 export async function sendOrderConfirmationEmail(
   customerEmail: string,
@@ -138,9 +138,9 @@ export async function sendOrderConfirmationEmail(
     const fromEmail = settings.smtpFromEmail || settings.contactEmail || 'noreply@innovanceorbit.com';
     const fromName = settings.smtpFromName || settings.siteName || 'InnovanceOrbit';
 
-    // Use Microsoft 365 SMTP for sending emails
-    console.log('Sending emails via Microsoft 365 SMTP...');
-    const smtpTransporter = await createMicrosoft365Transporter();
+    // Use configured SMTP provider for sending emails
+    console.log('Sending emails via configured SMTP provider...');
+    const smtpTransporter = await createSMTPTransporter();
     
     // Send to customer
     await smtpTransporter.sendMail({
@@ -191,7 +191,7 @@ export async function sendOrderConfirmationEmail(
 
 export async function testEmailConnection(): Promise<boolean> {
   try {
-    const emailTransporter = await createMicrosoft365Transporter();
+    const emailTransporter = await createSMTPTransporter();
     await emailTransporter.verify();
     return true;
   } catch (error) {
@@ -252,7 +252,7 @@ export async function sendOrderApprovalEmail(
       </div>
     `;
 
-    const transporter = await createMicrosoft365Transporter();
+    const transporter = await createSMTPTransporter();
     
     await transporter.sendMail({
       from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || 'info@innovanceorbit.com'}>`,
@@ -322,7 +322,7 @@ export async function sendOrderRejectionEmail(
       </div>
     `;
 
-    const transporter = await createMicrosoft365Transporter();
+    const transporter = await createSMTPTransporter();
     
     await transporter.sendMail({
       from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || 'info@innovanceorbit.com'}>`,
@@ -390,7 +390,7 @@ export async function sendOrderCompletionEmail(
       </div>
     `;
 
-    const transporter = await createMicrosoft365Transporter();
+    const transporter = await createSMTPTransporter();
     
     await transporter.sendMail({
       from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || 'info@innovanceorbit.com'}>`,
