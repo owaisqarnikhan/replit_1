@@ -382,7 +382,8 @@ export const siteSettings = pgTable("site_settings", {
       <p>Best regards,<br>{{siteName}} Team</p>
     </div>
   `),
-  // SMTP Configuration for Microsoft 365
+  // SMTP Configuration
+  smtpProvider: text("smtp_provider").default("microsoft365"), // "microsoft365", "gmail", "custom"
   smtpHost: text("smtp_host").default("smtp.office365.com"),
   smtpPort: integer("smtp_port").default(587),
   smtpUser: text("smtp_user").default("itsupport@bayg.bh"),
