@@ -1128,7 +1128,7 @@ export function SiteSettings() {
                     <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-900">
                       <div className="flex items-center space-x-4">
                         <img 
-                          src={form.watch("loginPageLogo")} 
+                          src={form.watch("loginPageLogo") || ""} 
                           alt="Login page logo preview" 
                           className="w-16 h-16 object-contain border rounded"
                         />
