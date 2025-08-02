@@ -49,19 +49,19 @@ export function DataImportExport() {
 
       switch (dataType) {
         case "products":
-          data = products || [];
+          data = Array.isArray(products) ? products : [];
           filename = "products_export.xlsx";
           break;
         case "categories":
-          data = categories || [];
+          data = Array.isArray(categories) ? categories : [];
           filename = "categories_export.xlsx";
           break;
         case "users":
-          data = users || [];
+          data = Array.isArray(users) ? users : [];
           filename = "users_export.xlsx";
           break;
         case "orders":
-          data = orders || [];
+          data = Array.isArray(orders) ? orders : [];
           filename = "orders_export.xlsx";
           break;
       }

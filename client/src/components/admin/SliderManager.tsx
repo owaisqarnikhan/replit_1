@@ -202,7 +202,7 @@ export function SliderManager() {
                     <FormItem>
                       <FormLabel>Title (Optional)</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter slide title" {...field} />
+                        <Input placeholder="Enter slide title" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -216,7 +216,7 @@ export function SliderManager() {
                     <FormItem>
                       <FormLabel>Description (Optional)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Enter slide description" {...field} />
+                        <Textarea placeholder="Enter slide description" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -280,6 +280,7 @@ export function SliderManager() {
                           type="number"
                           placeholder="0"
                           {...field}
+                          value={field.value || 0}
                           onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                         />
                       </FormControl>
@@ -296,7 +297,7 @@ export function SliderManager() {
                       <FormLabel>Active</FormLabel>
                       <FormControl>
                         <Switch
-                          checked={field.value}
+                          checked={field.value || false}
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
@@ -353,14 +354,14 @@ export function SliderManager() {
               </CardContent>
             </Card>
           ))
-        ) : sliderImages?.length === 0 ? (
+        ) : Array.isArray(sliderImages) && sliderImages.length === 0 ? (
           <Card>
             <CardContent className="text-center py-8">
               <p className="text-gray-500">No slider images found. Add your first slider image to get started.</p>
             </CardContent>
           </Card>
         ) : (
-          sliderImages?.map((slider: SliderImage) => (
+          Array.isArray(sliderImages) ? sliderImages.map((slider: SliderImage) => (
             <Card key={slider.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-4">
                 <div className="flex items-center space-x-4">
@@ -422,7 +423,7 @@ export function SliderManager() {
                 </div>
               </CardContent>
             </Card>
-          ))
+          )) : null
         )}
       </div>
     </div>

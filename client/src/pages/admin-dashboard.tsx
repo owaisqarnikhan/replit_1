@@ -135,7 +135,7 @@ export default function AdminDashboard() {
 
         {/* Management Tabs */}
         <Tabs defaultValue="approvals" className="space-y-6">
-          <TabsList className={`grid w-full ${user?.isSuperAdmin ? 'grid-cols-11' : 'grid-cols-10'}`}>
+          <TabsList className={`grid w-full ${(user as any)?.isSuperAdmin ? 'grid-cols-11' : 'grid-cols-10'}`}>
             <TabsTrigger value="approvals" className="flex items-center gap-2">
               <CheckCircle className="h-4 w-4" />
               Approvals
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
               <Users className="h-4 w-4" />
               Users
             </TabsTrigger>
-            {user?.isSuperAdmin && (
+            {(user as any)?.isSuperAdmin && (
               <TabsTrigger value="permissions" className="flex items-center gap-2">
                 <Shield className="h-4 w-4" />
                 Roles
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
             <UserManager />
           </TabsContent>
 
-          {user?.isSuperAdmin && (
+          {(user as any)?.isSuperAdmin && (
             <TabsContent value="permissions">
               <RolePermissionManager />
             </TabsContent>

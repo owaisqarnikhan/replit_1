@@ -34,14 +34,14 @@ interface Product {
   categoryId: string | null;
   unitOfMeasure?: string | null;
   imageUrl?: string | null;
-  isActive: boolean;
-  isFeatured: boolean;
-  rating: string;
-  reviewCount: number;
-  productType: "sale" | "rent";
+  isActive: boolean | null;
+  isFeatured: boolean | null;
+  rating: string | null;
+  reviewCount: number | null;
+  productType: string;
   rentalPeriod?: string | null;
   rentalPrice?: string | null;
-  createdAt: string;
+  createdAt: Date | null;
   category?: {
     name: string;
   };
@@ -161,7 +161,7 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
                     <Star
                       key={star}
                       className={`w-4 h-4 ${
-                        star <= parseFloat(product.rating)
+                        star <= parseFloat(product.rating || "0")
                           ? "text-yellow-400 fill-current"
                           : "text-gray-300"
                       }`}

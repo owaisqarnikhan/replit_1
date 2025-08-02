@@ -202,7 +202,7 @@ export function NavigationHeader() {
                 <Badge 
                   className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 text-xs px-1 sm:px-1.5 py-0.5 min-w-[1rem] sm:min-w-[1.25rem] h-4 sm:h-5 flex items-center justify-center"
                   style={{ 
-                    backgroundColor: siteSettings?.accentColor || '#0ea5e9',
+                    backgroundColor: '#0ea5e9',
                     color: '#ffffff'
                   }}
                 >
@@ -218,7 +218,7 @@ export function NavigationHeader() {
                   <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                     <AvatarFallback 
                       className="text-white text-xs sm:text-sm"
-                      style={{ backgroundColor: siteSettings?.primaryColor || '#2563eb' }}
+                      style={{ backgroundColor: '#2563eb' }}
                     >
                       {user?.username.charAt(0).toUpperCase() || "U"}
                     </AvatarFallback>

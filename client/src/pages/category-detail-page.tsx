@@ -159,7 +159,7 @@ export default function CategoryDetailPage() {
       {/* Product Detail Modal */}
       {selectedProduct && (
         <ProductDetailModal
-          product={selectedProduct as Product}
+          product={selectedProduct}
           isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);

@@ -63,10 +63,10 @@ export function createExcelFile(data: ExcelExportData): Buffer {
     'User ID': order.userId,
     Status: order.status,
     'Total Amount': order.total,
-    'Shipping Address': order.shippingAddress,
+    'Delivery Address': (order as any).deliveryAddress || '',
     'Payment Method': order.paymentMethod,
     'Payment Status': order.status,
-    Notes: '',
+    Notes: (order as any).notes || '',
     'Created At': order.createdAt,
     'Updated At': order.createdAt
   })));
@@ -371,7 +371,7 @@ export async function exportOrdersToExcel(): Promise<Buffer> {
     'User ID': order.userId,
     Status: order.status,
     'Total Amount': order.total,
-    'Shipping Address': order.shippingAddress,
+    'Delivery Address': order.deliveryAddress || '',
     'Payment Method': order.paymentMethod,
     'Created At': order.createdAt
   })));

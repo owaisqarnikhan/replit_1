@@ -267,7 +267,7 @@ export default function CheckoutPage() {
           isOpen={showApprovalModal}
           onClose={handleApprovalModalClose}
           orderId={createdOrder.id}
-          total={createdOrder.total}
+          orderTotal={createdOrder.total}
         />
       )}
     </div>

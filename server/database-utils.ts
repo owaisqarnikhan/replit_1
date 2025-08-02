@@ -33,7 +33,7 @@ export async function exportDatabase(): Promise<DatabaseExport> {
       storage.getUsers(),
       storage.getOrders(),
       storage.getOrderItems(),
-      storage.getCartItems(),
+      storage.getCartItems("system"),
       storage.getSiteSettings().then(settings => [settings])
     ]);
 
