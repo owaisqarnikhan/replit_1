@@ -246,8 +246,8 @@ PGPASSWORD=your_secure_password
 # Gmail SMTP Configuration
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
-SMTP_USER=your-gmail@gmail.com
-SMTP_PASSWORD=your-16-character-app-password
+SMTP_USER=khanawais51@gmail.com
+SMTP_PASSWORD=nrfxywdxvqsaiwvh
 
 # Session Security (generate a long random string)
 SESSION_SECRET=your-very-long-random-session-secret-min-32-characters
