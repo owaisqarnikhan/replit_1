@@ -954,10 +954,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async assignPermissionsToRole(roleId: string, permissionIds: string[]): Promise<void> {
-    // First remove all existing permissions for this role
+    // First, remove all existing permissions for this role
     await db.delete(rolePermissions).where(eq(rolePermissions.roleId, roleId));
     
-    // Then add the new permissions
+    // Then, add the new permissions
     if (permissionIds.length > 0) {
       const insertData = permissionIds.map(permissionId => ({
         roleId,

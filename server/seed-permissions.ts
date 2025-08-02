@@ -302,59 +302,14 @@ export async function seedPermissions() {
     if (adminRoleId) {
       console.log("Assigning admin permissions to Admin role...");
       
-      // Define admin permissions (moderate level access)
+      // Define basic admin permissions (minimal access - Super Admin will assign more as needed)
       const adminPermissions = [
-        // User management (limited)
-        "users.view",
-        "users.edit",
-        
-        // Product management (full)
+        // Basic view permissions only
         "products.view",
-        "products.create", 
-        "products.edit",
-        "products.delete",
-        "products.manage",
-        
-        // Order management (full)
+        "categories.view", 
         "orders.view",
-        "orders.approve",
-        "orders.reject", 
-        "orders.process",
-        "orders.manage",
-        
-        // Category management (full)
-        "categories.view",
-        "categories.create",
-        "categories.edit", 
-        "categories.delete",
-        "categories.manage",
-        
-        // Units management (full)
-        "units.view",
-        "units.create",
-        "units.edit",
-        "units.delete",
-        "units.manage",
-        
-        // Slider management (full)
-        "slider.view",
-        "slider.create",
-        "slider.edit",
-        "slider.delete",
-        "slider.manage",
-        
-        // Settings (limited)
         "settings.view",
-        "settings.edit",
-        
-        // Reports (view only)
-        "reports.view",
-        "reports.export",
-        
-        // Email (limited)
-        "email.view",
-        "email.edit",
-        "email.test"
+        "reports.view"
       ];
       
       const allPermissions = await db.select().from(permissions);

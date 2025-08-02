@@ -1555,6 +1555,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Super Admin permission assignment endpoint
+  app.post("/api/admin/assign-permissions", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isSuperAdmin) {
+      return res.status(401).json({ message: "Super Admin access required" });
+    }
+    
+    try {
+      const { roleId, permissionIds } = req.body;
+      await storage.assignPermissionsToRole(roleId, permissionIds);
+      res.json({ message: "Permissions assigned successfully" });
+    } catch (error) {
+      console.error("Error assigning permissions:", error);
+      res.status(500).json({ message: "Failed to assign permissions" });
+    }
+  });
+
   app.get("/api/user/permissions", async (req, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Authentication required" });
