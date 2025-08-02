@@ -44,14 +44,12 @@ import * as crypto from "crypto";
 
 const PostgresSessionStore = connectPg(session);
 
-// Session store configuration with error handling
-const sessionStore = new PostgresSessionStore({
-  pool,
-  tableName: 'session',
-  createTableIfMissing: true,
-  errorLog: (error: any) => {
-    console.error('Session store error:', error);
-  }
+// Use memory store for sessions to avoid DB conflicts
+import MemoryStore from 'memorystore';
+const MemStore = MemoryStore(session);
+
+const sessionStore = new MemStore({
+  checkPeriod: 86400000 // prune expired entries every 24h
 });
 
 export interface IStorage {

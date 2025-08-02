@@ -1,12 +1,9 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from "ws";
+import { neon, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from "@shared/schema";
 
-// Configure Neon with better connection handling
-neonConfig.webSocketConstructor = ws;
-neonConfig.poolQueryViaFetch = true;
-neonConfig.fetchConnectionCache = false; // Disable caching to avoid prepared statement conflicts
+// Configure Neon for HTTP connection (more stable)
+neonConfig.fetchConnectionCache = true;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -14,15 +11,9 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Create pool with simpler configuration for Neon
-export const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
-  max: 1 // Limit to single connection to avoid conflicts
-});
+// Use HTTP connection instead of WebSocket for better stability
+const sql = neon(process.env.DATABASE_URL);
+export const db = drizzle(sql, { schema });
 
-// Add connection error handling
-pool.on('error', (err) => {
-  console.error('Database pool error:', err);
-});
-
-export const db = drizzle({ client: pool, schema });
+// Create a simple connection for session store
+export const pool = sql;
