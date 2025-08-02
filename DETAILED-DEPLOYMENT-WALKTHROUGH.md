@@ -152,6 +152,7 @@ In the PostgreSQL prompt, run these commands:
 -- Create database
 CREATE DATABASE innovanceorbit;
 
+
 -- Create user with secure password (replace 'your_secure_password')
 CREATE USER dbuser WITH ENCRYPTED PASSWORD 'your_secure_password';
 
