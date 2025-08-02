@@ -342,6 +342,44 @@ export function SiteSettings() {
     setUploadedAttachments(prev => prev.filter(file => file.id !== fileId));
   };
 
+  // Login Page Logo Upload Handler
+  const handleLoginPageLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const data = await response.json();
+      form.setValue("loginPageLogo", data.imageUrl);
+      
+      toast({
+        title: "Login Page Logo Uploaded",
+        description: "Login page logo uploaded successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload login page logo",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleTestEmail = async () => {
     setIsTestingEmail(true);
     try {
@@ -1102,6 +1140,45 @@ export function SiteSettings() {
                     </FormItem>
                   )}
                 />
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium">Upload Login Page Logo</h3>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        id="login-page-logo-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLoginPageLogoUpload}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => document.getElementById("login-page-logo-upload")?.click()}
+                        disabled={isUploading}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        {isUploading ? "Uploading..." : "Upload Logo"}
+                      </Button>
+                    </div>
+                  </div>
+                  {form.watch("loginPageLogo") && (
+                    <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-900">
+                      <div className="flex items-center space-x-4">
+                        <img 
+                          src={form.watch("loginPageLogo")} 
+                          alt="Login page logo preview" 
+                          className="w-16 h-16 object-contain border rounded"
+                        />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">Current Login Page Logo</p>
+                          <p className="text-xs text-gray-500 break-all">{form.watch("loginPageLogo")}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 <FormField
                   control={form.control}
