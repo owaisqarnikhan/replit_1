@@ -17,12 +17,11 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl wget git unzip software-properties-common build-essential
 ```
 
-### 1.2 Create Application User
+### 1.2 Setup Root User Environment
 ```bash
-# Create dedicated user for BAYG application
-sudo adduser bayg --disabled-password --gecos ""
-sudo usermod -aG sudo bayg
-sudo su - bayg
+# Switch to ubuntu user (default on AWS EC2)
+# All deployment will be done as ubuntu user with sudo privileges
+whoami  # Should show: ubuntu
 ```
 
 ---
@@ -179,7 +178,7 @@ sudo systemctl reload nginx
 ```bash
 # Create BAYG application directory
 sudo mkdir -p /var/www/bayg
-sudo chown -R bayg:bayg /var/www/bayg
+sudo chown -R ubuntu:ubuntu /var/www/bayg
 cd /var/www/bayg
 ```
 
@@ -200,8 +199,7 @@ mkdir -p client/src server shared uploads dist
 
 ### 5.3 Install Dependencies and Build
 ```bash
-# Switch to bayg user and navigate to project
-sudo su - bayg
+# Navigate to project directory as ubuntu user
 cd /var/www/bayg
 
 # Install Node.js dependencies
@@ -385,7 +383,7 @@ After=network.target postgresql.service
 
 [Service]
 Type=simple
-User=bayg
+User=ubuntu
 WorkingDirectory=/var/www/bayg
 Environment=NODE_ENV=production
 Environment=PORT=5000
@@ -416,7 +414,7 @@ sudo tee /etc/logrotate.d/bayg << 'EOF'
     rotate 30
     compress
     notifempty
-    create 644 bayg bayg
+    create 644 ubuntu ubuntu
     postrotate
         pm2 reload bayg-ecommerce
     endscript

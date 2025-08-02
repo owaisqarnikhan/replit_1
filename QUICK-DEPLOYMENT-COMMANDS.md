@@ -8,9 +8,8 @@
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y curl wget git unzip build-essential
 
-# Create application user
-sudo adduser bayg --disabled-password --gecos ""
-sudo usermod -aG sudo bayg
+# Verify ubuntu user (default on AWS EC2)
+whoami  # Should show: ubuntu
 ```
 
 ### **Step 2: Install PostgreSQL**
@@ -81,11 +80,7 @@ sudo systemctl reload nginx
 ```bash
 # Create application directory
 sudo mkdir -p /var/www/bayg
-sudo chown -R bayg:bayg /var/www/bayg
-cd /var/www/bayg
-
-# Switch to bayg user
-sudo su - bayg
+sudo chown -R ubuntu:ubuntu /var/www/bayg
 cd /var/www/bayg
 
 # Upload your BAYG project files here, then:
