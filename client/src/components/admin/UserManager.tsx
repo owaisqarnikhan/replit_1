@@ -7,20 +7,37 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema, type InsertUser, type User } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Plus, Edit, Trash2, Users, Shield, User as UserIcon } from "lucide-react";
+import { Plus, Edit, Trash2, Users, Shield, User as UserIcon, Settings } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+
+interface Role {
+  id: string;
+  name: string;
+  displayName: string;
+  description: string;
+}
 
 export function UserManager() {
   const { toast } = useToast();
+  const { user: currentUser } = useAuth();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [isPermissionDialogOpen, setIsPermissionDialogOpen] = useState(false);
+  const [selectedUserForPermissions, setSelectedUserForPermissions] = useState<User | null>(null);
+  const [selectedRoleId, setSelectedRoleId] = useState<string>("");
 
   const { data: users, isLoading } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
+  });
+
+  const { data: roles } = useQuery<Role[]>({
+    queryKey: ["/api/admin/roles"],
   });
 
   const form = useForm<InsertUser>({
@@ -122,6 +139,29 @@ export function UserManager() {
     },
   });
 
+  const assignRoleMutation = useMutation({
+    mutationFn: async ({ userId, roleId }: { userId: string; roleId: string }) => {
+      await apiRequest(`/api/admin/assign-role`, "POST", { userId, roleId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      setIsPermissionDialogOpen(false);
+      setSelectedUserForPermissions(null);
+      setSelectedRoleId("");
+      toast({
+        title: "Success",
+        description: "Role assigned successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to assign role",
+        variant: "destructive",
+      });
+    },
+  });
+
   const onSubmit = (data: InsertUser) => {
     console.log("User form submitted with data:", data);
     console.log("User form errors:", form.formState.errors);
@@ -156,6 +196,21 @@ export function UserManager() {
       userId: user.id,
       isAdmin: !user.isAdmin,
     });
+  };
+
+  const handleOpenPermissionDialog = (user: User) => {
+    setSelectedUserForPermissions(user);
+    setSelectedRoleId(user.roleId || "");
+    setIsPermissionDialogOpen(true);
+  };
+
+  const handleAssignRole = () => {
+    if (selectedUserForPermissions && selectedRoleId) {
+      assignRoleMutation.mutate({
+        userId: selectedUserForPermissions.id,
+        roleId: selectedRoleId,
+      });
+    }
   };
 
   if (isLoading) {
@@ -349,6 +404,16 @@ export function UserManager() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {currentUser?.isSuperAdmin && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleOpenPermissionDialog(user)}
+                      title="Assign Role & Permissions"
+                    >
+                      <Settings className="h-4 w-4" />
+                    </Button>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"
@@ -377,6 +442,52 @@ export function UserManager() {
             ))
           )}
         </div>
+
+        {/* Role Assignment Dialog */}
+        <Dialog open={isPermissionDialogOpen} onOpenChange={setIsPermissionDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Assign Role & Permissions</DialogTitle>
+              <DialogDescription>
+                Assign a role to {selectedUserForPermissions?.username} to control their permissions and access level.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Select Role</label>
+                <Select value={selectedRoleId} onValueChange={setSelectedRoleId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a role..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roles?.map((role) => (
+                      <SelectItem key={role.id} value={role.id}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{role.displayName}</span>
+                          <span className="text-xs text-muted-foreground">{role.description}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsPermissionDialogOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleAssignRole}
+                  disabled={!selectedRoleId || assignRoleMutation.isPending}
+                >
+                  {assignRoleMutation.isPending ? "Assigning..." : "Assign Role"}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
