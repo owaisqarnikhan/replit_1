@@ -1,8 +1,8 @@
-# InnovanceOrbit E-commerce Platform
+# BAYG E-commerce Platform
 
 ## Overview
 
-InnovanceOrbit is a comprehensive e-commerce platform built for B2B and B2C sales with approval-based ordering, multi-payment gateway support, and admin management capabilities. The platform supports both purchase and rental products, features a permission-based role system, and includes specialized payment methods for the Bahrain/GCC market including Benefit Pay integration.
+BAYG is a comprehensive e-commerce platform built for B2B and B2C sales with approval-based ordering, multi-payment gateway support, and admin management capabilities. The platform supports both purchase and rental products, features a permission-based role system, and includes specialized payment methods for the Bahrain/GCC market including Benefit Pay integration.
 
 ## User Preferences
 
