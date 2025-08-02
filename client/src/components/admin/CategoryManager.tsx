@@ -13,6 +13,7 @@ import { insertCategorySchema, type InsertCategory, type Category } from "@share
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Plus, Edit, Trash2, Package, Upload } from "lucide-react";
+import { createImageUploadHandler } from "@/lib/imageUpload";
 
 export function CategoryManager() {
   const { toast } = useToast();
@@ -99,42 +100,10 @@ export function CategoryManager() {
     },
   });
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setIsUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('image', file);
-
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const data = await response.json();
-      form.setValue("imageUrl", data.imageUrl);
-      
-      toast({
-        title: "Image Uploaded",
-        description: "Category image uploaded successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Upload Failed",
-        description: "Failed to upload image",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploading(false);
-    }
-  };
+  const handleImageUpload = createImageUploadHandler(
+    (url) => form.setValue("imageUrl", url),
+    setIsUploading
+  );
 
   const onSubmit = (data: InsertCategory) => {
     console.log("Form submitted with data:", data);

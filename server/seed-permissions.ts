@@ -410,26 +410,44 @@ export async function seedPermissions() {
       console.log(`✓ Assigned ${allPermissions.length} permissions to Super Admin`);
     }
 
-    // 6. Update existing admin user to Super Admin
+    // 6. Update existing admin user to Super Admin (only the 'admin' user)
     console.log("Setting up Super Admin user...");
-    const adminUsers = await db
+    const adminUser = await db
       .select()
       .from(users)
-      .where(eq(users.isAdmin, true));
+      .where(eq(users.username, "admin"));
 
-    if (adminUsers.length > 0) {
-      for (const user of adminUsers) {
-        await db
-          .update(users)
-          .set({ 
-            isSuperAdmin: true, 
-            roleId: superAdminRoleId,
-            isAdmin: true // Keep this for backward compatibility
-          })
-          .where(eq(users.id, user.id));
-        
-        console.log(`✓ Updated user ${user.username} to Super Admin`);
-      }
+    if (adminUser.length > 0) {
+      await db
+        .update(users)
+        .set({ 
+          isSuperAdmin: true, 
+          roleId: superAdminRoleId,
+          isAdmin: true // Keep this for backward compatibility
+        })
+        .where(eq(users.username, "admin"));
+      
+      console.log(`✓ Updated user admin to Super Admin`);
+    }
+
+    // 7. Update manager user to Admin role (not Super Admin)
+    console.log("Setting up Admin user...");
+    const managerUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.username, "manager"));
+
+    if (managerUser.length > 0) {
+      await db
+        .update(users)
+        .set({ 
+          isSuperAdmin: false, 
+          roleId: adminRoleId,
+          isAdmin: true // Keep this for backward compatibility
+        })
+        .where(eq(users.username, "manager"));
+      
+      console.log(`✓ Updated user manager to Admin`);
     }
 
     console.log("🎉 Permission system seeded successfully!");

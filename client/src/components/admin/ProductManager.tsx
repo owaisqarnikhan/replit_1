@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Plus, Edit, Trash2, ShoppingCart, Package, Upload } from "lucide-react";
 import { z } from "zod";
+import { createImageUploadHandler } from "@/lib/imageUpload";
 
 // Enhanced product schema with product type and proper number validation
 const enhancedProductSchema = insertProductSchema.extend({
@@ -68,42 +69,10 @@ export function ProductManager() {
 
   const productType = form.watch("productType");
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setIsUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append('image', file);
-
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const data = await response.json();
-      form.setValue("imageUrl", data.imageUrl);
-      
-      toast({
-        title: "Image Uploaded",
-        description: "Product image uploaded successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Upload Failed",
-        description: "Failed to upload image",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploading(false);
-    }
-  };
+  const handleImageUpload = createImageUploadHandler(
+    (url) => form.setValue("imageUrl", url),
+    setIsUploading
+  );
 
   const createMutation = useMutation({
     mutationFn: async (data: EnhancedInsertProduct) => {
