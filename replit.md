@@ -8,6 +8,15 @@ BAYG is a comprehensive e-commerce platform built for B2B and B2C sales with app
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes (August 2, 2025)
+
+- ✅ **Complete Project Rebranding**: Successfully rebranded from "InnovanceOrbit" to "BAYG"
+- ✅ **Database Migration**: Updated from Neon cloud database to local PostgreSQL (database name: "bayg")
+- ✅ **File Cleanup**: Removed all unnecessary files, test data, and deployment packages
+- ✅ **Gmail SMTP Only**: Simplified email system to use only Gmail SMTP (removed Microsoft 365 and custom SMTP)
+- ✅ **User Account Updates**: Updated default admin/manager emails to @bayg.com domain
+- ✅ **Clean Project Structure**: Maintained only essential BAYG project files
+
 ## System Architecture
 
 ### Frontend Architecture
