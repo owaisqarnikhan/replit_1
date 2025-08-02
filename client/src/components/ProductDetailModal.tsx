@@ -236,7 +236,7 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
                     <Calendar className="w-4 h-4 text-gray-500" />
                     <span className="text-gray-600">Added:</span>
                     <span className="font-medium">
-                      {new Date(product.createdAt).toLocaleDateString()}
+                      {product.createdAt ? new Date(product.createdAt).toLocaleDateString() : 'N/A'}
                     </span>
                   </div>
                 </div>
