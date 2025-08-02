@@ -232,8 +232,8 @@ export const ROLE_PERMISSIONS = {
   // Super Admin: Full access to everything
   super_admin: "all", // Special keyword for all permissions
   
-  // Admin: Minimal permissions that Super Admin can expand
-  admin: [
+  // Manager: Limited permissions that Super Admin can expand
+  manager: [
     "auth.login",
     "auth.logout",
     "users.view",

@@ -90,7 +90,7 @@ The platform is now fully operational on Replit with:
 - ✅ **15 Permission Modules**: Authentication, Users, Products, Categories, Orders, Cart, Payments, Media, Slider, Units, Settings, Email, Reports, Database, Roles
 - ✅ **Fixed 3-tier role hierarchy**:
   - Super Admin: 85 permissions (full platform access)
-  - Admin: 7 limited permissions (expandable by Super Admin)
+  - Manager: 7 limited permissions (expandable by Super Admin)
   - User: 16 customer permissions (shopping and orders)
 - ✅ **Proper role-based access control**: Manager user now has `isAdmin: false` and only role-based permissions
 - ✅ **Permission middleware system**: Created robust middleware for checking granular permissions
@@ -115,10 +115,15 @@ The platform is now fully operational on Replit with:
 
 ### Security Architecture:
 - Super Admin retains full control over all permissions and role assignments
-- Admin role now properly restricted with minimal permissions that can be expanded
+- Manager role now properly restricted with minimal permissions that can be expanded
 - Manager user correctly denied admin access until Super Admin grants specific permissions
 - Comprehensive middleware system for granular permission checking
 - Role-based permissions replace old isAdmin flag system
+
+### Current Role Structure:
+1. **Super Admin** (admin, itsupport): Full access (85 permissions)
+2. **Manager** (manager): Limited access (7 permissions: login, logout, view users/products/categories/orders/settings)
+3. **User** (user): Customer access (16 permissions: shopping, cart, orders, payments)
 
 ## Latest Deployment Preparation (January 31, 2025)
 

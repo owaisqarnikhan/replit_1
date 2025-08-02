@@ -86,21 +86,21 @@ export async function seedComprehensivePermissions() {
     }
     superAdminRoleId = superAdminRole[0].id;
 
-    // Admin role
-    let adminRole = await db.select().from(roles).where(eq(roles.name, "admin"));
-    let adminRoleId: string;
+    // Manager role
+    let managerRole = await db.select().from(roles).where(eq(roles.name, "manager"));
+    let managerRoleId: string;
     
-    if (adminRole.length === 0) {
-      [adminRole[0]] = await db
+    if (managerRole.length === 0) {
+      [managerRole[0]] = await db
         .insert(roles)
         .values({
-          name: "admin",
-          displayName: "Administrator",
-          description: "Limited admin access - permissions controlled by Super Admin"
+          name: "manager",
+          displayName: "Manager",
+          description: "Limited access - permissions controlled by Super Admin"
         })
         .returning();
     }
-    adminRoleId = adminRole[0].id;
+    managerRoleId = managerRole[0].id;
 
     // User role
     let userRole = await db.select().from(roles).where(eq(roles.name, "user"));
@@ -134,23 +134,23 @@ export async function seedComprehensivePermissions() {
     }
     console.log(`✓ Assigned ${allPermissionIds.length} permissions to Super Admin`);
 
-    // Admin gets limited permissions
-    const adminPermissions = ROLE_PERMISSIONS.admin;
-    let assignedAdminCount = 0;
-    for (const permissionName of adminPermissions) {
+    // Manager gets limited permissions
+    const managerPermissions = ROLE_PERMISSIONS.manager;
+    let assignedManagerCount = 0;
+    for (const permissionName of managerPermissions) {
       const permissionId = permissionMap.get(permissionName);
       if (permissionId) {
         await db
           .insert(rolePermissions)
           .values({
-            roleId: adminRoleId,
+            roleId: managerRoleId,
             permissionId: permissionId
           })
           .onConflictDoNothing();
-        assignedAdminCount++;
+        assignedManagerCount++;
       }
     }
-    console.log(`✓ Assigned ${assignedAdminCount} permissions to Admin role`);
+    console.log(`✓ Assigned ${assignedManagerCount} permissions to Manager role`);
 
     // User gets basic permissions
     const userPermissions = ROLE_PERMISSIONS.user;
@@ -192,7 +192,7 @@ export async function seedComprehensivePermissions() {
       console.log(`✓ Updated admin user to Super Admin`);
     }
 
-    // Update manager user to Admin (with limited permissions)
+    // Update manager user to Manager role (with limited permissions)
     const managerUsers = await db
       .select()
       .from(users)
@@ -204,11 +204,11 @@ export async function seedComprehensivePermissions() {
         .set({ 
           isSuperAdmin: false, 
           isAdmin: false, // Remove admin flag - use role-based permissions only
-          roleId: adminRoleId
+          roleId: managerRoleId
         })
         .where(eq(users.username, "manager"));
       
-      console.log(`✓ Updated manager user to Admin role (limited permissions)`);
+      console.log(`✓ Updated manager user to Manager role (limited permissions)`);
     }
 
     // Update regular user to User role
@@ -235,12 +235,12 @@ export async function seedComprehensivePermissions() {
     return {
       success: true,
       superAdminRoleId,
-      adminRoleId,
+      managerRoleId,
       userRoleId,
       modulesCount: PERMISSION_MODULES.length,
       permissionsCount: PERMISSIONS.length,
       totalPermissions: allPermissionIds.length,
-      adminPermissions: assignedAdminCount,
+      managerPermissions: assignedManagerCount,
       userPermissions: assignedUserCount
     };
 
