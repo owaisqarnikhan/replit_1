@@ -1,15 +1,9 @@
 module.exports = {
   apps: [{
     name: 'innovanceorbit',
-    script: 'dist/index.js',
-    instances: 1,
-    autorestart: true,
-    watch: false,
-    max_memory_restart: '1G',
-    error_file: '/home/ubuntu/logs/innovanceorbit-error.log',
-    out_file: '/home/ubuntu/logs/innovanceorbit-out.log',
-    log_file: '/home/ubuntu/logs/innovanceorbit-combined.log',
-    time: true,
+    script: 'npm',
+    args: 'start',
+    cwd: '/var/www/innovanceorbit',
     env: {
       NODE_ENV: 'production',
       PORT: 5000
@@ -17,6 +11,20 @@ module.exports = {
     env_production: {
       NODE_ENV: 'production',
       PORT: 5000
-    }
+    },
+    instances: 1,
+    exec_mode: 'fork',
+    watch: false,
+    max_memory_restart: '500M',
+    error_file: '/var/log/pm2/innovanceorbit-error.log',
+    out_file: '/var/log/pm2/innovanceorbit-out.log',
+    log_file: '/var/log/pm2/innovanceorbit-combined.log',
+    time: true,
+    autorestart: true,
+    max_restarts: 10,
+    min_uptime: '10s',
+    kill_timeout: 5000,
+    wait_ready: true,
+    listen_timeout: 10000
   }]
-}
+};
