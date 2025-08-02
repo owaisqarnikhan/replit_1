@@ -44,7 +44,7 @@ async function seedUsers() {
     const predefinedUsers = [
       {
         username: "admin",
-        email: "admin@innovanceorbit.com",
+        email: "admin@bayg.com",
         password: "admin123",
         isAdmin: true,
         isSuperAdmin: true,
@@ -53,7 +53,7 @@ async function seedUsers() {
       },
       {
         username: "manager",
-        email: "manager@innovanceorbit.com",
+        email: "manager@bayg.com",
         password: "manager123",
         isAdmin: true,
         isSuperAdmin: false,

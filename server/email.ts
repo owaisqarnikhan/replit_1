@@ -104,7 +104,7 @@ export async function sendOrderConfirmationEmail(
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <p style="color: #374151; margin: 0;">Best regards,</p>
-            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'InnovanceOrbit'} Team</p>
+            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'BAYG'} Team</p>
           </div>
         </div>
       </div>
@@ -135,8 +135,8 @@ export async function sendOrderConfirmationEmail(
       .replace(/{{orderItems}}/g, orderItemsTable)
       .replace(/{{siteName}}/g, settings.siteName);
 
-    const fromEmail = settings.smtpFromEmail || settings.contactEmail || 'noreply@innovanceorbit.com';
-    const fromName = settings.smtpFromName || settings.siteName || 'InnovanceOrbit';
+    const fromEmail = settings.smtpFromEmail || settings.contactEmail || 'noreply@bayg.com';
+    const fromName = settings.smtpFromName || settings.siteName || 'BAYG';
 
     // Use configured SMTP provider for sending emails
     console.log('Sending emails via configured SMTP provider...');
@@ -246,7 +246,7 @@ export async function sendOrderApprovalEmail(
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <p style="color: #374151; margin: 0;">Best regards,</p>
-            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'InnovanceOrbit'} Team</p>
+            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'BAYG'} Team</p>
           </div>
         </div>
       </div>
@@ -255,7 +255,7 @@ export async function sendOrderApprovalEmail(
     const transporter = await createSMTPTransporter();
     
     await transporter.sendMail({
-      from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || 'info@innovanceorbit.com'}>`,
+      from: `"${settings.smtpFromName || 'BAYG'}" <${settings.smtpFromEmail || 'info@bayg.com'}>`,
       to: customerEmail,
       subject: `Order Approved - Payment Required - ${orderDetails.orderNumber}`,
       html: emailTemplate,
@@ -316,7 +316,7 @@ export async function sendOrderRejectionEmail(
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <p style="color: #374151; margin: 0;">Best regards,</p>
-            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'InnovanceOrbit'} Team</p>
+            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'BAYG'} Team</p>
           </div>
         </div>
       </div>
@@ -325,7 +325,7 @@ export async function sendOrderRejectionEmail(
     const transporter = await createSMTPTransporter();
     
     await transporter.sendMail({
-      from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || 'info@innovanceorbit.com'}>`,
+      from: `"${settings.smtpFromName || 'BAYG'}" <${settings.smtpFromEmail || 'info@bayg.com'}>`,
       to: customerEmail,
       subject: `Order Cancelled - ${orderDetails.orderNumber}`,
       html: emailTemplate,
@@ -384,7 +384,7 @@ export async function sendOrderCompletionEmail(
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <p style="color: #374151; margin: 0;">Best regards,</p>
-            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'InnovanceOrbit'} Team</p>
+            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'BAYG'} Team</p>
           </div>
         </div>
       </div>
@@ -393,7 +393,7 @@ export async function sendOrderCompletionEmail(
     const transporter = await createSMTPTransporter();
     
     await transporter.sendMail({
-      from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || 'info@innovanceorbit.com'}>`,
+      from: `"${settings.smtpFromName || 'BAYG'}" <${settings.smtpFromEmail || 'info@bayg.com'}>`,
       to: customerEmail,
       subject: `Order Delivered - ${orderDetails.orderNumber}`,
       html: emailTemplate,

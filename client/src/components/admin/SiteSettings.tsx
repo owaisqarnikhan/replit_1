@@ -30,7 +30,7 @@ export function SiteSettings() {
   const form = useForm<InsertSiteSettings>({
     resolver: zodResolver(insertSiteSettingsSchema),
     defaultValues: {
-      siteName: settings?.siteName || "InnovanceOrbit",
+      siteName: settings?.siteName || "BAYG",
       logoUrl: settings?.logoUrl || "",
       contactEmail: settings?.contactEmail || "",
       supportEmail: settings?.supportEmail || "",
@@ -72,11 +72,11 @@ export function SiteSettings() {
       smtpUser: settings?.smtpUser || "",
       smtpPassword: settings?.smtpPassword || "",
       smtpFromEmail: settings?.smtpFromEmail || "",
-      smtpFromName: settings?.smtpFromName || "InnovanceOrbit",
+      smtpFromName: settings?.smtpFromName || "BAYG",
       emailEnabled: settings?.emailEnabled || false,
       // Login Page Settings
       loginPageLogo: settings?.loginPageLogo || "",
-      loginPageTitle: settings?.loginPageTitle || "InnovanceOrbit Store",
+      loginPageTitle: settings?.loginPageTitle || "BAYG Store",
     },
   });
 
@@ -675,7 +675,7 @@ export function SiteSettings() {
                     <FormItem>
                       <FormLabel>Contact Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="contact@innovanceorbit.com" {...field} value={field.value || ""} />
+                        <Input placeholder="contact@bayg.com" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -689,7 +689,7 @@ export function SiteSettings() {
                     <FormItem>
                       <FormLabel>Support Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="support@innovanceorbit.com" {...field} value={field.value || ""} />
+                        <Input placeholder="support@bayg.com" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -703,7 +703,7 @@ export function SiteSettings() {
                     <FormItem>
                       <FormLabel>Admin Email (for notifications)</FormLabel>
                       <FormControl>
-                        <Input placeholder="admin@innovanceorbit.com" {...field} value={field.value || ""} />
+                        <Input placeholder="admin@bayg.com" {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

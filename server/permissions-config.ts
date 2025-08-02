@@ -1,5 +1,5 @@
 // Comprehensive permission system based on deep project analysis
-// This file defines all modules and permissions for the InnovanceOrbit e-commerce platform
+// This file defines all modules and permissions for the BAYG e-commerce platform
 
 export const PERMISSION_MODULES = [
   {
