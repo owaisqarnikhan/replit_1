@@ -44,9 +44,9 @@ app.use((req, res, next) => {
     await db.execute('SELECT 1 as test');
     log("Database connection successful");
     
-    // Seed permission system first (creates roles)
-    const { seedPermissions } = await import("./seed-permissions");
-    await seedPermissions();
+    // Seed comprehensive permission system first (creates roles)
+    const { seedComprehensivePermissions } = await import("./seed-comprehensive-permissions");
+    await seedComprehensivePermissions();
     
     // Seed predefined user accounts after roles are created
     await seedUsers();
