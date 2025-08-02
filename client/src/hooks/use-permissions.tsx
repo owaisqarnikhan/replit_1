@@ -13,6 +13,8 @@ export function usePermissions() {
   } = useQuery<PermissionsResponse, Error>({
     queryKey: ["/api/user/permissions"],
     queryFn: getQueryFn({ on401: "returnNull" }),
+    staleTime: 0, // Always refetch permissions to ensure fresh data
+    refetchOnMount: true, // Refetch on component mount
   });
 
   const permissions = data?.permissions || [];

@@ -30,7 +30,7 @@ type CartItemWithProduct = CartItem & { product: Product };
 
 export function NavigationHeader() {
   const { user, logoutMutation } = useAuth();
-  const { hasManagerAccess } = usePermissions();
+  const { hasManagerAccess, isLoading: permissionsLoading } = usePermissions();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -236,8 +236,19 @@ export function NavigationHeader() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
+                {/* Show loading while permissions are being fetched */}
+                {permissionsLoading && (
+                  <>
+                    <DropdownMenuItem disabled>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Loading...
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+
                 {/* Super Admin Panel */}
-                {user?.isSuperAdmin && (
+                {!permissionsLoading && user?.isSuperAdmin && (
                   <>
                     <DropdownMenuItem onClick={() => setLocation("/admin")}>
                       <Settings className="mr-2 h-4 w-4" />
@@ -248,7 +259,7 @@ export function NavigationHeader() {
                 )}
 
                 {/* Manager Panel */}
-                {!user?.isSuperAdmin && hasManagerAccess() && (
+                {!permissionsLoading && !user?.isSuperAdmin && hasManagerAccess() && (
                   <>
                     <DropdownMenuItem onClick={() => setLocation("/admin")}>
                       <Settings className="mr-2 h-4 w-4" />
@@ -259,7 +270,7 @@ export function NavigationHeader() {
                 )}
 
                 {/* Regular User Panel */}
-                {!user?.isSuperAdmin && !hasManagerAccess() && (
+                {!permissionsLoading && !user?.isSuperAdmin && !hasManagerAccess() && (
                   <>
                     <DropdownMenuItem onClick={() => setLocation("/dashboard")}>
                       <User className="mr-2 h-4 w-4" />

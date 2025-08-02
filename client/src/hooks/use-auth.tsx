@@ -38,6 +38,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
+      // Force refresh permissions after login to ensure manager role is detected immediately
+      queryClient.invalidateQueries({ queryKey: ["/api/user/permissions"] });
     },
     onError: (error: Error) => {
       toast({
