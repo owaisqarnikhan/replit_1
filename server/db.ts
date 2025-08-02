@@ -6,7 +6,7 @@ import * as schema from "@shared/schema";
 // Configure Neon with better connection handling
 neonConfig.webSocketConstructor = ws;
 neonConfig.poolQueryViaFetch = true;
-neonConfig.fetchConnectionCache = true;
+neonConfig.fetchConnectionCache = false; // Disable caching to avoid prepared statement conflicts
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -14,13 +14,10 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Create pool with retry configuration
+// Create pool with simpler configuration for Neon
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
-  connectionTimeoutMillis: 10000,
-  idleTimeoutMillis: 30000,
-  max: 10,
-  allowExitOnIdle: true
+  max: 1 // Limit to single connection to avoid conflicts
 });
 
 // Add connection error handling

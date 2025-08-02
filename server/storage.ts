@@ -44,6 +44,16 @@ import * as crypto from "crypto";
 
 const PostgresSessionStore = connectPg(session);
 
+// Session store configuration with error handling
+const sessionStore = new PostgresSessionStore({
+  pool,
+  tableName: 'session',
+  createTableIfMissing: true,
+  errorLog: (error: any) => {
+    console.error('Session store error:', error);
+  }
+});
+
 export interface IStorage {
   // User methods
   getUser(id: string): Promise<User | undefined>;
@@ -133,10 +143,7 @@ export class DatabaseStorage implements IStorage {
   public sessionStore: any;
 
   constructor() {
-    this.sessionStore = new PostgresSessionStore({ 
-      pool, 
-      createTableIfMissing: true 
-    });
+    this.sessionStore = sessionStore;
   }
 
   // User methods
