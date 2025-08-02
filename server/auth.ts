@@ -82,4 +82,39 @@ export function setupAuth(app: Express) {
       res.sendStatus(401);
     }
   });
+
+  // Get user permissions
+  app.get("/api/user/permissions", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { getUserPermissions } = await import("./seed-comprehensive-permissions");
+      const permissions = await getUserPermissions(req.user!.id);
+      res.json({ permissions });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Check specific permission
+  app.post("/api/user/check-permission", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { permission } = req.body;
+      if (!permission) {
+        return res.status(400).json({ message: "Permission name required" });
+      }
+
+      const { userHasPermission } = await import("./seed-comprehensive-permissions");
+      const hasPermission = await userHasPermission(req.user!.id, permission);
+      res.json({ hasPermission });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 }

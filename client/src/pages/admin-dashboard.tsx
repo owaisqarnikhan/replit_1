@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { usePermissions } from "@/hooks/use-permissions";
 import { NavigationHeader } from "@/components/navigation-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -35,6 +36,7 @@ interface AdminStats {
 
 export default function AdminDashboard() {
   const { data: user } = useQuery({ queryKey: ["/api/user"] });
+  const { hasPermission } = usePermissions();
   const { data: stats, isLoading: statsLoading } = useQuery<AdminStats>({
     queryKey: ["/api/admin/stats"],
   });
@@ -135,78 +137,110 @@ export default function AdminDashboard() {
 
         {/* Management Tabs */}
         <Tabs defaultValue="approvals" className="space-y-6">
-          <TabsList className={`grid w-full ${(user as any)?.isSuperAdmin ? 'grid-cols-11' : 'grid-cols-10'}`}>
-            <TabsTrigger value="approvals" className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4" />
-              Approvals
-            </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-2">
-              <ShoppingBag className="h-4 w-4" />
-              Orders
-            </TabsTrigger>
-            <TabsTrigger value="categories" className="flex items-center gap-2">
-              <ShoppingCart className="h-4 w-4" />
-              Categories
-            </TabsTrigger>
-            <TabsTrigger value="products" className="flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              Products
-            </TabsTrigger>
-            <TabsTrigger value="slider" className="flex items-center gap-2">
-              <FileSpreadsheet className="h-4 w-4" />
-              Slider
-            </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Users
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
+            {hasPermission("orders.approve") && (
+              <TabsTrigger value="approvals" className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Approvals
+              </TabsTrigger>
+            )}
+            {hasPermission("orders.view") && (
+              <TabsTrigger value="orders" className="flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4" />
+                Orders
+              </TabsTrigger>
+            )}
+            {hasPermission("categories.view") && (
+              <TabsTrigger value="categories" className="flex items-center gap-2">
+                <ShoppingCart className="h-4 w-4" />
+                Categories
+              </TabsTrigger>
+            )}
+            {hasPermission("products.view") && (
+              <TabsTrigger value="products" className="flex items-center gap-2">
+                <Package className="h-4 w-4" />
+                Products
+              </TabsTrigger>
+            )}
+            {hasPermission("slider.view") && (
+              <TabsTrigger value="slider" className="flex items-center gap-2">
+                <FileSpreadsheet className="h-4 w-4" />
+                Slider
+              </TabsTrigger>
+            )}
+            {hasPermission("users.view") && (
+              <TabsTrigger value="users" className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Users
+              </TabsTrigger>
+            )}
             {(user as any)?.isSuperAdmin && (
               <TabsTrigger value="permissions" className="flex items-center gap-2">
                 <Shield className="h-4 w-4" />
                 Roles
               </TabsTrigger>
             )}
-            <TabsTrigger value="excel" className="flex items-center gap-2">
-              <FileSpreadsheet className="h-4 w-4" />
-              Excel
-            </TabsTrigger>
-            <TabsTrigger value="database" className="flex items-center gap-2">
-              <FileSpreadsheet className="h-4 w-4" />
-              Database
-            </TabsTrigger>
-            <TabsTrigger value="units" className="flex items-center gap-2">
-              <Package className="h-4 w-4" />
-              Units
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Settings
-            </TabsTrigger>
+            {hasPermission("database.export") && (
+              <TabsTrigger value="excel" className="flex items-center gap-2">
+                <FileSpreadsheet className="h-4 w-4" />
+                Excel
+              </TabsTrigger>
+            )}
+            {hasPermission("database.export") && (
+              <TabsTrigger value="database" className="flex items-center gap-2">
+                <FileSpreadsheet className="h-4 w-4" />
+                Database
+              </TabsTrigger>
+            )}
+            {hasPermission("units.view") && (
+              <TabsTrigger value="units" className="flex items-center gap-2">
+                <Package className="h-4 w-4" />
+                Units
+              </TabsTrigger>
+            )}
+            {hasPermission("settings.view") && (
+              <TabsTrigger value="settings" className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                Settings
+              </TabsTrigger>
+            )}
           </TabsList>
 
-          <TabsContent value="approvals">
-            <AdminRequestSection />
-          </TabsContent>
+          {hasPermission("orders.approve") && (
+            <TabsContent value="approvals">
+              <AdminRequestSection />
+            </TabsContent>
+          )}
 
-          <TabsContent value="orders">
-            <OrderManager />
-          </TabsContent>
+          {hasPermission("orders.view") && (
+            <TabsContent value="orders">
+              <OrderManager />
+            </TabsContent>
+          )}
 
-          <TabsContent value="categories">
-            <CategoryManager />
-          </TabsContent>
+          {hasPermission("categories.view") && (
+            <TabsContent value="categories">
+              <CategoryManager />
+            </TabsContent>
+          )}
 
-          <TabsContent value="products">
-            <ProductManager />
-          </TabsContent>
+          {hasPermission("products.view") && (
+            <TabsContent value="products">
+              <ProductManager />
+            </TabsContent>
+          )}
 
-          <TabsContent value="slider">
-            <SliderManager />
-          </TabsContent>
+          {hasPermission("slider.view") && (
+            <TabsContent value="slider">
+              <SliderManager />
+            </TabsContent>
+          )}
 
-          <TabsContent value="users">
-            <UserManager />
-          </TabsContent>
+          {hasPermission("users.view") && (
+            <TabsContent value="users">
+              <UserManager />
+            </TabsContent>
+          )}
 
           {(user as any)?.isSuperAdmin && (
             <TabsContent value="permissions">
@@ -214,21 +248,29 @@ export default function AdminDashboard() {
             </TabsContent>
           )}
 
-          <TabsContent value="excel">
-            <ExcelManager />
-          </TabsContent>
+          {hasPermission("database.export") && (
+            <TabsContent value="excel">
+              <ExcelManager />
+            </TabsContent>
+          )}
 
-          <TabsContent value="database">
-            <DatabaseManager />
-          </TabsContent>
+          {hasPermission("database.export") && (
+            <TabsContent value="database">
+              <DatabaseManager />
+            </TabsContent>
+          )}
 
-          <TabsContent value="units">
-            <UnitsOfMeasureManager />
-          </TabsContent>
+          {hasPermission("units.view") && (
+            <TabsContent value="units">
+              <UnitsOfMeasureManager />
+            </TabsContent>
+          )}
 
-          <TabsContent value="settings">
-            <SiteSettings />
-          </TabsContent>
+          {hasPermission("settings.view") && (
+            <TabsContent value="settings">
+              <SiteSettings />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </div>

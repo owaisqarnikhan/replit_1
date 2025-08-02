@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
+import { usePermissions } from "@/hooks/use-permissions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -29,6 +30,7 @@ type CartItemWithProduct = CartItem & { product: Product };
 
 export function NavigationHeader() {
   const { user, logoutMutation } = useAuth();
+  const { hasManagerAccess } = usePermissions();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -240,10 +242,10 @@ export function NavigationHeader() {
                   <Package className="mr-2 h-4 w-4" />
                   My Orders
                 </DropdownMenuItem>
-                {user?.isAdmin && (
+                {(user?.isAdmin || hasManagerAccess()) && (
                   <DropdownMenuItem onClick={() => setLocation("/admin")}>
                     <Settings className="mr-2 h-4 w-4" />
-                    Admin Panel
+                    {user?.isSuperAdmin ? "Admin Panel" : "Manager Panel"}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
