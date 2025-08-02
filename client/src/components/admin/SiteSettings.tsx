@@ -12,20 +12,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertSiteSettingsSchema, type InsertSiteSettings, type SiteSettings } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Settings, Palette, Mail, Upload, Save, Monitor, Loader2, Shield, FileText, X } from "lucide-react";
+import { Settings, Palette, Mail, Upload, Save, Monitor, Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { themes, applyTheme, type ThemeName } from "@/lib/themes";
-import { useAuth } from "@/hooks/use-auth";
 
 export function SiteSettings() {
   const { toast } = useToast();
-  const { user } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [isTestingEmail, setIsTestingEmail] = useState(false);
   
-  // Super Admin Login Page Attachments
-  const [uploadedAttachments, setUploadedAttachments] = useState<Array<{id: string, name: string, url: string, type: string}>>([]);
-  const [isUploadingAttachments, setIsUploadingAttachments] = useState(false);
+
 
   const { data: settings, isLoading } = useQuery<SiteSettings>({
     queryKey: ["/api/settings"],
@@ -288,59 +284,7 @@ export function SiteSettings() {
     }
   };
 
-  // Super Admin Login Page Attachments Upload Handler
-  const handleLoginPageAttachmentsUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
 
-    setIsUploadingAttachments(true);
-
-    for (const file of Array.from(files)) {
-      try {
-        const formData = new FormData();
-        formData.append('image', file);
-
-        const response = await fetch('/api/upload-image', {
-          method: 'POST',
-          body: formData,
-          credentials: 'include',
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          const fileInfo = {
-            id: Date.now() + Math.random().toString(),
-            name: file.name,
-            url: data.imageUrl,
-            type: file.type.startsWith('image/') ? 'image' : 'file'
-          };
-          
-          setUploadedAttachments(prev => [...prev, fileInfo]);
-          
-          toast({
-            title: "Success",
-            description: `${file.name} uploaded successfully`,
-          });
-        } else {
-          throw new Error('Upload failed');
-        }
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: `Failed to upload ${file.name}`,
-          variant: "destructive",
-        });
-      }
-    }
-
-    setIsUploadingAttachments(false);
-    // Reset input
-    event.target.value = '';
-  };
-
-  const removeAttachment = (fileId: string) => {
-    setUploadedAttachments(prev => prev.filter(file => file.id !== fileId));
-  };
 
   // Login Page Logo Upload Handler
   const handleLoginPageLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -1200,91 +1144,7 @@ export function SiteSettings() {
                   )}
                 />
 
-                {/* Super Admin Login Page Attachments Section */}
-                {(user as any)?.isSuperAdmin && (
-                  <div className="mt-8 p-6 border-2 border-blue-200 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Shield className="h-5 w-5 text-blue-600" />
-                      <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100">Super Admin Login Page Attachments</h3>
-                    </div>
-                    <p className="text-sm text-blue-700 dark:text-blue-300 mb-4">
-                      Upload files and attachments that will be available for reference during login. These are only visible to super admins.
-                    </p>
-                    
-                    <div className="space-y-4">
-                      <div className="border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-lg p-6 text-center bg-white dark:bg-gray-800">
-                        <input
-                          id="login-attachments-upload"
-                          type="file"
-                          multiple
-                          accept="image/*,.pdf,.doc,.docx,.txt,.xlsx,.xls"
-                          className="hidden"
-                          onChange={handleLoginPageAttachmentsUpload}
-                          disabled={isUploadingAttachments}
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => document.getElementById('login-attachments-upload')?.click()}
-                          disabled={isUploadingAttachments}
-                          className="flex items-center gap-2"
-                        >
-                          <Upload className="h-4 w-4" />
-                          {isUploadingAttachments ? "Uploading..." : "Upload Login Page Attachments"}
-                        </Button>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                          Supports images, PDFs, documents, spreadsheets (Max 5MB each)
-                        </p>
-                      </div>
 
-                      {/* Uploaded Attachments List */}
-                      {uploadedAttachments.length > 0 && (
-                        <div className="space-y-2">
-                          <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100">Uploaded Files:</h4>
-                          <div className="space-y-2 max-h-60 overflow-y-auto">
-                            {uploadedAttachments.map((file) => (
-                              <div key={file.id} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded border border-blue-200 dark:border-blue-700">
-                                <div className="flex items-center gap-3 min-w-0 flex-1">
-                                  {file.type === 'image' ? (
-                                    <img 
-                                      src={file.url} 
-                                      alt={file.name}
-                                      className="w-10 h-10 object-cover rounded border"
-                                    />
-                                  ) : (
-                                    <FileText className="h-10 w-10 text-blue-500" />
-                                  )}
-                                  <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-medium truncate dark:text-white" title={file.name}>
-                                      {file.name}
-                                    </p>
-                                    <a 
-                                      href={file.url} 
-                                      target="_blank" 
-                                      rel="noopener noreferrer"
-                                      className="text-xs text-blue-600 hover:underline"
-                                    >
-                                      Download / View File
-                                    </a>
-                                  </div>
-                                </div>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => removeAttachment(file.id)}
-                                  className="h-8 w-8 p-0 hover:bg-red-100 dark:hover:bg-red-900"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
               </TabsContent>
 
               <TabsContent value="email" className="space-y-4">
