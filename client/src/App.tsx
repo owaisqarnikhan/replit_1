@@ -17,6 +17,7 @@ import CheckoutPage from "@/pages/checkout-page";
 import OrdersPage from "@/pages/orders-page";
 import UserDashboard from "@/pages/user-dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
+import ProfilePage from "@/pages/profile-page";
 import { ProtectedRoute } from "./lib/protected-route";
 import Footer from "@/components/footer";
 import { useTheme } from "./hooks/use-theme";
@@ -41,6 +42,7 @@ function Router() {
       <ProtectedRoute path="/checkout/:orderId" component={CheckoutPage} />
       <ProtectedRoute path="/checkout" component={CheckoutPage} />
       <ProtectedRoute path="/dashboard" component={UserDashboard} />
+      <ProtectedRoute path="/profile" component={ProfilePage} />
       <ProtectedRoute path="/admin" component={AdminDashboard} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />

@@ -246,15 +246,20 @@ export function NavigationHeader() {
                       <Package className="mr-2 h-4 w-4" />
                       My Orders
                     </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                   </>
                 )}
+                
+                {/* Admin/Manager Panel Access */}
                 {(user?.isAdmin || hasManagerAccess()) && (
-                  <DropdownMenuItem onClick={() => setLocation("/admin")}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    {user?.isSuperAdmin ? "Admin Panel" : "Manager Panel"}
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem onClick={() => setLocation("/admin")}>
+                      <Settings className="mr-2 h-4 w-4" />
+                      {user?.isSuperAdmin ? "Admin Panel" : "Manager Panel"}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
                 )}
-                <DropdownMenuSeparator />
                 <DropdownMenuItem 
                   onClick={handleLogout}
                   className="text-red-600 focus:text-red-600"
