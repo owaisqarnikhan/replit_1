@@ -28,27 +28,17 @@ export function usePermissions() {
   };
 
   // Check if user has manager role access
-  // This is now a simpler check - if they have more than just basic user permissions, they're a manager
+  // Check for specific manager permissions (users.view, orders.view, settings.view)
   const hasManagerAccess = (): boolean => {
-    // Basic permissions that all users have
-    const basicUserPermissions = [
-      "auth.login", "auth.logout", "auth.session",
-      "products.view", "categories.view", 
-      "orders.view_own", "cart.view", "cart.add", "cart.update", "cart.remove", "cart.clear",
-      "payment.stripe", "payment.paypal", "payment.benefit", "payment.cod", "payment.history",
-      "profile.edit"
+    // Manager role specifically has these permissions that regular users don't have
+    const managerSpecificPermissions = [
+      "users.view",     // Only managers and super admins can view users
+      "orders.view",    // Only managers and super admins can view all orders (not just own)
+      "settings.view"   // Only managers and super admins can view settings
     ];
     
-    // If user has permissions beyond basic user permissions, they are a manager
-    const hasManagementPermissions = permissions.some(permission => 
-      !basicUserPermissions.includes(permission) && 
-      !permission.startsWith("orders.view_own") && 
-      !permission.startsWith("cart.") &&
-      !permission.startsWith("payment.") &&
-      permission !== "profile.edit"
-    );
-    
-    return hasManagementPermissions || permissions.includes("users.view") || permissions.includes("orders.view");
+    // If user has any of these specific manager permissions, they are a manager
+    return hasAnyPermission(managerSpecificPermissions);
   };
 
   return {
