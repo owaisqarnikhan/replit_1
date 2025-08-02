@@ -70,10 +70,10 @@ export default function UserDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            Welcome back, {user?.firstName || user?.username}!
+            User Panel - Welcome back, {user?.firstName || user?.username}!
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Manage your orders, profile, and shopping preferences
+            Your personal dashboard to manage orders, profile, and shopping preferences
           </p>
         </div>
         <Button onClick={() => setLocation("/profile")} variant="outline">

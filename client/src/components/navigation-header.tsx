@@ -240,7 +240,7 @@ export function NavigationHeader() {
                   <>
                     <DropdownMenuItem onClick={() => setLocation("/dashboard")}>
                       <User className="mr-2 h-4 w-4" />
-                      My Dashboard
+                      User Panel
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setLocation("/orders")}>
                       <Package className="mr-2 h-4 w-4" />

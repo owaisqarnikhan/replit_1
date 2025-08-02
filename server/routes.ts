@@ -11,6 +11,7 @@ import { testMicrosoft365Connection } from "./smtp-config";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
 // import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { createBenefitPayTransaction, verifyBenefitPayTransaction, handleBenefitPayWebhook } from "./benefit-pay";
+import { requirePermission } from "./middleware";
 import Stripe from "stripe";
 import multer from "multer";
 import path from "path";
@@ -1615,6 +1616,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user permissions:", error);
       res.status(500).json({ message: "Failed to fetch user permissions" });
+    }
+  });
+
+  // Update user profile
+  app.patch("/api/user/profile", requirePermission("users.profile"), async (req, res) => {
+    try {
+      const userId = req.user.id;
+      const { firstName, lastName, email } = req.body;
+      
+      const updatedUser = await storage.updateUserProfile(userId, {
+        firstName,
+        lastName, 
+        email
+      });
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ error: "Failed to update profile" });
     }
   });
 

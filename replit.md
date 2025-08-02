@@ -1,7 +1,7 @@
 # InnovanceOrbit E-commerce Platform
 
 ## Overview
-InnovanceOrbit is a login-only e-commerce platform designed for private stores. Built with a modern full-stack architecture, it features a React frontend with TypeScript, an Express.js backend, and a PostgreSQL database with Drizzle ORM. The platform integrates with Benefit Pay and other Bahrain payment methods. Its core purpose is to provide a secure, controlled environment for predefined users to access products and make purchases, with public registration disabled. The business vision is to offer a robust, visually appealing, and highly customizable e-commerce solution for niche markets requiring exclusive access.
+InnovanceOrbit is a login-only e-commerce platform for private stores, built with React, Express.js, and PostgreSQL. It integrates with Bahraini payment methods like Benefit Pay. Its purpose is to provide a secure, controlled environment for predefined users, with public registration disabled. The business vision is to offer a robust, visually appealing, and customizable e-commerce solution for niche markets requiring exclusive access.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -9,34 +9,32 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend Architecture
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **UI Framework**: Shadcn/ui built on Radix UI primitives
-- **Styling**: Tailwind CSS with CSS variables
-- **State Management**: TanStack Query (React Query)
-- **Routing**: Wouter with dynamic category routing (`/category/:categoryId`)
-- **Forms**: React Hook Form with Zod validation
-- **UI/UX Decisions**: Responsive design for mobile and desktop, dark/light theme support, accessible components. Geometric artwork is integrated across hero sections, admin dashboard, promotional banners, and as a custom footer background. Card components use glass-morphism, gradients, and modern animations. Prominent corner geometric designs are used in image sliders and promotional banners. Header and footer logos are enhanced for better brand prominence. Featured Products and Shop by Category sections are visually redesigned with gradient backgrounds and modern typography. Individual category pages automatically created for each category with dedicated URLs.
+- **Framework**: React 18 with TypeScript, Vite build tool.
+- **UI**: Shadcn/ui (Radix UI primitives), Tailwind CSS for styling.
+- **State Management**: TanStack Query (React Query).
+- **Routing**: Wouter with dynamic category routing.
+- **Forms**: React Hook Form with Zod validation.
+- **UI/UX Decisions**: Responsive design, dark/light theme, accessible components. Features geometric artwork, glass-morphism, gradient and modern animations for UI elements, enhanced logos, and redesigned product/category sections. Individual category pages are dynamically generated.
 
 ### Backend Architecture
-- **Runtime**: Node.js with TypeScript
-- **Framework**: Express.js
-- **Authentication**: Passport.js with local strategy and express-session
-- **Password Security**: Node.js crypto module with scrypt hashing
-- **Session Storage**: PostgreSQL-backed sessions using `connect-pg-simple`
+- **Runtime**: Node.js with TypeScript, Express.js framework.
+- **Authentication**: Passport.js with local strategy, express-session, Node.js crypto module for scrypt hashing.
+- **Session Storage**: PostgreSQL-backed sessions using `connect-pg-simple`.
 
 ### Database Architecture
-- **Database**: PostgreSQL
-- **ORM**: Drizzle with migrations support
-- **Schema**: Shared between client and server via TypeScript types
+- **Database**: PostgreSQL.
+- **ORM**: Drizzle with migrations support.
+- **Schema**: Shared between client and server via TypeScript types.
 
 ### Key Features and Specifications
-- **Authentication System**: Login-only access for predefined users, session-based authentication, secure password hashing.
-- **E-commerce Features**: Product catalog with categories, shopping cart, order management, email notifications for order confirmations. Dynamic individual category pages with automatic URL generation (`/category/[categoryId]`) that display category-specific products, search functionality, and category details.
-- **Payment Integration**: Support for Benefit Pay and Cash on Delivery. Multi-payment gateway architecture to support regional payment preferences (K-Net and Benefit Debit are planned). Stripe and PayPal are integrated for international payments.
-- **Email System**: SMTP integration using Nodemailer for order confirmations. Supports customizable HTML email templates.
-- **Admin Management**: Comprehensive footer management (description, copyright, quick links, services, social media, dynamic background image). Full CRUD operations for slider images. Comprehensive unit of measure system with 16 predefined units and CRUD operations. Enhanced Excel data management system for individual sheet export/import for 8 data types (Products, Categories, Users, Orders, Order Items, Units of Measure, Site Settings, Slider Images). Database export/import functionality.
-- **System Design Choices**: Monorepo structure with shared TypeScript schemas between client and server. Authentication-first approach for protected e-commerce functionality. Stock management and Wishlist functionality have been removed from the system. Application optimized for stability with database connection fixes.
+- **Authentication**: Login-only for predefined users, session-based, secure password hashing.
+- **E-commerce**: Product catalog with categories, shopping cart, order management, email notifications for order confirmations. Dynamic individual category pages with search.
+- **Payment Integration**: Support for Benefit Pay, Cash on Delivery, and Stripe.
+- **Email System**: SMTP integration using Nodemailer for order confirmations, customizable HTML templates.
+- **Admin Management**: Comprehensive footer management, CRUD for slider images, unit of measure system, Excel data management (export/import for Products, Categories, Users, Orders, Order Items, Units of Measure, Site Settings, Slider Images), database export/import.
+- **System Design**: Monorepo structure with shared TypeScript schemas. Authentication-first approach. Stock management and Wishlist functionality removed. Optimized for stability with database connection fixes.
+- **Permission System**: Comprehensive role-based permission system with 85 permissions across 15 modules. Features a 3-tier role hierarchy (Super Admin, Manager, User) with granular control and middleware for checking permissions. UI adapts dynamically based on user roles and permissions.
+- **Order Approval Workflow**: Admin dashboard for order management (pending/approved filtering). Email notifications for various stages (submission, approval, payment confirmation, delivery confirmation). Payment options are locked until admin approval.
 
 ## External Dependencies
 
@@ -50,130 +48,9 @@ Preferred communication style: Simple, everyday language.
 - **Neon**: Serverless PostgreSQL hosting.
 
 ### Email Services
-- **Microsoft 365 SMTP**: Professional email delivery (`smtp.office365.com`) with admin-configurable settings through dashboard.
-- **SMTP Configuration**: Uses `itsupport@bayg.bh` with proper app password authentication.
-- **Tenant Requirement**: Requires IT administrator to enable SMTP authentication at tenant level.
+- **Microsoft 365 SMTP**: Professional email delivery (`smtp.office365.com`) with admin-configurable settings.
 
 ### UI Components
 - **Radix UI**: Accessible component primitives.
 - **Tailwind CSS**: Utility-first styling framework.
 - **Lucide React**: Icon library.
-
-## Migration to Replit (February 2, 2025)
-
-### Successfully Migrated from Replit Agent:
-- ✅ **PostgreSQL Database Setup**: Created and configured PostgreSQL database with all environment variables
-- ✅ **Database Schema Migration**: Applied complete schema using Drizzle ORM with all tables and relations
-- ✅ **Permission System Seeding**: Initialized comprehensive role-based permission system with 46 permissions across 10 modules
-- ✅ **User Account Seeding**: Created predefined test accounts including admin and customer users
-- ✅ **Application Launch**: Successfully running on port 5000 with full functionality
-- ✅ **Security Implementation**: Maintained client/server separation and robust security practices
-- ✅ **Environment Configuration**: All dependencies installed and configured for Replit environment
-- ✅ **Responsive Login Page**: Updated login page to be fully responsive across all screen sizes with mobile-first design, dark mode support, and optimized mobile experience
-- ✅ **Database Connection Fix**: Resolved critical Neon DB "multiple commands into prepared statement" error by switching from WebSocket pool to HTTP connection and using memory-based session store
-
-### Ready for Development:
-The platform is now fully operational on Replit with:
-- Complete e-commerce functionality with working authentication
-- Admin dashboard with order approval workflow
-- Email notification system (Microsoft 365 SMTP)
-- Payment integration (Benefit Pay, Stripe, PayPal)
-- Comprehensive user management and permissions
-- Fully responsive login interface for all devices
-- Stable database connectivity with optimized Neon HTTP driver
-
-## Comprehensive Permission System Recreation (February 2, 2025)
-
-### Deep Project Analysis & Complete Permission System Rebuild:
-- ✅ **Analyzed entire codebase**: Identified all API endpoints, authentication routes, and functionality modules
-- ✅ **Created 85 comprehensive permissions**: Covering every aspect of the platform across 15 specialized modules
-- ✅ **15 Permission Modules**: Authentication, Users, Products, Categories, Orders, Cart, Payments, Media, Slider, Units, Settings, Email, Reports, Database, Roles
-- ✅ **Fixed 3-tier role hierarchy**:
-  - Super Admin: 85 permissions (full platform access)
-  - Manager: 7 limited permissions (expandable by Super Admin)
-  - User: 16 customer permissions (shopping and orders)
-- ✅ **Proper role-based access control**: Manager user now has `isAdmin: false` and only role-based permissions
-- ✅ **Permission middleware system**: Created robust middleware for checking granular permissions
-- ✅ **Authentication security**: Removed admin flag bypass, ensuring proper role-based permission checks
-
-### Permission Module Breakdown:
-1. **Authentication & Sessions** (3 permissions): Login, logout, session management
-2. **User Management** (6 permissions): Create, edit, delete, view users and profiles
-3. **Product Management** (7 permissions): Full product lifecycle including pricing and featured products
-4. **Category Management** (5 permissions): Complete category organization system
-5. **Order Management** (10 permissions): Order processing, approval workflow, fulfillment
-6. **Shopping Cart** (5 permissions): Cart operations for customers
-7. **Payment Processing** (6 permissions): Stripe, PayPal, Benefit Pay, COD, refunds
-8. **Media & File Management** (4 permissions): Image upload and file management
-9. **Homepage Slider** (6 permissions): Slider content management with ordering
-10. **Units of Measure** (5 permissions): Product measurement units
-11. **Site Settings** (5 permissions): Configuration and SMTP setup
-12. **Email System** (6 permissions): Email notifications and SMTP testing
-13. **Reports & Analytics** (5 permissions): Business intelligence and data export
-14. **Database Management** (5 permissions): Import/export and backup operations
-15. **Role & Permission Management** (7 permissions): Super Admin role control system
-
-### Security Architecture:
-- Super Admin retains full control over all permissions and role assignments
-- Manager role now properly restricted with minimal permissions that can be expanded
-- Manager user correctly denied admin access until Super Admin grants specific permissions
-- Comprehensive middleware system for granular permission checking
-- Role-based permissions replace old isAdmin flag system
-
-### Current Role Structure:
-1. **Super Admin** (admin, itsupport): Full access (85 permissions)
-2. **Manager** (manager): Limited access (7 permissions: login, logout, view users/products/categories/orders/settings)
-3. **User** (user): Customer access (16 permissions: shopping, cart, orders, payments)
-
-## Latest UI Enhancements and Role-Based Access Control (February 2, 2025)
-
-### Completed Dynamic Permission-Based Interface System:
-- ✅ **Dynamic Dashboard Titles**: Manager users see "Manager Dashboard" instead of "Admin Dashboard" 
-- ✅ **Enhanced Super Admin Dashboard**: Added 4 additional metric cards (Pending Orders, Active Users, Total Roles, Permissions) exclusive to Super Admin
-- ✅ **Customer-Only Features**: Removed cart icon and "My Orders" access from Super Admin and Manager users - these are customer-exclusive features
-- ✅ **Permission-Based Navigation**: Cart and order access controlled by permissions (`cart.view`, `orders.own`) rather than admin flags
-- ✅ **Backend Stats Enhancement**: Updated stats API to provide additional metrics for Super Admin with proper permission checking
-- ✅ **Role-Appropriate Access**: Complete separation of customer shopping features from admin/manager functionality
-
-### Permission System Validation:
-- ✅ **Customer Permissions**: Users have cart operations (`cart.view`, `cart.add`, `cart.update`, `cart.remove`, `cart.clear`) and order management (`orders.own`, `orders.create`)
-- ✅ **Admin/Manager Restrictions**: Shopping cart and customer order features completely hidden from admin and manager roles
-- ✅ **Dynamic UI**: Dashboard grid adapts automatically (4 cards for Manager, 8 cards for Super Admin)
-- ✅ **Navigation Updates**: Header cart icon and user menu "My Orders" only visible to customer users
-
-## Latest Deployment Preparation (January 31, 2025)
-
-### Complete Order Approval Workflow System:
-- ✅ **Admin Order Management**: Complete order approval interface in admin dashboard with pending/approved order filtering
-- ✅ **Email Notification System**: Full Microsoft 365 SMTP integration with comprehensive email workflow:
-  - Order submission notification (customer receives "awaiting approval" email)
-  - Admin notification when new orders submitted
-  - Order approval notification (customer receives "payment unlocked" email)
-  - Payment completion confirmation (customer receives "order confirmed" email)
-  - Order delivery confirmation (customer receives "delivered successfully" email)
-- ✅ **Payment Method Locking**: Payment options locked until admin approval, unlocked after approval
-- ✅ **Email Setup Guide**: Comprehensive EMAIL-SETUP-GUIDE.md with Microsoft 365 configuration instructions
-- ✅ **Admin Email Configuration**: Complete SMTP settings managed through admin dashboard with test functionality
-- ✅ **SendGrid Removal**: Completely removed SendGrid in favor of Microsoft 365 SMTP with database-stored configuration
-- ✅ **SMTP Troubleshooting**: Enhanced error handling with specific Microsoft 365 authentication guidance and IT administrator instructions
-
-### AWS PuTTY Deployment Ready:
-- ✅ **Complete AWS Deployment Guide**: Comprehensive step-by-step guide for deploying to AWS using PuTTY SSH client
-- ✅ **Production Build Package**: Generated optimized production build (132.6kb server bundle, 706.6kb client bundle)
-- ✅ **Deployment Configuration Files**: All necessary config files created:
-  - Production environment variables template (.env.production)
-  - PM2 process manager configuration (ecosystem.config.js)  
-  - Nginx web server configuration with security headers and caching
-  - Automated installation script for AWS EC2 setup
-- ✅ **Complete Deployment Package**: Ready-to-upload deployment folder with built application, uploads, and all configuration files
-- ✅ **Cost-Optimized AWS Setup**: Self-hosted PostgreSQL on EC2 t3.small reduces costs to $31/month vs $44/month with RDS
-- ✅ **Production Security**: Configured proper file permissions, process management, and web server security headers
-
-### Deployment Specifications:
-- **Server**: AWS EC2 t3.small (2 vCPU, 2GB RAM, 30GB SSD)
-- **Database**: PostgreSQL installed directly on EC2 (cost optimization)
-- **Web Server**: Nginx reverse proxy with PM2 process management
-- **Email Service**: Microsoft 365 SMTP with app password authentication
-- **Monthly Cost**: $31/month for professional e-commerce hosting
-- **Deployment Method**: PuTTY SSH with WinSCP file transfer
-- **Ready for Production**: All files prepared and tested for deployment including email workflow
