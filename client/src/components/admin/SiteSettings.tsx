@@ -66,8 +66,8 @@ export function SiteSettings() {
       copyrightText: settings?.copyrightText || "",
       additionalFooterText: settings?.additionalFooterText || "",
       // SMTP Configuration
-      smtpProvider: settings?.smtpProvider || "microsoft365",
-      smtpHost: settings?.smtpHost || "smtp.office365.com",
+      smtpProvider: settings?.smtpProvider || "gmail",
+      smtpHost: settings?.smtpHost || "smtp.gmail.com",
       smtpPort: settings?.smtpPort || 587,
       smtpUser: settings?.smtpUser || "",
       smtpPassword: settings?.smtpPassword || "",
@@ -118,8 +118,8 @@ export function SiteSettings() {
         copyrightText: settings.copyrightText || "",
         additionalFooterText: settings.additionalFooterText || "",
         // SMTP Configuration
-        smtpProvider: settings.smtpProvider || "microsoft365",
-        smtpHost: settings.smtpHost || "smtp.office365.com",
+        smtpProvider: settings.smtpProvider || "gmail",
+        smtpHost: settings.smtpHost || "smtp.gmail.com",
         smtpPort: settings.smtpPort || 587,
         smtpUser: settings.smtpUser || "",
         smtpPassword: settings.smtpPassword || "",
@@ -326,19 +326,11 @@ export function SiteSettings() {
     }
   };
 
-  // Handle SMTP provider change
+  // Handle SMTP provider change (only Gmail supported)
   const handleProviderChange = (provider: string) => {
     form.setValue("smtpProvider", provider);
-    
-    // Auto-configure based on provider
-    if (provider === "microsoft365") {
-      form.setValue("smtpHost", "smtp.office365.com");
-      form.setValue("smtpPort", 587);
-    } else if (provider === "gmail") {
-      form.setValue("smtpHost", "smtp.gmail.com");
-      form.setValue("smtpPort", 587);
-    }
-    // For custom, keep existing values
+    form.setValue("smtpHost", "smtp.gmail.com");
+    form.setValue("smtpPort", 587);
   };
 
   const handleTestEmail = async () => {
@@ -1172,16 +1164,14 @@ export function SiteSettings() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email Provider</FormLabel>
-                      <Select onValueChange={handleProviderChange} value={field.value || "microsoft365"}>
+                      <Select onValueChange={handleProviderChange} value={field.value || "gmail"}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select email provider" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="microsoft365">Microsoft 365</SelectItem>
                           <SelectItem value="gmail">Gmail</SelectItem>
-                          <SelectItem value="custom">Custom SMTP</SelectItem>
                         </SelectContent>
                       </Select>
                       <p className="text-sm text-muted-foreground">
@@ -1192,50 +1182,20 @@ export function SiteSettings() {
                   )}
                 />
 
-                {/* Provider-specific setup instructions */}
-                {form.watch("smtpProvider") === "microsoft365" && (
-                  <div className="bg-blue-50 p-4 rounded-lg border">
-                    <h3 className="text-sm font-medium text-blue-900 mb-2">Microsoft 365 Setup</h3>
-                    <p className="text-sm text-blue-700 mb-2">
-                      For Microsoft 365 accounts with MFA enabled, you need to use an App Password.
-                    </p>
-                    <ol className="text-sm text-blue-700 space-y-1 list-decimal list-inside">
-                      <li>Go to your Microsoft 365 Security dashboard</li>
-                      <li>Navigate to "Additional security verification"</li>
-                      <li>Click "Create and manage app passwords"</li>
-                      <li>Generate a new app password for "Email Application"</li>
-                      <li>Use this app password in the SMTP Password field below</li>
-                    </ol>
-                  </div>
-                )}
-
-                {form.watch("smtpProvider") === "gmail" && (
-                  <div className="bg-green-50 p-4 rounded-lg border">
-                    <h3 className="text-sm font-medium text-green-900 mb-2">Gmail Setup</h3>
-                    <p className="text-sm text-green-700 mb-2">
-                      To use Gmail SMTP, you need to enable 2-factor authentication and create an App Password.
-                    </p>
-                    <ol className="text-sm text-green-700 space-y-1 list-decimal list-inside">
-                      <li>Enable 2-factor authentication on your Google account</li>
-                      <li>Go to Google Account Settings → Security</li>
-                      <li>Under "2-Step Verification", click "App passwords"</li>
-                      <li>Generate an app password for "Mail"</li>
-                      <li>Use this 16-character password in the SMTP Password field</li>
-                    </ol>
-                  </div>
-                )}
-
-                {form.watch("smtpProvider") === "custom" && (
-                  <div className="bg-purple-50 p-4 rounded-lg border">
-                    <h3 className="text-sm font-medium text-purple-900 mb-2">Custom SMTP Setup</h3>
-                    <p className="text-sm text-purple-700 mb-2">
-                      Configure the SMTP settings manually for your email provider.
-                    </p>
-                    <p className="text-sm text-purple-700">
-                      Common providers: SendGrid (smtp.sendgrid.net:587), Mailgun (smtp.mailgun.org:587), etc.
-                    </p>
-                  </div>
-                )}
+                {/* Gmail setup instructions */}
+                <div className="bg-green-50 p-4 rounded-lg border">
+                  <h3 className="text-sm font-medium text-green-900 mb-2">Gmail Setup Instructions</h3>
+                  <p className="text-sm text-green-700 mb-2">
+                    To use Gmail SMTP, you need to enable 2-factor authentication and create an App Password.
+                  </p>
+                  <ol className="text-sm text-green-700 space-y-1 list-decimal list-inside">
+                    <li>Enable 2-factor authentication on your Google account</li>
+                    <li>Go to Google Account Settings → Security</li>
+                    <li>Under "2-Step Verification", click "App passwords"</li>
+                    <li>Generate an app password for "Mail"</li>
+                    <li>Use this 16-character password in the SMTP Password field</li>
+                  </ol>
+                </div>
 
                 <FormField
                   control={form.control}
@@ -1269,15 +1229,11 @@ export function SiteSettings() {
                         <FormLabel>SMTP Host</FormLabel>
                         <FormControl>
                           <Input 
-                            placeholder={
-                              form.watch("smtpProvider") === "gmail" ? "smtp.gmail.com" :
-                              form.watch("smtpProvider") === "microsoft365" ? "smtp.office365.com" :
-                              "Enter SMTP host"
-                            } 
+                            placeholder="smtp.gmail.com" 
                             {...field} 
                             value={field.value || ""} 
-                            readOnly={form.watch("smtpProvider") !== "custom"}
-                            className={form.watch("smtpProvider") !== "custom" ? "bg-gray-50" : ""}
+                            readOnly={true}
+                            className="bg-gray-50"
                           />
                         </FormControl>
                         <FormMessage />
@@ -1298,8 +1254,8 @@ export function SiteSettings() {
                             {...field} 
                             value={field.value || 587}
                             onChange={(e) => field.onChange(parseInt(e.target.value) || 587)}
-                            readOnly={form.watch("smtpProvider") !== "custom"}
-                            className={form.watch("smtpProvider") !== "custom" ? "bg-gray-50" : ""}
+                            readOnly={true}
+                            className="bg-gray-50"
                           />
                         </FormControl>
                         <FormMessage />
