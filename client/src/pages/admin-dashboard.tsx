@@ -23,7 +23,11 @@ import {
   FileSpreadsheet,
   Settings,
   CheckCircle,
-  Shield
+  Shield,
+  Crown,
+  UserCheck,
+  Clock,
+  Database
 } from "lucide-react";
 import { AdminRequestSection } from "@/components/admin/admin-request-section";
 
@@ -32,6 +36,10 @@ interface AdminStats {
   orders: number;
   products: number;
   users: number;
+  pendingOrders?: number;
+  totalRoles?: number;
+  totalPermissions?: number;
+  activeUsers?: number;
 }
 
 export default function AdminDashboard() {
@@ -57,13 +65,20 @@ export default function AdminDashboard() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-blue-600/80" />
           <div className="relative z-10">
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <p className="mt-2 opacity-90">Manage your e-commerce platform</p>
+            <h1 className="text-3xl font-bold">
+              {(user as any)?.isSuperAdmin ? "Admin Dashboard" : "Manager Dashboard"}
+            </h1>
+            <p className="mt-2 opacity-90">
+              {(user as any)?.isSuperAdmin 
+                ? "Manage your e-commerce platform with full administrative control" 
+                : "Manage assigned areas of the e-commerce platform"
+              }
+            </p>
           </div>
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className={`grid grid-cols-1 ${(user as any)?.isSuperAdmin ? 'md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8' : 'md:grid-cols-4'} gap-6 mb-8`}>
           <Card className="bg-gradient-to-br from-green-50 to-emerald-100 border-green-200 hover:shadow-2xl">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-semibold text-green-800">Total Revenue</CardTitle>
@@ -133,6 +148,79 @@ export default function AdminDashboard() {
               <p className="text-xs text-orange-600 mt-1">registered users</p>
             </CardContent>
           </Card>
+
+          {/* Super Admin Only Cards */}
+          {(user as any)?.isSuperAdmin && (
+            <>
+              <Card className="bg-gradient-to-br from-red-50 to-rose-100 border-red-200 hover:shadow-2xl">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold text-red-800">Pending Orders</CardTitle>
+                  <div className="p-2 bg-red-500 rounded-full">
+                    <Clock className="h-5 w-5 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {statsLoading ? (
+                    <Skeleton className="h-8 w-20" />
+                  ) : (
+                    <div className="text-3xl font-bold text-red-700">{stats?.pendingOrders || 0}</div>
+                  )}
+                  <p className="text-xs text-red-600 mt-1">awaiting approval</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-indigo-50 to-blue-100 border-indigo-200 hover:shadow-2xl">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold text-indigo-800">Active Users</CardTitle>
+                  <div className="p-2 bg-indigo-500 rounded-full">
+                    <UserCheck className="h-5 w-5 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {statsLoading ? (
+                    <Skeleton className="h-8 w-20" />
+                  ) : (
+                    <div className="text-3xl font-bold text-indigo-700">{stats?.activeUsers || 0}</div>
+                  )}
+                  <p className="text-xs text-indigo-600 mt-1">active this month</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-yellow-50 to-amber-100 border-yellow-200 hover:shadow-2xl">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold text-yellow-800">Total Roles</CardTitle>
+                  <div className="p-2 bg-yellow-500 rounded-full">
+                    <Crown className="h-5 w-5 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {statsLoading ? (
+                    <Skeleton className="h-8 w-20" />
+                  ) : (
+                    <div className="text-3xl font-bold text-yellow-700">{stats?.totalRoles || 3}</div>
+                  )}
+                  <p className="text-xs text-yellow-600 mt-1">system roles</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-teal-50 to-cyan-100 border-teal-200 hover:shadow-2xl">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-semibold text-teal-800">Permissions</CardTitle>
+                  <div className="p-2 bg-teal-500 rounded-full">
+                    <Database className="h-5 w-5 text-white" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {statsLoading ? (
+                    <Skeleton className="h-8 w-20" />
+                  ) : (
+                    <div className="text-3xl font-bold text-teal-700">{stats?.totalPermissions || 85}</div>
+                  )}
+                  <p className="text-xs text-teal-600 mt-1">total permissions</p>
+                </CardContent>
+              </Card>
+            </>
+          )}
         </div>
 
         {/* Management Tabs */}

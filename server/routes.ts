@@ -3,7 +3,8 @@ import express from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema, insertUnitOfMeasureSchema } from "@shared/schema";
+import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema, insertUnitOfMeasureSchema, roles, permissions } from "@shared/schema";
+import { db } from "./db";
 import { sendOrderConfirmationEmail } from "./email";
 import { testMicrosoft365Connection } from "./smtp-config";
 // import { sendOrderSubmittedNotification, sendOrderApprovedNotification, sendOrderRejectedNotification } from "./sendgrid";
@@ -965,11 +966,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Statistics for admin dashboard
   app.get("/api/admin/stats", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+    if (!req.isAuthenticated()) {
       return res.sendStatus(401);
     }
 
     try {
+      // Check if user has permission to view statistics
+      const { userHasPermission } = await import("./seed-comprehensive-permissions");
+      const hasStatsPermission = await userHasPermission(req.user!.id, "reports.view") || req.user?.isAdmin || req.user?.isSuperAdmin;
+      
+      if (!hasStatsPermission) {
+        return res.sendStatus(401);
+      }
+
       const [orders, products, users] = await Promise.all([
         storage.getOrdersWithDetails(),
         storage.getProducts(),
@@ -978,12 +987,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const totalRevenue = orders.reduce((sum, order) => sum + parseFloat(order.total), 0);
       
-      const stats = {
+      // Basic stats for all admin users
+      const stats: any = {
         revenue: totalRevenue.toFixed(2),
         orders: orders.length,
         products: products.length,
         users: users.length,
       };
+
+      // Additional stats for Super Admin
+      if (req.user?.isSuperAdmin) {
+        const pendingOrders = orders.filter(order => order.status === 'pending').length;
+        const activeUsers = users.filter(user => {
+          // Consider users active if they have any orders in the last 30 days
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          return new Date(user.createdAt) > thirtyDaysAgo;
+        }).length;
+
+        // Get total roles and permissions from database
+        const [rolesResult, permissionsResult] = await Promise.all([
+          db.select().from(roles),
+          db.select().from(permissions)
+        ]);
+
+        stats.pendingOrders = pendingOrders;
+        stats.activeUsers = activeUsers;
+        stats.totalRoles = rolesResult.length;
+        stats.totalPermissions = permissionsResult.length;
+      }
 
       res.json(stats);
     } catch (error: any) {
