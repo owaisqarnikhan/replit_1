@@ -255,7 +255,7 @@ export function NavigationHeader() {
                   <>
                     <DropdownMenuItem onClick={() => setLocation("/admin")}>
                       <Settings className="mr-2 h-4 w-4" />
-                      {user?.isSuperAdmin ? "Admin Panel" : "Manager Panel"}
+                      {user?.isSuperAdmin ? "Super Admin Panel" : "Manager Panel"}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                   </>

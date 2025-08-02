@@ -66,12 +66,12 @@ export default function AdminDashboard() {
           <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-blue-600/80" />
           <div className="relative z-10">
             <h1 className="text-3xl font-bold">
-              {(user as any)?.isSuperAdmin ? "Admin Dashboard" : "Manager Dashboard"}
+              {(user as any)?.isSuperAdmin ? "Super Admin Panel" : "Manager Panel"}
             </h1>
             <p className="mt-2 opacity-90">
               {(user as any)?.isSuperAdmin 
-                ? "Manage your e-commerce platform with full administrative control" 
-                : "Manage assigned areas of the e-commerce platform"
+                ? "Complete system administration with full access to all features" 
+                : "Limited management access - contact Super Admin for additional permissions"
               }
             </p>
           </div>
