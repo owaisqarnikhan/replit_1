@@ -1002,7 +1002,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Consider users active if they have any orders in the last 30 days
           const thirtyDaysAgo = new Date();
           thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-          return new Date(user.createdAt) > thirtyDaysAgo;
+          return user.createdAt && new Date(user.createdAt) > thirtyDaysAgo;
         }).length;
 
         // Get total roles and permissions from database

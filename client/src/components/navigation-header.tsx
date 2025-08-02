@@ -185,33 +185,35 @@ export function NavigationHeader() {
           <div className="flex items-center justify-end space-x-2 sm:space-x-4">
 
 
-            {/* Shopping Cart */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative transition-colors duration-200"
-              style={{ color: siteSettings?.headerTextColor || '#64748b' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = siteSettings?.tabTextColor || '#2563eb';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = siteSettings?.headerTextColor || '#64748b';
-              }}
-              onClick={() => setLocation("/cart")}
-            >
-              <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
-              {cartCount > 0 && (
-                <Badge 
-                  className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 text-xs px-1 sm:px-1.5 py-0.5 min-w-[1rem] sm:min-w-[1.25rem] h-4 sm:h-5 flex items-center justify-center"
-                  style={{ 
-                    backgroundColor: '#0ea5e9',
-                    color: '#ffffff'
-                  }}
-                >
-                  {cartCount > 99 ? "99+" : cartCount}
-                </Badge>
-              )}
-            </Button>
+            {/* Shopping Cart - Only for regular customers, not admin/manager */}
+            {!user?.isAdmin && !hasManagerAccess() && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative transition-colors duration-200"
+                style={{ color: siteSettings?.headerTextColor || '#64748b' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = siteSettings?.tabTextColor || '#2563eb';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = siteSettings?.headerTextColor || '#64748b';
+                }}
+                onClick={() => setLocation("/cart")}
+              >
+                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
+                {cartCount > 0 && (
+                  <Badge 
+                    className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 text-xs px-1 sm:px-1.5 py-0.5 min-w-[1rem] sm:min-w-[1.25rem] h-4 sm:h-5 flex items-center justify-center"
+                    style={{ 
+                      backgroundColor: '#0ea5e9',
+                      color: '#ffffff'
+                    }}
+                  >
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </Badge>
+                )}
+              </Button>
+            )}
 
             {/* User Menu */}
             <DropdownMenu>
@@ -234,14 +236,18 @@ export function NavigationHeader() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onClick={() => setLocation("/dashboard")}>
-                  <User className="mr-2 h-4 w-4" />
-                  My Dashboard
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLocation("/dashboard")}>
-                  <Package className="mr-2 h-4 w-4" />
-                  My Orders
-                </DropdownMenuItem>
+                {!user?.isAdmin && !hasManagerAccess() && (
+                  <>
+                    <DropdownMenuItem onClick={() => setLocation("/dashboard")}>
+                      <User className="mr-2 h-4 w-4" />
+                      My Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setLocation("/orders")}>
+                      <Package className="mr-2 h-4 w-4" />
+                      My Orders
+                    </DropdownMenuItem>
+                  </>
+                )}
                 {(user?.isAdmin || hasManagerAccess()) && (
                   <DropdownMenuItem onClick={() => setLocation("/admin")}>
                     <Settings className="mr-2 h-4 w-4" />
