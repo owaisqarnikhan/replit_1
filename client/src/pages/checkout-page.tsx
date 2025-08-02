@@ -54,7 +54,7 @@ export default function CheckoutPage() {
 
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: any) => {
-      const res = await apiRequest("POST", "/api/orders", orderData);
+      const res = await apiRequest("/api/orders", "POST", orderData);
       return res.json();
     },
     onSuccess: (data) => {

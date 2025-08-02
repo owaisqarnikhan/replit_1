@@ -27,7 +27,7 @@ export function OrderPaymentCheckout({ orderId }: OrderPaymentCheckoutProps) {
 
   const updateOrderMutation = useMutation({
     mutationFn: async (paymentData: any) => {
-      const res = await apiRequest("PUT", `/api/orders/${orderId}/payment`, paymentData);
+      const res = await apiRequest(`/api/orders/${orderId}/payment`, "PUT", paymentData);
       return res.json();
     },
     onSuccess: () => {

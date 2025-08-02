@@ -68,7 +68,7 @@ export function BahrainPaymentMethods({
 
     try {
       if (selectedMethod === "benefit_pay") {
-        const response = await apiRequest("POST", "/api/benefit-pay/create", {
+        const response = await apiRequest("/api/benefit-pay/create", "POST", {
           amount: total,
           currency: "USD",
           orderId,
@@ -98,7 +98,7 @@ export function BahrainPaymentMethods({
           }, 2000);
         }
       } else if (selectedMethod === "cash_on_delivery") {
-        const response = await apiRequest("POST", "/api/cash-on-delivery", {
+        const response = await apiRequest("/api/cash-on-delivery", "POST", {
           orderId,
           amount: total,
           shippingAddress: shippingData,

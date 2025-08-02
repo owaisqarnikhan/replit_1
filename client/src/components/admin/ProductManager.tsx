@@ -82,7 +82,7 @@ export function ProductManager() {
         price: data.price || "0",
         rentalPrice: data.rentalPrice || undefined,
       };
-      const response = await apiRequest("POST", "/api/products", cleanData);
+      const response = await apiRequest("/api/products", "POST", cleanData);
       return response.json();
     },
     onSuccess: () => {
@@ -111,7 +111,7 @@ export function ProductManager() {
         price: data.price || "0",
         rentalPrice: data.rentalPrice || undefined,
       };
-      const response = await apiRequest("PUT", `/api/products/${id}`, cleanData);
+      const response = await apiRequest(`/api/products/${id}`, "PUT", cleanData);
       return response.json();
     },
     onSuccess: () => {
@@ -134,7 +134,7 @@ export function ProductManager() {
 
   const deleteMutation = useMutation({
     mutationFn: async (productId: string) => {
-      await apiRequest("DELETE", `/api/products/${productId}`);
+      await apiRequest(`/api/products/${productId}`, "DELETE");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });

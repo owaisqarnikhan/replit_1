@@ -42,7 +42,7 @@ export function UnitsOfMeasureManager() {
 
   const createUnitMutation = useMutation({
     mutationFn: async (unitData: InsertUnitOfMeasure) => {
-      const res = await apiRequest("POST", "/api/admin/units-of-measure", unitData);
+      const res = await apiRequest("/api/admin/units-of-measure", "POST", unitData);
       return res.json();
     },
     onSuccess: () => {
@@ -67,7 +67,7 @@ export function UnitsOfMeasureManager() {
 
   const updateUnitMutation = useMutation({
     mutationFn: async ({ id, unitData }: { id: string; unitData: Partial<InsertUnitOfMeasure> }) => {
-      const res = await apiRequest("PUT", `/api/admin/units-of-measure/${id}`, unitData);
+      const res = await apiRequest(`/api/admin/units-of-measure/${id}`, "PUT", unitData);
       return res.json();
     },
     onSuccess: () => {
@@ -91,7 +91,7 @@ export function UnitsOfMeasureManager() {
 
   const deleteUnitMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiRequest("DELETE", `/api/admin/units-of-measure/${id}`);
+      await apiRequest(`/api/admin/units-of-measure/${id}`, "DELETE");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/units-of-measure"] });

@@ -40,7 +40,7 @@ export function SliderManager() {
 
   const createSliderMutation = useMutation({
     mutationFn: async (data: InsertSliderImage) => {
-      const res = await apiRequest("POST", "/api/slider-images", data);
+      const res = await apiRequest("/api/slider-images", "POST", data);
       return res.json();
     },
     onSuccess: () => {
@@ -63,7 +63,7 @@ export function SliderManager() {
 
   const updateSliderMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<SliderImage> }) => {
-      const res = await apiRequest("PATCH", `/api/slider-images/${id}`, data);
+      const res = await apiRequest(`/api/slider-images/${id}`, "PATCH", data);
       return res.json();
     },
     onSuccess: () => {
@@ -85,7 +85,7 @@ export function SliderManager() {
 
   const deleteSliderMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await apiRequest("DELETE", `/api/slider-images/${id}`);
+      const res = await apiRequest(`/api/slider-images/${id}`, "DELETE");
       return res.json();
     },
     onSuccess: () => {

@@ -59,7 +59,7 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
 
   const addToCartMutation = useMutation({
     mutationFn: async ({ productId, quantity }: { productId: string; quantity: number }) => {
-      const res = await apiRequest("POST", "/api/cart", { productId, quantity });
+      const res = await apiRequest("/api/cart", "POST", { productId, quantity });
       return res.json();
     },
     onSuccess: () => {

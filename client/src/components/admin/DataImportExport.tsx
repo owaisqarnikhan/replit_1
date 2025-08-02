@@ -121,7 +121,7 @@ export function DataImportExport() {
           
           switch (selectedDataType) {
             case "products":
-              await apiRequest("POST", "/api/products", {
+              await apiRequest("/api/products", "POST", {
                 name: row.name || "",
                 description: row.description || "",
                 price: row.price || "0",
@@ -137,14 +137,14 @@ export function DataImportExport() {
               });
               break;
             case "categories":
-              await apiRequest("POST", "/api/categories", {
+              await apiRequest("/api/categories", "POST", {
                 name: row.name || "",
                 description: row.description || "",
                 imageUrl: row.imageUrl || "",
               });
               break;
             case "users":
-              await apiRequest("POST", "/api/admin/users", {
+              await apiRequest("/api/admin/users", "POST", {
                 username: row.username || "",
                 email: row.email || "",
                 password: row.password || "defaultPassword123",

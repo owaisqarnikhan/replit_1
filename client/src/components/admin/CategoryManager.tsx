@@ -36,7 +36,7 @@ export function CategoryManager() {
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertCategory) => {
-      const response = await apiRequest("POST", "/api/categories", data);
+      const response = await apiRequest("/api/categories", "POST", data);
       return response.json();
     },
     onSuccess: () => {
@@ -59,7 +59,7 @@ export function CategoryManager() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: InsertCategory }) => {
-      const response = await apiRequest("PUT", `/api/categories/${id}`, data);
+      const response = await apiRequest(`/api/categories/${id}`, "PUT", data);
       return response.json();
     },
     onSuccess: () => {
@@ -82,7 +82,7 @@ export function CategoryManager() {
 
   const deleteMutation = useMutation({
     mutationFn: async (categoryId: string) => {
-      await apiRequest("DELETE", `/api/categories/${categoryId}`);
+      await apiRequest(`/api/categories/${categoryId}`, "DELETE");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/categories"] });

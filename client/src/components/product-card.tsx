@@ -21,7 +21,7 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
 
   const addToCartMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/cart", {
+      const res = await apiRequest("/api/cart", "POST", {
         productId: product.id,
         quantity: 1,
       });

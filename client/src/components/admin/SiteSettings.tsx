@@ -142,7 +142,7 @@ export function SiteSettings() {
 
   const updateMutation = useMutation({
     mutationFn: async (data: InsertSiteSettings) => {
-      const response = await apiRequest("PUT", "/api/settings", data);
+      const response = await apiRequest("/api/settings", "PUT", data);
       return response.json();
     },
     onSuccess: (result, variables) => {
@@ -285,7 +285,7 @@ export function SiteSettings() {
   const handleTestEmail = async () => {
     setIsTestingEmail(true);
     try {
-      const response = await apiRequest("POST", "/api/test-smtp", {});
+      const response = await apiRequest("/api/test-smtp", "POST", {});
       const result = await response.json();
       
       if (result.success) {

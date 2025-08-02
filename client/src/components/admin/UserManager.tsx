@@ -37,7 +37,7 @@ export function UserManager() {
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertUser) => {
-      const response = await apiRequest("POST", "/api/admin/users", data);
+      const response = await apiRequest("/api/admin/users", "POST", data);
       return response.json();
     },
     onSuccess: () => {
@@ -60,7 +60,7 @@ export function UserManager() {
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<InsertUser> }) => {
-      const response = await apiRequest("PUT", `/api/admin/users/${id}`, data);
+      const response = await apiRequest(`/api/admin/users/${id}`, "PUT", data);
       return response.json();
     },
     onSuccess: () => {
@@ -83,7 +83,7 @@ export function UserManager() {
 
   const deleteMutation = useMutation({
     mutationFn: async (userId: string) => {
-      await apiRequest("DELETE", `/api/admin/users/${userId}`);
+      await apiRequest(`/api/admin/users/${userId}`, "DELETE");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
@@ -103,7 +103,7 @@ export function UserManager() {
 
   const toggleAdminMutation = useMutation({
     mutationFn: async ({ userId, isAdmin }: { userId: string; isAdmin: boolean }) => {
-      const response = await apiRequest("PUT", `/api/admin/users/${userId}`, { isAdmin });
+      const response = await apiRequest(`/api/admin/users/${userId}`, "PUT", { isAdmin });
       return response.json();
     },
     onSuccess: () => {

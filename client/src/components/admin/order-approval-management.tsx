@@ -59,7 +59,7 @@ export function OrderApprovalManagement() {
 
   const approveMutation = useMutation({
     mutationFn: async ({ orderId, remarks }: { orderId: string; remarks: string }) => {
-      const res = await apiRequest("PUT", `/api/admin/orders/${orderId}/approve`, {
+      const res = await apiRequest(`/api/admin/orders/${orderId}/approve`, "PUT", {
         adminRemarks: remarks,
       });
       return res.json();
@@ -84,7 +84,7 @@ export function OrderApprovalManagement() {
 
   const rejectMutation = useMutation({
     mutationFn: async ({ orderId, remarks }: { orderId: string; remarks: string }) => {
-      const res = await apiRequest("PUT", `/api/admin/orders/${orderId}/reject`, {
+      const res = await apiRequest(`/api/admin/orders/${orderId}/reject`, "PUT", {
         adminRemarks: remarks,
       });
       return res.json();
