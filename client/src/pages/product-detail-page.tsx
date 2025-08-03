@@ -191,11 +191,22 @@ export default function ProductDetailPage() {
 
     }
 
+    const startDateString = startDate ? startDate.toISOString().split('T')[0] : undefined;
+    const endDateString = endDate ? endDate.toISOString().split('T')[0] : undefined;
+    
+    // Temporary debug logging
+    console.log('Client sending dates:', {
+      startDate: startDate?.toString(),
+      endDate: endDate?.toString(),
+      startDateString,
+      endDateString
+    });
+
     addToCartMutation.mutate({
       productId: product.id,
       quantity,
-      rentalStartDate: startDate ? startDate.toISOString().split('T')[0] : undefined,
-      rentalEndDate: endDate ? endDate.toISOString().split('T')[0] : undefined
+      rentalStartDate: startDateString,
+      rentalEndDate: endDateString
     });
   };
 

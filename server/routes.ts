@@ -354,6 +354,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const isStartDateValid = startYear === 2025 && startMonth === 10 && startDay >= 18 && startDay <= 31;
         const isEndDateValid = endYear === 2025 && endMonth === 10 && endDay >= 18 && endDay <= 31;
         
+        // Temporary debug logging
+        console.log('Date validation debug:', {
+          received: { rentalStartDate, rentalEndDate },
+          parsed: { startYear, startMonth, startDay, endYear, endMonth, endDay },
+          validation: { isStartDateValid, isEndDateValid }
+        });
+        
         if (!isStartDateValid || !isEndDateValid) {
           return res.status(400).json({ 
             message: "Selected dates are outside the allowed rental period. Please choose dates between 18th October and 31st October 2025." 
