@@ -147,7 +147,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedOrder = await storage.updateOrder(orderId, {
         paymentMethod: "cash_on_delivery",
         status: "processing", // Update status to processing for COD
-        shippingAddress: shippingAddress ? JSON.stringify(shippingAddress) : order.shippingAddress,
       });
 
       // Send payment confirmation email
@@ -1682,7 +1681,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update user profile
   app.patch("/api/user/profile", requirePermission("users.profile"), async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user!.id;
       const { firstName, lastName, email } = req.body;
       
       const updatedUser = await storage.updateUserProfile(userId, {
