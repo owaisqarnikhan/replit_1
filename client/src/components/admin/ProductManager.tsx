@@ -513,7 +513,15 @@ export function ProductManager() {
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Price: ${product.price} | SKU: {product.sku}
+                    {(product as any).productType === "rental" ? (
+                      <>
+                        Rental Price: ${(product as any).rentalPrice || "0.00"} / {(product as any).rentalPeriod || "period"} | Regular Price: ${product.price}
+                      </>
+                    ) : (
+                      <>
+                        Price: ${product.price}
+                      </>
+                    )} | SKU: {product.sku}
                   </p>
                   {product.description && (
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
