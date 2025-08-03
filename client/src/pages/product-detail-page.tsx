@@ -2,6 +2,7 @@ import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -36,6 +37,7 @@ export default function ProductDetailPage() {
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [dateError, setDateError] = useState("");
+  const [isSingleDay, setIsSingleDay] = useState(false);
   
   // Rental period constants - ensure proper date boundaries
   const RENTAL_START = new Date(2025, 9, 18, 0, 0, 0); // October 18, 2025 00:00:00
@@ -84,7 +86,7 @@ export default function ProductDetailPage() {
     if (start < RENTAL_START || start > RENTAL_END || end < RENTAL_START || end > RENTAL_END) {
       return "Selected dates are outside the allowed rental period. Please choose dates between 18th October and 31st October 2025.";
     }
-    if (start >= end) {
+    if (!isSingleDay && start >= end) {
       return "End date must be after start date.";
     }
     return "";
@@ -110,8 +112,11 @@ export default function ProductDetailPage() {
     setStartDate(date);
     setDateError("");
     
-    // If we have both dates, validate them
-    if (endDate) {
+    // For single day rental, set end date to start date
+    if (isSingleDay) {
+      setEndDate(date);
+    } else if (endDate) {
+      // If we have both dates, validate them
       const error = validateDateRange(date, endDate);
       setDateError(error);
     }
@@ -127,6 +132,15 @@ export default function ProductDetailPage() {
     if (startDate) {
       const error = validateDateRange(startDate, date);
       setDateError(error);
+    }
+  };
+
+  const handleSingleDayToggle = (checked: boolean) => {
+    setIsSingleDay(checked);
+    if (checked && startDate) {
+      setEndDate(startDate); // Set end date to start date for single day
+    } else if (!checked && startDate && endDate && startDate.getTime() === endDate.getTime()) {
+      setEndDate(undefined); // Clear end date if it was same as start date
     }
   };
 
@@ -202,13 +216,7 @@ export default function ProductDetailPage() {
     const startDateString = startDate ? formatDateForServer(startDate) : undefined;
     const endDateString = endDate ? formatDateForServer(endDate) : undefined;
     
-    // Temporary debug logging
-    console.log('Client sending dates:', {
-      startDate: startDate?.toString(),
-      endDate: endDate?.toString(),
-      startDateString,
-      endDateString
-    });
+
 
     addToCartMutation.mutate({
       productId: product.id,
@@ -369,8 +377,23 @@ export default function ProductDetailPage() {
                       <p className="text-sm text-amber-800">
                         <Calendar className="w-4 h-4 inline mr-2" />
                         Products rental only between 18th October and 31st October 2025.
-                        Please select your start and end dates within this period. Pricing will be automatically calculated based on the number of days selected.
+                        You can select dates for single day or multiple day rentals. Pricing will be automatically calculated based on the number of days selected.
                       </p>
+                    </div>
+                    
+                    {/* Single Day Option */}
+                    <div className="flex items-center space-x-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <Checkbox 
+                        id="single-day" 
+                        checked={isSingleDay}
+                        onCheckedChange={handleSingleDayToggle}
+                      />
+                      <label 
+                        htmlFor="single-day" 
+                        className="text-sm font-medium text-blue-800 cursor-pointer"
+                      >
+                        Single day rental (select only start date)
+                      </label>
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -410,7 +433,7 @@ export default function ProductDetailPage() {
                       </div>
 
                       {/* End Date Picker */}
-                      <div className="space-y-2">
+                      <div className={`space-y-2 ${isSingleDay ? 'opacity-50 pointer-events-none' : ''}`}>
                         <label className="text-sm font-medium text-gray-700">End Date</label>
                         <Popover>
                           <PopoverTrigger asChild>
