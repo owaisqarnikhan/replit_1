@@ -90,7 +90,9 @@ export default function CheckoutPage() {
   }
 
   const subtotal = cartItems.reduce((total, item) => {
-    return total + (parseFloat(item.product.price) * item.quantity);
+    // Use calculated total price from cart item if available, otherwise fallback to product price
+    const itemTotal = item.totalPrice ? parseFloat(item.totalPrice) : (parseFloat(item.product.price) * item.quantity);
+    return total + itemTotal;
   }, 0);
 
   const tax = subtotal * 0.10;
@@ -221,19 +223,33 @@ export default function CheckoutPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center py-2 border-b border-slate-200">
-                      <div className="flex-1">
-                        <h4 className="font-medium text-slate-900">{item.product.name}</h4>
-                        <p className="text-sm text-slate-600">Quantity: {item.quantity}</p>
+                  {cartItems.map((item) => {
+                    // Use calculated total price from cart item if available, otherwise fallback to product price
+                    const itemTotal = item.totalPrice ? parseFloat(item.totalPrice) : (parseFloat(item.product.price) * item.quantity);
+                    const unitPrice = item.unitPrice ? parseFloat(item.unitPrice) : parseFloat(item.product.price);
+                    
+                    return (
+                      <div key={item.id} className="flex justify-between items-center py-2 border-b border-slate-200">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-slate-900">{item.product.name}</h4>
+                          <div className="text-sm text-slate-600 space-y-1">
+                            <p>Quantity: {item.quantity}</p>
+                            {item.rentalStartDate && item.rentalEndDate && (
+                              <p>
+                                Rental: {new Date(item.rentalStartDate).toLocaleDateString()} - {new Date(item.rentalEndDate).toLocaleDateString()}
+                              </p>
+                            )}
+                            <p>Unit Price: ${unitPrice.toFixed(2)}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium text-slate-900">
+                            ${itemTotal.toFixed(2)}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium text-slate-900">
-                          ${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                   
                   <div className="space-y-2 pt-4 border-t border-slate-200">
                     <div className="flex justify-between text-slate-600">

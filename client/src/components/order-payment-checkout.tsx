@@ -186,12 +186,25 @@ export function OrderPaymentCheckout({ orderId }: OrderPaymentCheckoutProps) {
                             )}
                             <div>
                               <p className="font-medium text-slate-900">{item.product.name}</p>
-                              <p className="text-sm text-slate-600">Qty: {item.quantity}</p>
+                              <div className="text-sm text-slate-600 space-y-1">
+                                <p>Qty: {item.quantity}</p>
+                                {item.rentalStartDate && item.rentalEndDate && (
+                                  <p>
+                                    Rental: {new Date(item.rentalStartDate).toLocaleDateString()} - {new Date(item.rentalEndDate).toLocaleDateString()}
+                                  </p>
+                                )}
+                                {item.rentalDays && (
+                                  <p>Duration: {item.rentalDays} day{item.rentalDays > 1 ? 's' : ''}</p>
+                                )}
+                              </div>
                             </div>
                           </div>
                           <div className="text-right">
+                            <div className="text-sm text-slate-600 mb-1">
+                              ${parseFloat(item.price).toFixed(2)} × {item.quantity}
+                            </div>
                             <p className="font-medium text-slate-900">
-                              ${(parseFloat(item.price) * item.quantity).toFixed(2)}
+                              ${item.totalPrice || (parseFloat(item.price) * item.quantity).toFixed(2)}
                             </p>
                           </div>
                         </div>
