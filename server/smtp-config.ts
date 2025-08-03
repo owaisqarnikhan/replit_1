@@ -16,7 +16,7 @@ export async function createSMTPTransporter() {
   console.log(`Creating ${provider.toUpperCase()} SMTP transporter...`);
 
   // Base configuration
-  const baseConfig = {
+  const baseConfig: any = {
     host: settings.smtpHost,
     port: settings.smtpPort || 587,
     secure: false, // STARTTLS
@@ -42,6 +42,8 @@ export async function createSMTPTransporter() {
     config = {
       ...baseConfig,
       host: settings.smtpHost || 'smtp.gmail.com',
+      port: 587,
+      secure: false,
       tls: {
         rejectUnauthorized: false
       }
