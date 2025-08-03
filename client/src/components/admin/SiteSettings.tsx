@@ -1183,18 +1183,27 @@ export function SiteSettings() {
                 />
 
                 {/* Gmail setup instructions */}
-                <div className="bg-green-50 p-4 rounded-lg border">
-                  <h3 className="text-sm font-medium text-green-900 mb-2">Gmail Setup Instructions</h3>
-                  <p className="text-sm text-green-700 mb-2">
-                    To use Gmail SMTP, you need to enable 2-factor authentication and create an App Password.
-                  </p>
-                  <ol className="text-sm text-green-700 space-y-1 list-decimal list-inside">
-                    <li>Enable 2-factor authentication on your Google account</li>
-                    <li>Go to Google Account Settings → Security</li>
-                    <li>Under "2-Step Verification", click "App passwords"</li>
-                    <li>Generate an app password for "Mail"</li>
-                    <li>Use this 16-character password in the SMTP Password field</li>
-                  </ol>
+                <div className="bg-blue-50 p-4 rounded-lg border">
+                  <h3 className="text-sm font-medium text-blue-900 mb-2">📧 Gmail SMTP Setup Instructions</h3>
+                  <div className="space-y-3">
+                    <p className="text-sm text-blue-700">
+                      <strong>Step 1:</strong> Enable 2-factor authentication on your Google account
+                    </p>
+                    <p className="text-sm text-blue-700">
+                      <strong>Step 2:</strong> Go to Google Account Settings → Security → 2-Step Verification → App passwords
+                    </p>
+                    <p className="text-sm text-blue-700">
+                      <strong>Step 3:</strong> Generate an app password for "Mail" and copy the 16-character password
+                    </p>
+                    <p className="text-sm text-blue-700">
+                      <strong>Step 4:</strong> Use your full Gmail address as SMTP Username and the App Password (not your regular password) as SMTP Password
+                    </p>
+                    <div className="bg-yellow-100 p-3 rounded border-l-4 border-yellow-400">
+                      <p className="text-sm text-yellow-800">
+                        <strong>⚠️ Important:</strong> Use the 16-character App Password, NOT your regular Gmail password!
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 <FormField
@@ -1269,10 +1278,13 @@ export function SiteSettings() {
                   name="smtpUser"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>SMTP Username (Email Address)</FormLabel>
+                      <FormLabel>Gmail Address (Full Email)</FormLabel>
                       <FormControl>
-                        <Input placeholder="your-email@yourdomain.com" {...field} value={field.value || ""} />
+                        <Input placeholder="your-email@gmail.com" {...field} value={field.value || ""} />
                       </FormControl>
+                      <p className="text-sm text-muted-foreground">
+                        Enter your complete Gmail address (e.g., user@gmail.com)
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -1283,15 +1295,18 @@ export function SiteSettings() {
                   name="smtpPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>SMTP Password (or App Password for MFA)</FormLabel>
+                      <FormLabel>Gmail App Password (16 characters)</FormLabel>
                       <FormControl>
                         <Input 
                           type="password" 
-                          placeholder="your-password-or-app-password" 
+                          placeholder="abcd efgh ijkl mnop" 
                           {...field} 
                           value={field.value || ""} 
                         />
                       </FormControl>
+                      <p className="text-sm text-muted-foreground">
+                        Use the 16-character App Password from Google Account Settings, not your regular Gmail password
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -1304,8 +1319,11 @@ export function SiteSettings() {
                     <FormItem>
                       <FormLabel>From Email Address</FormLabel>
                       <FormControl>
-                        <Input placeholder="noreply@yourdomain.com" {...field} value={field.value || ""} />
+                        <Input placeholder="noreply@gmail.com or your-email@gmail.com" {...field} value={field.value || ""} />
                       </FormControl>
+                      <p className="text-sm text-muted-foreground">
+                        This should typically be the same as your Gmail address above
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -1348,30 +1366,35 @@ export function SiteSettings() {
                 />
 
                 <div className="space-y-4 pt-6 border-t">
-                  <h3 className="text-lg font-medium">Email Testing</h3>
-                  <div className="bg-amber-50 p-4 rounded-lg border">
-                    <p className="text-sm text-amber-800 mb-3">
-                      Test your SMTP configuration by sending a test email. Make sure to save your settings first.
+                  <h3 className="text-lg font-medium">📧 Gmail SMTP Testing</h3>
+                  <div className="bg-blue-50 p-4 rounded-lg border">
+                    <p className="text-sm text-blue-800 mb-3">
+                      <strong>Test your Gmail SMTP configuration:</strong> Make sure to save your settings first, then click the test button below.
                     </p>
                     <Button
                       type="button"
                       variant="outline"
                       onClick={handleTestEmail}
                       disabled={isTestingEmail}
-                      className="w-full"
+                      className="w-full bg-white hover:bg-blue-50"
                     >
                       {isTestingEmail ? (
                         <>
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Sending Test Email...
+                          Testing Gmail SMTP Connection...
                         </>
                       ) : (
                         <>
                           <Mail className="h-4 w-4 mr-2" />
-                          Send Test Email
+                          Test Gmail SMTP Connection
                         </>
                       )}
                     </Button>
+                    <div className="mt-3 p-3 bg-white rounded border">
+                      <p className="text-xs text-gray-600">
+                        <strong>What this test does:</strong> Sends a test email to your Gmail address to verify that your App Password and SMTP settings are configured correctly.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </TabsContent>

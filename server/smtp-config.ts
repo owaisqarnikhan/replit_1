@@ -71,8 +71,8 @@ export async function createSMTPTransporter() {
         (error.message.includes('Authentication unsuccessful') || 
          error.message.includes('SmtpClientAuthentication is disabled'))) {
       throw new Error(`SMTP Authentication Disabled: Your Microsoft 365 tenant has SMTP authentication disabled. Please enable it in the Microsoft 365 Admin Center under Security & Compliance > Basic Authentication policies, or contact your IT administrator.`);
-    } else if (provider === 'gmail' && error.message.includes('Invalid login')) {
-      throw new Error(`Gmail Authentication Failed: Please ensure you're using an App Password (not your regular password) and that 2-factor authentication is enabled on your Google account.`);
+    } else if (provider === 'gmail' && (error.message.includes('Invalid login') || error.message.includes('Username and Password not accepted'))) {
+      throw new Error(`Gmail Authentication Failed: Please ensure you're using an App Password (not your regular Gmail password) and that 2-factor authentication is enabled on your Google account. Visit https://support.google.com/accounts/answer/185833 for setup instructions.`);
     } else if (error.message.includes('Invalid login')) {
       throw new Error(`Invalid Credentials: Please verify your email address and password are correct for ${provider}.`);
     } else {

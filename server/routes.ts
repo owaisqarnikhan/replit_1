@@ -688,13 +688,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const { testMicrosoft365Connection } = await import("./smtp-config");
-      const result = await testMicrosoft365Connection();
-      res.json(result);
+      const { testSMTP } = await import("./test-smtp");
+      const result = await testSMTP();
+      res.json({
+        success: true,
+        message: "Test email sent successfully! Check your inbox to confirm SMTP is working."
+      });
     } catch (error: any) {
+      console.error('SMTP test error:', error);
       res.json({
         success: false,
-        message: error.message || 'Unknown error occurred'
+        message: error.message || 'SMTP test failed. Please check your configuration.'
       });
     }
   });
@@ -873,13 +877,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const result = await testMicrosoft365Connection();
-      res.json(result);
+      const { testSMTP } = await import("./test-smtp");
+      const result = await testSMTP();
+      res.json({
+        success: true,
+        message: "Admin SMTP test email sent successfully! Check your inbox to confirm email system is working."
+      });
     } catch (error: any) {
-      console.error('Microsoft 365 SMTP test error:', error);
+      console.error('Admin SMTP test error:', error);
       res.status(500).json({ 
         success: false, 
-        message: error.message || "Microsoft 365 SMTP test failed" 
+        message: error.message || "SMTP test failed. Please verify your email configuration." 
       });
     }
   });
