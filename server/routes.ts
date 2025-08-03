@@ -332,11 +332,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         parsedEndDate = new Date(rentalEndDate);
         
         // Validate rental dates are within allowed period (Oct 18-31, 2025)
-        const rentalStart = new Date(2025, 9, 18); // October 18, 2025
-        const rentalEnd = new Date(2025, 9, 31); // October 31, 2025
+        // Use UTC dates to avoid timezone issues
+        const rentalStart = new Date('2025-10-18T00:00:00.000Z');
+        const rentalEnd = new Date('2025-10-31T23:59:59.999Z');
         
-        if (parsedStartDate < rentalStart || parsedStartDate > rentalEnd || 
-            parsedEndDate < rentalStart || parsedEndDate > rentalEnd) {
+        // Convert to date-only comparison to avoid time zone issues
+        const startDateOnly = new Date(parsedStartDate.getFullYear(), parsedStartDate.getMonth(), parsedStartDate.getDate());
+        const endDateOnly = new Date(parsedEndDate.getFullYear(), parsedEndDate.getMonth(), parsedEndDate.getDate());
+        const rentalStartOnly = new Date(2025, 9, 18); // October 18, 2025
+        const rentalEndOnly = new Date(2025, 9, 31); // October 31, 2025
+        
+        if (startDateOnly < rentalStartOnly || startDateOnly > rentalEndOnly || 
+            endDateOnly < rentalStartOnly || endDateOnly > rentalEndOnly) {
           return res.status(400).json({ 
             message: "Selected dates are outside the allowed rental period. Please choose dates between 18th October and 31st October 2025." 
           });
