@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Star, ShoppingCart, Eye } from "lucide-react";
+import { useLocation } from "wouter";
 
 import type { Product } from "@shared/schema";
 
@@ -17,6 +18,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onViewDetails, onCardClick, showDetailsButton = true }: ProductCardProps) {
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
 
   const addToCartMutation = useMutation({
@@ -33,6 +35,8 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
         title: "Added to cart",
         description: `${product.name} has been added to your cart`,
       });
+      // Redirect to cart page after successful add
+      setLocation("/cart");
     },
     onError: () => {
       toast({
@@ -45,6 +49,13 @@ export function ProductCard({ product, onViewDetails, onCardClick, showDetailsBu
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    // For rental products, redirect to product detail page to select dates
+    if (product.productType === "rental") {
+      setLocation(`/products/${product.id}`);
+      return;
+    }
+    
     addToCartMutation.mutate();
   };
 

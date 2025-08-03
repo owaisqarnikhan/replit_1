@@ -350,17 +350,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         parsedStartDate = new Date(startYear, startMonth - 1, startDay);
         parsedEndDate = new Date(endYear, endMonth - 1, endDay);
         
-        console.log('Debug: Received date strings:', { rentalStartDate, rentalEndDate });
-        console.log('Debug: Parsed date components:', { 
-          start: { startYear, startMonth, startDay }, 
-          end: { endYear, endMonth, endDay } 
-        });
-        
         // Check if dates are in 2025 and October (month 10)
         const isStartDateValid = startYear === 2025 && startMonth === 10 && startDay >= 18 && startDay <= 31;
         const isEndDateValid = endYear === 2025 && endMonth === 10 && endDay >= 18 && endDay <= 31;
-        
-        console.log('Debug: Date validation:', { isStartDateValid, isEndDateValid });
         
         if (!isStartDateValid || !isEndDateValid) {
           return res.status(400).json({ 

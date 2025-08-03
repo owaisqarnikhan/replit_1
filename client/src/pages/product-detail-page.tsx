@@ -37,9 +37,9 @@ export default function ProductDetailPage() {
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [dateError, setDateError] = useState("");
   
-  // Rental period constants
-  const RENTAL_START = new Date(2025, 9, 18); // October 18, 2025
-  const RENTAL_END = new Date(2025, 9, 31); // October 31, 2025
+  // Rental period constants - ensure proper date boundaries
+  const RENTAL_START = new Date(2025, 9, 18, 0, 0, 0); // October 18, 2025 00:00:00
+  const RENTAL_END = new Date(2025, 9, 31, 23, 59, 59); // October 31, 2025 23:59:59
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: [`/api/products/${id}`],
@@ -67,6 +67,8 @@ export default function ProductDetailPage() {
         title: "Added to Cart",
         description: `${product?.name} has been added to your cart.`,
       });
+      // Redirect to cart page after successful add
+      setLocation("/cart");
     },
     onError: () => {
       toast({
@@ -186,14 +188,7 @@ export default function ProductDetailPage() {
         });
         return;
       }
-      
-      // Debug logging
-      console.log('Client: Sending dates to server:', {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        startDateLocal: startDate.toString(),
-        endDateLocal: endDate.toString()
-      });
+
     }
 
     addToCartMutation.mutate({
@@ -379,7 +374,12 @@ export default function ProductDetailPage() {
                               selected={startDate}
                               onSelect={handleStartDateSelect}
                               disabled={(date) => {
-                                if (date < RENTAL_START || date > RENTAL_END || date < new Date()) {
+                                const today = new Date();
+                                today.setHours(0, 0, 0, 0);
+                                const checkDate = new Date(date);
+                                checkDate.setHours(0, 0, 0, 0);
+                                
+                                if (checkDate < RENTAL_START || checkDate > RENTAL_END || checkDate < today) {
                                   return true;
                                 }
                                 return false;
@@ -409,10 +409,15 @@ export default function ProductDetailPage() {
                               selected={endDate}
                               onSelect={handleEndDateSelect}
                               disabled={(date) => {
-                                if (date < RENTAL_START || date > RENTAL_END || date < new Date()) {
+                                const today = new Date();
+                                today.setHours(0, 0, 0, 0);
+                                const checkDate = new Date(date);
+                                checkDate.setHours(0, 0, 0, 0);
+                                
+                                if (checkDate < RENTAL_START || checkDate > RENTAL_END || checkDate < today) {
                                   return true;
                                 }
-                                if (startDate && date <= startDate) {
+                                if (startDate && checkDate <= startDate) {
                                   return true;
                                 }
                                 return false;
