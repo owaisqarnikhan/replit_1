@@ -46,11 +46,11 @@ Preferred communication style: Simple, everyday language.
 - **Security**: Environment-based API key management
 
 ## Email System
-- **Primary Provider**: Microsoft 365 SMTP with fallback Gmail support
-- **Multi-provider SMTP**: Microsoft 365 (primary), Gmail, and custom SMTP support
+- **Single Provider**: Microsoft 365 SMTP only
 - **Transactional Emails**: Order confirmations, admin notifications, approval workflows
 - **Template System**: HTML email templates with dynamic content
-- **Configuration**: Database-driven SMTP settings with validation and provider-specific setup instructions
+- **Configuration**: Database-driven Microsoft 365 SMTP settings with validation and setup instructions
+- **Authentication**: Supports regular passwords and App Passwords for MFA-enabled accounts
 
 ## Order Management
 - **Approval Workflow**: Admin approval required before payment processing
@@ -99,10 +99,11 @@ Preferred communication style: Simple, everyday language.
 - **Type Safety**: Comprehensive TypeScript configuration with strict mode enabled
 
 ## Recent Changes (January 2025)
-- **Email Provider Switch**: Changed primary email provider from Gmail back to Microsoft 365 SMTP
-- **Multi-Provider UI**: Enhanced admin interface with provider-specific setup instructions for both Microsoft 365 and Gmail
-- **SMTP Configuration**: Updated default settings to use smtp.office365.com:587 with proper authentication handling
-- **Error Handling**: Improved SMTP authentication error messages with provider-specific guidance
+- **Email Provider Simplification**: Removed Gmail support entirely, project now uses Microsoft 365 SMTP exclusively
+- **Microsoft 365 Only**: Simplified admin interface to focus solely on Microsoft 365 configuration
+- **SMTP Configuration**: Default settings locked to smtp.office365.com:587 with Microsoft 365-specific authentication
+- **Error Handling**: Enhanced Microsoft 365 specific error messages and troubleshooting guidance
+- **UI Streamlining**: Removed provider selection dropdown, Microsoft 365 is the only supported email provider
 
 ## Authentication and Security
 - **Session Management**: Express-session with connect-pg-simple for PostgreSQL session store

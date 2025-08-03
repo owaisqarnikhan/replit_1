@@ -326,16 +326,11 @@ export function SiteSettings() {
     }
   };
 
-  // Handle SMTP provider change (Microsoft 365 supported)
+  // Handle SMTP provider change (Microsoft 365 only)
   const handleProviderChange = (provider: string) => {
-    form.setValue("smtpProvider", provider);
-    if (provider === "microsoft365") {
-      form.setValue("smtpHost", "smtp.office365.com");
-      form.setValue("smtpPort", 587);
-    } else if (provider === "gmail") {
-      form.setValue("smtpHost", "smtp.gmail.com");
-      form.setValue("smtpPort", 587);
-    }
+    form.setValue("smtpProvider", "microsoft365");
+    form.setValue("smtpHost", "smtp.office365.com");
+    form.setValue("smtpPort", 587);
   };
 
   const handleTestEmail = async () => {
@@ -1169,15 +1164,14 @@ export function SiteSettings() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email Provider</FormLabel>
-                      <Select onValueChange={handleProviderChange} value={field.value || "microsoft365"}>
+                      <Select onValueChange={handleProviderChange} value="microsoft365" disabled>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select email provider" />
+                          <SelectTrigger className="bg-gray-50">
+                            <SelectValue placeholder="Microsoft 365 (Only)" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="microsoft365">Microsoft 365</SelectItem>
-                          <SelectItem value="gmail">Gmail</SelectItem>
                         </SelectContent>
                       </Select>
                       <p className="text-sm text-muted-foreground">
@@ -1189,61 +1183,33 @@ export function SiteSettings() {
                 />
 
                 {/* Microsoft 365 setup instructions */}
-                {form.watch("smtpProvider") === "microsoft365" && (
-                  <div className="bg-blue-50 p-4 rounded-lg border">
-                    <h3 className="text-sm font-medium text-blue-900 mb-2">📧 Microsoft 365 SMTP Setup Instructions</h3>
-                    <div className="space-y-3">
-                      <p className="text-sm text-blue-700">
-                        <strong>Step 1:</strong> Use your full Microsoft 365 email address (e.g., user@yourcompany.com)
+                <div className="bg-blue-50 p-4 rounded-lg border">
+                  <h3 className="text-sm font-medium text-blue-900 mb-2">📧 Microsoft 365 SMTP Setup Instructions</h3>
+                  <div className="space-y-3">
+                    <p className="text-sm text-blue-700">
+                      <strong>Step 1:</strong> Use your full Microsoft 365 email address (e.g., user@yourcompany.com)
+                    </p>
+                    <p className="text-sm text-blue-700">
+                      <strong>Step 2:</strong> Use your regular Microsoft 365 password or app password if MFA is enabled
+                    </p>
+                    <p className="text-sm text-blue-700">
+                      <strong>Step 3:</strong> Ensure SMTP authentication is enabled in your Microsoft 365 admin center
+                    </p>
+                    <p className="text-sm text-blue-700">
+                      <strong>Step 4:</strong> If MFA is enabled, generate an App Password: Security → Additional security verification → App passwords
+                    </p>
+                    <div className="bg-red-100 p-3 rounded border-l-4 border-red-400 mb-2">
+                      <p className="text-sm text-red-800">
+                        <strong>⚠️ Common Issue:</strong> If you get "SmtpClientAuthentication is disabled" error, your organization has disabled SMTP authentication. Contact your IT administrator to enable it.
                       </p>
-                      <p className="text-sm text-blue-700">
-                        <strong>Step 2:</strong> Use your regular Microsoft 365 password or app password if MFA is enabled
+                    </div>
+                    <div className="bg-yellow-100 p-3 rounded border-l-4 border-yellow-400">
+                      <p className="text-sm text-yellow-800">
+                        <strong>💡 Alternative:</strong> Use an App Password instead of your regular password, especially for accounts with MFA enabled.
                       </p>
-                      <p className="text-sm text-blue-700">
-                        <strong>Step 3:</strong> Ensure SMTP authentication is enabled in your Microsoft 365 admin center
-                      </p>
-                      <p className="text-sm text-blue-700">
-                        <strong>Step 4:</strong> If MFA is enabled, generate an App Password: Security → Additional security verification → App passwords
-                      </p>
-                      <div className="bg-red-100 p-3 rounded border-l-4 border-red-400 mb-2">
-                        <p className="text-sm text-red-800">
-                          <strong>⚠️ Common Issue:</strong> If you get "SmtpClientAuthentication is disabled" error, your organization has disabled SMTP authentication. Contact your IT administrator to enable it.
-                        </p>
-                      </div>
-                      <div className="bg-yellow-100 p-3 rounded border-l-4 border-yellow-400">
-                        <p className="text-sm text-yellow-800">
-                          <strong>💡 Alternative:</strong> Use an App Password instead of your regular password, especially for accounts with MFA enabled.
-                        </p>
-                      </div>
                     </div>
                   </div>
-                )}
-
-                {/* Gmail setup instructions */}
-                {form.watch("smtpProvider") === "gmail" && (
-                  <div className="bg-green-50 p-4 rounded-lg border">
-                    <h3 className="text-sm font-medium text-green-900 mb-2">📧 Gmail SMTP Setup Instructions</h3>
-                    <div className="space-y-3">
-                      <p className="text-sm text-green-700">
-                        <strong>Step 1:</strong> Enable 2-factor authentication on your Google account
-                      </p>
-                      <p className="text-sm text-green-700">
-                        <strong>Step 2:</strong> Go to Google Account Settings → Security → 2-Step Verification → App passwords
-                      </p>
-                      <p className="text-sm text-green-700">
-                        <strong>Step 3:</strong> Generate an app password for "Mail" and copy the 16-character password
-                      </p>
-                      <p className="text-sm text-green-700">
-                        <strong>Step 4:</strong> Use your full Gmail address as SMTP Username and the App Password (not your regular password) as SMTP Password
-                      </p>
-                      <div className="bg-yellow-100 p-3 rounded border-l-4 border-yellow-400">
-                        <p className="text-sm text-yellow-800">
-                          <strong>⚠️ Important:</strong> Use the 16-character App Password, NOT your regular Gmail password!
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                </div>
 
                 <FormField
                   control={form.control}
@@ -1317,12 +1283,12 @@ export function SiteSettings() {
                   name="smtpUser"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>SMTP Username (Email Address)</FormLabel>
+                      <FormLabel>Microsoft 365 Email Address</FormLabel>
                       <FormControl>
                         <Input placeholder="your-email@yourcompany.com" {...field} value={field.value || ""} />
                       </FormControl>
                       <p className="text-sm text-muted-foreground">
-                        Enter your complete email address (Microsoft 365 or Gmail)
+                        Enter your complete Microsoft 365 email address
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -1334,17 +1300,17 @@ export function SiteSettings() {
                   name="smtpPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>SMTP Password</FormLabel>
+                      <FormLabel>Microsoft 365 Password</FormLabel>
                       <FormControl>
                         <Input 
                           type="password" 
-                          placeholder="your-email-password-or-app-password" 
+                          placeholder="your-microsoft-365-password-or-app-password" 
                           {...field} 
                           value={field.value || ""} 
                         />
                       </FormControl>
                       <p className="text-sm text-muted-foreground">
-                        Use your email password or app password (for accounts with MFA enabled)
+                        Use your Microsoft 365 password or App Password (for MFA-enabled accounts)
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -1361,7 +1327,7 @@ export function SiteSettings() {
                         <Input placeholder="noreply@yourcompany.com" {...field} value={field.value || ""} />
                       </FormControl>
                       <p className="text-sm text-muted-foreground">
-                        This should typically be the same as your SMTP username above
+                        This should typically be the same as your Microsoft 365 email address above
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -1405,10 +1371,10 @@ export function SiteSettings() {
                 />
 
                 <div className="space-y-4 pt-6 border-t">
-                  <h3 className="text-lg font-medium">📧 SMTP Testing</h3>
+                  <h3 className="text-lg font-medium">📧 Microsoft 365 SMTP Testing</h3>
                   <div className="bg-blue-50 p-4 rounded-lg border">
                     <p className="text-sm text-blue-800 mb-3">
-                      <strong>Test your SMTP configuration:</strong> Make sure to save your settings first, then click the test button below.
+                      <strong>Test your Microsoft 365 SMTP configuration:</strong> Make sure to save your settings first, then click the test button below.
                     </p>
                     <Button
                       type="button"
@@ -1420,18 +1386,18 @@ export function SiteSettings() {
                       {isTestingEmail ? (
                         <>
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Testing SMTP Connection...
+                          Testing Microsoft 365 SMTP...
                         </>
                       ) : (
                         <>
                           <Mail className="h-4 w-4 mr-2" />
-                          Test SMTP Connection
+                          Test Microsoft 365 SMTP
                         </>
                       )}
                     </Button>
                     <div className="mt-3 p-3 bg-white rounded border">
                       <p className="text-xs text-gray-600">
-                        <strong>What this test does:</strong> Sends a test email to verify that your SMTP settings and credentials are configured correctly.
+                        <strong>What this test does:</strong> Sends a test email to verify that your Microsoft 365 SMTP settings and credentials are configured correctly.
                       </p>
                     </div>
                   </div>

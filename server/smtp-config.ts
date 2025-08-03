@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import { storage } from './storage';
 
-// Multi-provider SMTP Configuration
+// Microsoft 365 SMTP Configuration
 export async function createSMTPTransporter() {
   const settings = await storage.getSiteSettings();
   
@@ -26,37 +26,15 @@ export async function createSMTPTransporter() {
     },
   };
 
-  // Provider-specific configurations
-  let config;
-  
-  if (provider === 'microsoft365') {
-    config = {
-      ...baseConfig,
-      host: settings.smtpHost || 'smtp.office365.com',
-      tls: {
-        ciphers: 'SSLv3',
-        rejectUnauthorized: false
-      }
-    };
-  } else if (provider === 'gmail') {
-    config = {
-      ...baseConfig,
-      host: settings.smtpHost || 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      tls: {
-        rejectUnauthorized: false
-      }
-    };
-  } else {
-    // Custom SMTP
-    config = {
-      ...baseConfig,
-      tls: {
-        rejectUnauthorized: false
-      }
-    };
-  }
+  // Microsoft 365 SMTP configuration only
+  const config = {
+    ...baseConfig,
+    host: settings.smtpHost || 'smtp.office365.com',
+    tls: {
+      ciphers: 'SSLv3',
+      rejectUnauthorized: false
+    }
+  };
 
   try {
     const transporter = nodemailer.createTransport(config);
@@ -66,17 +44,14 @@ export async function createSMTPTransporter() {
   } catch (error: any) {
     console.error(`${provider.toUpperCase()} SMTP Configuration Error:`, error.message);
     
-    // Provider-specific error handling
-    if (provider === 'microsoft365' && 
-        (error.message.includes('Authentication unsuccessful') || 
-         error.message.includes('SmtpClientAuthentication is disabled'))) {
+    // Microsoft 365 specific error handling
+    if (error.message.includes('Authentication unsuccessful') || 
+        error.message.includes('SmtpClientAuthentication is disabled')) {
       throw new Error(`SMTP Authentication Disabled: Your Microsoft 365 tenant has SMTP authentication disabled. Please enable it in the Microsoft 365 Admin Center under Security & Compliance > Basic Authentication policies, or contact your IT administrator.`);
-    } else if (provider === 'gmail' && (error.message.includes('Invalid login') || error.message.includes('Username and Password not accepted'))) {
-      throw new Error(`Gmail Authentication Failed: Please ensure you're using an App Password (not your regular Gmail password) and that 2-factor authentication is enabled on your Google account. Visit https://support.google.com/accounts/answer/185833 for setup instructions.`);
     } else if (error.message.includes('Invalid login')) {
-      throw new Error(`Invalid Credentials: Please verify your email address and password are correct for ${provider}.`);
+      throw new Error(`Invalid Credentials: Please verify your Microsoft 365 email address and password are correct.`);
     } else {
-      throw new Error(`SMTP Setup Failed for ${provider}: ${error.message}`);
+      throw new Error(`Microsoft 365 SMTP Setup Failed: ${error.message}`);
     }
   }
 }
@@ -127,7 +102,7 @@ export async function testMicrosoft365Connection(): Promise<{ success: boolean; 
   } catch (error: any) {
     console.error('SMTP Test Error:', error);
     
-    // Specific error handling for common Microsoft 365 issues
+    // Microsoft 365 specific error handling
     if (error.message.includes('SmtpClientAuthentication is disabled')) {
       return {
         success: false,
@@ -138,7 +113,7 @@ export async function testMicrosoft365Connection(): Promise<{ success: boolean; 
     if (error.message.includes('Invalid login') || error.code === 'EAUTH') {
       return {
         success: false,
-        message: `Authentication Failed: Please check your email address and password. For Microsoft 365 accounts with MFA enabled, use an App Password instead of your regular password.`
+        message: `Microsoft 365 Authentication Failed: Please check your email address and password. For accounts with MFA enabled, use an App Password instead of your regular password.`
       };
     }
     
@@ -149,7 +124,7 @@ export async function testMicrosoft365Connection(): Promise<{ success: boolean; 
   }
 }
 
-// Email validation helper with multi-provider support
+// Email validation helper for Microsoft 365
 export function validateEmailConfig(settings: any): { valid: boolean; errors: string[] } {
   const errors = [];
   const provider = settings.smtpProvider || 'microsoft365';
@@ -159,21 +134,15 @@ export function validateEmailConfig(settings: any): { valid: boolean; errors: st
   }
   
   if (!settings.smtpPassword) {
-    if (provider === 'gmail') {
-      errors.push('Gmail App Password is required (not your regular password)');
-    } else if (provider === 'microsoft365') {
-      errors.push('Microsoft 365 Password is required (use regular password or App Password for MFA-enabled accounts)');
-    } else {
-      errors.push('SMTP Password is required');
-    }
+    errors.push('Microsoft 365 Password is required (use regular password or App Password for MFA-enabled accounts)');
   }
   
   if (!settings.adminEmail) {
     errors.push('Admin Email is required for notifications');
   }
 
-  if (provider === 'custom' && (!settings.smtpHost || !settings.smtpPort)) {
-    errors.push('Custom SMTP requires Host and Port configuration');
+  if (!settings.smtpHost || !settings.smtpPort) {
+    errors.push('Microsoft 365 SMTP requires Host and Port configuration');
   }
 
   return { valid: errors.length === 0, errors };

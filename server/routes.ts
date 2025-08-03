@@ -697,7 +697,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('SMTP test error:', error);
       
-      // Handle specific Microsoft 365 authentication errors
+      // Handle Microsoft 365 authentication errors
       if (error.message && error.message.includes('SmtpClientAuthentication is disabled')) {
         return res.json({
           success: false,
@@ -895,7 +895,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error('Admin SMTP test error:', error);
       
-      // Handle specific Microsoft 365 authentication errors
+      // Handle Microsoft 365 authentication errors
       if (error.message && error.message.includes('SmtpClientAuthentication is disabled')) {
         return res.status(500).json({
           success: false,

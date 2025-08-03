@@ -26,8 +26,8 @@ export async function sendOrderConfirmationEmail(
     const emailValidation = validateEmailConfig(settings);
     if (!settings.emailEnabled || !emailValidation.valid) {
       console.log('Email notifications disabled:', emailValidation.errors.join(', '));
-      console.log('To enable emails: Configure SMTP settings in Admin Dashboard > Settings > Email');
-      console.log('Required: Email address and password (Microsoft 365 or Gmail with App Password)');
+      console.log('To enable emails: Configure Microsoft 365 SMTP settings in Admin Dashboard > Settings > Email');
+      console.log('Required: Microsoft 365 email address and password (or App Password for MFA accounts)');
       return;
     }
     
