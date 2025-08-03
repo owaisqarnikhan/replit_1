@@ -1,87 +1,110 @@
-# BAYG E-commerce Platform
+# Overview
 
-## Overview
+This is a comprehensive e-commerce platform built for Bahrain/MENA markets called "BAYG" or "InnovanceOrbit". The application features a full-stack TypeScript architecture with a React frontend, Express.js backend, and PostgreSQL database. It supports product management, order processing with admin approval workflows, multiple payment methods (including local Bahrain options like Benefit Pay), user role-based permissions, and comprehensive admin features.
 
-BAYG is a comprehensive e-commerce platform built for B2B and B2C sales with approval-based ordering, multi-payment gateway support, and admin management capabilities. The platform supports both purchase and rental products, features a permission-based role system, and includes specialized payment methods for the Bahrain/GCC market including Benefit Pay integration.
-
-## User Preferences
+# User Preferences
 
 Preferred communication style: Simple, everyday language.
 
-## Recent Changes (August 2, 2025)
+# System Architecture
 
-- ✅ **Complete Project Rebranding**: Successfully rebranded from "InnovanceOrbit" to "BAYG"
-- ✅ **Database Migration**: Updated from Neon cloud database to local PostgreSQL (database name: "bayg")
-- ✅ **File Cleanup**: Removed all unnecessary files, test data, and deployment packages
-- ✅ **Gmail SMTP Only**: Simplified email system to use only Gmail SMTP (removed Microsoft 365 and custom SMTP)
-- ✅ **User Account Updates**: Updated default admin/manager emails to @bayg.com domain
-- ✅ **Clean Project Structure**: Maintained only essential BAYG project files
+## Frontend Architecture
+- **Framework**: React with TypeScript using Vite for build tooling
+- **UI Framework**: Shadcn/UI components with Radix UI primitives
+- **Styling**: Tailwind CSS with custom theme system supporting multiple color schemes
+- **State Management**: TanStack Query for server state, React hooks for local state
+- **Routing**: Wouter for lightweight client-side routing
+- **Form Handling**: React Hook Form with Zod validation
+- **Authentication**: Context-based auth provider with protected routes
 
-## System Architecture
+## Backend Architecture
+- **Framework**: Express.js with TypeScript
+- **Authentication**: Passport.js with local strategy using session-based auth
+- **Session Storage**: Memory store for development, PostgreSQL session store for production
+- **Password Security**: Scrypt hashing with salt
+- **File Uploads**: Multer for image handling with size and type validation
+- **Permission System**: Role-based access control with granular permissions across modules
 
-### Frontend Architecture
-- **Framework**: React with TypeScript, using Wouter for client-side routing
-- **UI Framework**: Shadcn/ui components built on Radix UI primitives with Tailwind CSS
-- **State Management**: TanStack Query for server state management and caching
-- **Authentication**: Context-based auth system with protected routes
-- **Theme System**: Dynamic theming with CSS variables supporting customizable colors and branding
+## Database Design
+- **ORM**: Drizzle ORM with PostgreSQL dialect
+- **Database**: PostgreSQL with Neon serverless support
+- **Schema**: Comprehensive schema including users, roles, permissions, products, categories, orders, cart items, and site settings
+- **Migrations**: Drizzle Kit for schema migrations
+- **Relations**: Well-defined foreign key relationships with proper cascade behaviors
 
-### Backend Architecture
-- **Runtime**: Node.js with Express.js server
-- **Database**: PostgreSQL with Drizzle ORM for type-safe database operations
-- **Authentication**: Passport.js with local strategy and session-based auth
-- **Session Management**: Express-session with PostgreSQL session store
-- **File Handling**: Multer for image uploads with local file storage
+## Authentication & Authorization
+- **Multi-tier Role System**: Super Admin, Admin, Manager, and User roles
+- **Granular Permissions**: Module-based permissions (users, products, orders, categories, payments, etc.)
+- **Permission Modules**: 12 core modules including auth, users, products, orders, categories, cart, payments, slider, settings, units, reports, and database operations
+- **Session Management**: Express-session with configurable stores
+- **Route Protection**: Middleware-based permission checking on API endpoints
 
-### Database Design
-- **Schema**: Comprehensive relational schema including users, products, categories, orders, permissions
-- **Role-Based Access Control**: Granular permission system with modules, roles, and user assignments
-- **Order Management**: Multi-status order workflow with approval mechanisms
-- **Cart System**: User-specific shopping cart with product relationships
+## Payment Integration
+- **Multi-provider Support**: Stripe, PayPal, and regional Benefit Pay for Bahrain market
+- **Cash on Delivery**: Support for COD payments
+- **Payment Workflow**: Integrated with order approval system
+- **Security**: Environment-based API key management
 
-### Core Business Logic
-- **Order Approval Workflow**: Orders require admin approval before payment processing
-- **Product Management**: Support for both purchase and rental products with different pricing models
-- **Permission System**: Module-based permissions (users, products, orders, payments, etc.)
-- **Email Notifications**: SMTP-based email system for order confirmations and admin notifications
+## Email System
+- **Multi-provider SMTP**: Microsoft 365, Gmail, and custom SMTP support
+- **Transactional Emails**: Order confirmations, admin notifications, approval workflows
+- **Template System**: HTML email templates with dynamic content
+- **Configuration**: Database-driven SMTP settings with validation
 
-### Payment Processing
-- **Multi-Gateway Support**: Stripe, PayPal, and Benefit Pay (Bahrain-specific)
-- **Approval-First Model**: Payments are locked until admin approval is granted
-- **Regional Compliance**: Specialized support for GCC market payment methods
+## Order Management
+- **Approval Workflow**: Admin approval required before payment processing
+- **Status Tracking**: Comprehensive order status system (pending, awaiting_approval, approved, payment_pending, processing, shipped, delivered, cancelled)
+- **Notification System**: Email notifications for all order state changes
+- **Payment Integration**: Seamless transition from approval to payment
 
-### File Management
-- **Upload System**: Local file storage with configurable upload paths
-- **Image Handling**: Product images, category images, and site branding assets
-- **Database Export/Import**: JSON-based data migration and backup system
+## File Management
+- **Image Uploads**: Multer-based file handling with validation
+- **Static Serving**: Express static middleware for uploaded assets
+- **Image Processing**: Client-side validation and server-side security checks
 
-## External Dependencies
+## Admin Features
+- **Comprehensive Dashboard**: Full CRUD operations for all entities
+- **Data Management**: Excel import/export functionality
+- **Database Tools**: Backup, restore, and migration utilities
+- **Site Customization**: Theme management, slider images, site settings
+- **User Management**: Role assignment, permission management
 
-### Payment Services
-- **Stripe**: Credit card processing with webhook support
-- **PayPal**: PayPal Server SDK for order creation and capture
-- **Benefit Pay**: Custom integration for Bahrain regional payments
+## Theme System
+- **Dynamic Theming**: Runtime theme switching with CSS custom properties
+- **Predefined Themes**: Default, Ocean, Forest, Sunset, Purple, and Teal themes
+- **Customization**: Admin-configurable colors and branding
+- **Responsive Design**: Mobile-first approach with Tailwind breakpoints
 
-### Email Services
-- **SMTP Support**: Multi-provider SMTP with Microsoft 365, Gmail, and custom SMTP servers
-- **Nodemailer**: Email transport layer with template support
+# External Dependencies
 
-### Database and Infrastructure
-- **PostgreSQL**: Primary database with Neon serverless support
-- **Drizzle ORM**: Type-safe database operations and migrations
-- **Session Storage**: Database-backed session management
+## Core Runtime Dependencies
+- **Database**: PostgreSQL via Neon serverless (@neondatabase/serverless)
+- **ORM**: Drizzle ORM with PostgreSQL adapter
+- **Payment Processors**: Stripe API, PayPal Server SDK, custom Benefit Pay integration
+- **Email Service**: Nodemailer with Microsoft 365/Gmail SMTP support
+- **File Processing**: Multer for uploads, XLSX for Excel operations
 
-### Development and Build Tools
-- **Vite**: Frontend build tool and development server
-- **TypeScript**: Full-stack type safety
-- **ESBuild**: Server-side bundling for production
+## UI and Frontend Libraries
+- **Component Library**: Radix UI primitives with Shadcn/UI components
+- **Styling**: Tailwind CSS with PostCSS processing
+- **Icons**: Lucide React for consistent iconography
+- **Date Handling**: date-fns for date formatting and manipulation
+- **Validation**: Zod for schema validation across frontend and backend
 
-### UI and Styling
-- **Radix UI**: Headless component primitives
-- **Tailwind CSS**: Utility-first CSS framework
-- **Lucide React**: Icon library
+## Development and Build Tools
+- **Build System**: Vite with React plugin and TypeScript support
+- **Development**: tsx for TypeScript execution, ESBuild for production builds
+- **Replit Integration**: Cartographer plugin and runtime error overlay for Replit development environment
+- **Type Safety**: Comprehensive TypeScript configuration with strict mode enabled
 
-### Deployment Packages
-- **AWS Deployment**: Complete deployment package with PM2, Nginx configuration
-- **Hostinger Support**: Specialized deployment packages with MySQL migration options
-- **Environment Configuration**: Multi-environment setup with production optimizations
+## Authentication and Security
+- **Session Management**: Express-session with connect-pg-simple for PostgreSQL session store
+- **Password Hashing**: Node.js crypto module with scrypt algorithm
+- **CSRF Protection**: Built into session management
+- **Input Validation**: Zod schemas shared between frontend and backend
+
+## Data Processing
+- **Excel Operations**: XLSX library for import/export functionality
+- **CSV Processing**: PapaParse for CSV file handling
+- **Caching**: Memoizee for performance optimization
+- **Query Optimization**: TanStack Query for efficient data fetching and caching
