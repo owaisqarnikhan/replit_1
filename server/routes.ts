@@ -331,19 +331,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         parsedStartDate = new Date(rentalStartDate);
         parsedEndDate = new Date(rentalEndDate);
         
+        // Debug logging
+        console.log('Debug: Received dates:', { rentalStartDate, rentalEndDate });
+        console.log('Debug: Parsed dates:', { parsedStartDate, parsedEndDate });
+        
         // Validate rental dates are within allowed period (Oct 18-31, 2025)
-        // Use UTC dates to avoid timezone issues
-        const rentalStart = new Date('2025-10-18T00:00:00.000Z');
-        const rentalEnd = new Date('2025-10-31T23:59:59.999Z');
+        // Extract date components for comparison (ignoring time)
+        const startYear = parsedStartDate.getFullYear();
+        const startMonth = parsedStartDate.getMonth(); // 0-based
+        const startDay = parsedStartDate.getDate();
         
-        // Convert to date-only comparison to avoid time zone issues
-        const startDateOnly = new Date(parsedStartDate.getFullYear(), parsedStartDate.getMonth(), parsedStartDate.getDate());
-        const endDateOnly = new Date(parsedEndDate.getFullYear(), parsedEndDate.getMonth(), parsedEndDate.getDate());
-        const rentalStartOnly = new Date(2025, 9, 18); // October 18, 2025
-        const rentalEndOnly = new Date(2025, 9, 31); // October 31, 2025
+        const endYear = parsedEndDate.getFullYear();
+        const endMonth = parsedEndDate.getMonth(); // 0-based
+        const endDay = parsedEndDate.getDate();
         
-        if (startDateOnly < rentalStartOnly || startDateOnly > rentalEndOnly || 
-            endDateOnly < rentalStartOnly || endDateOnly > rentalEndOnly) {
+        console.log('Debug: Start date components:', { startYear, startMonth, startDay });
+        console.log('Debug: End date components:', { endYear, endMonth, endDay });
+        
+        // Check if dates are in 2025 and October (month 9)
+        const isStartDateValid = startYear === 2025 && startMonth === 9 && startDay >= 18 && startDay <= 31;
+        const isEndDateValid = endYear === 2025 && endMonth === 9 && endDay >= 18 && endDay <= 31;
+        
+        console.log('Debug: Date validation:', { isStartDateValid, isEndDateValid });
+        
+        if (!isStartDateValid || !isEndDateValid) {
           return res.status(400).json({ 
             message: "Selected dates are outside the allowed rental period. Please choose dates between 18th October and 31st October 2025." 
           });

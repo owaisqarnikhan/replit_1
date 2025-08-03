@@ -186,6 +186,14 @@ export default function ProductDetailPage() {
         });
         return;
       }
+      
+      // Debug logging
+      console.log('Client: Sending dates to server:', {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        startDateLocal: startDate.toString(),
+        endDateLocal: endDate.toString()
+      });
     }
 
     addToCartMutation.mutate({
