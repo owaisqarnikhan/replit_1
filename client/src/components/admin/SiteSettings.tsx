@@ -1202,9 +1202,17 @@ export function SiteSettings() {
                       <p className="text-sm text-blue-700">
                         <strong>Step 3:</strong> Ensure SMTP authentication is enabled in your Microsoft 365 admin center
                       </p>
+                      <p className="text-sm text-blue-700">
+                        <strong>Step 4:</strong> If MFA is enabled, generate an App Password: Security → Additional security verification → App passwords
+                      </p>
+                      <div className="bg-red-100 p-3 rounded border-l-4 border-red-400 mb-2">
+                        <p className="text-sm text-red-800">
+                          <strong>⚠️ Common Issue:</strong> If you get "SmtpClientAuthentication is disabled" error, your organization has disabled SMTP authentication. Contact your IT administrator to enable it.
+                        </p>
+                      </div>
                       <div className="bg-yellow-100 p-3 rounded border-l-4 border-yellow-400">
                         <p className="text-sm text-yellow-800">
-                          <strong>⚠️ Note:</strong> Some organizations disable SMTP authentication for security. Contact your IT admin if authentication fails.
+                          <strong>💡 Alternative:</strong> Use an App Password instead of your regular password, especially for accounts with MFA enabled.
                         </p>
                       </div>
                     </div>

@@ -696,6 +696,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error('SMTP test error:', error);
+      
+      // Handle specific Microsoft 365 authentication errors
+      if (error.message && error.message.includes('SmtpClientAuthentication is disabled')) {
+        return res.json({
+          success: false,
+          message: 'Microsoft 365 SMTP authentication is disabled for your organization. Contact your IT administrator to enable SMTP authentication, or try using an App Password instead.'
+        });
+      }
+      
       res.json({
         success: false,
         message: error.message || 'SMTP test failed. Please check your configuration.'
@@ -885,6 +894,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error('Admin SMTP test error:', error);
+      
+      // Handle specific Microsoft 365 authentication errors
+      if (error.message && error.message.includes('SmtpClientAuthentication is disabled')) {
+        return res.status(500).json({
+          success: false,
+          message: 'Microsoft 365 SMTP authentication is disabled for your organization. Contact your IT administrator to enable SMTP authentication, or try using an App Password instead.'
+        });
+      }
+      
       res.status(500).json({ 
         success: false, 
         message: error.message || "SMTP test failed. Please verify your email configuration." 

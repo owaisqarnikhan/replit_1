@@ -125,6 +125,23 @@ export async function testMicrosoft365Connection(): Promise<{ success: boolean; 
       message: `Test email sent successfully using ${provider.toUpperCase()} SMTP!` 
     };
   } catch (error: any) {
+    console.error('SMTP Test Error:', error);
+    
+    // Specific error handling for common Microsoft 365 issues
+    if (error.message.includes('SmtpClientAuthentication is disabled')) {
+      return {
+        success: false,
+        message: `Microsoft 365 SMTP Authentication Disabled: Your organization has disabled SMTP authentication. Contact your IT administrator to enable it, or use an App Password instead. Visit https://aka.ms/smtp_auth_disabled for more information.`
+      };
+    }
+    
+    if (error.message.includes('Invalid login') || error.code === 'EAUTH') {
+      return {
+        success: false,
+        message: `Authentication Failed: Please check your email address and password. For Microsoft 365 accounts with MFA enabled, use an App Password instead of your regular password.`
+      };
+    }
+    
     return { 
       success: false, 
       message: `SMTP Test Failed: ${error.message}` 
