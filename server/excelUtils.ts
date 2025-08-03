@@ -68,7 +68,7 @@ export function createExcelFile(data: ExcelExportData): Buffer {
     'Payment Status': order.status,
     Notes: (order as any).notes || '',
     'Created At': order.createdAt,
-    'Updated At': order.createdAt
+    'Updated At': (order as any).updatedAt || order.createdAt
   })));
 
   // Create order items worksheet

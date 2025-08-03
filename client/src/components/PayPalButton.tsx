@@ -91,6 +91,12 @@ export default function PayPalButton({
     };
 
     loadPayPalSDK();
+    
+    // Cleanup function to remove script if component unmounts
+    return () => {
+      const scripts = document.querySelectorAll('script[src*="paypal.com"]');
+      scripts.forEach(script => script.remove());
+    };
   }, []);
   const initPayPal = async () => {
     try {
