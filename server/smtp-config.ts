@@ -7,7 +7,7 @@ export async function createSMTPTransporter() {
   
   const smtpUser = settings.smtpUser;
   const smtpPassword = settings.smtpPassword;
-  const provider = settings.smtpProvider || 'microsoft365';
+  const provider = 'microsoft365'; // Force Microsoft 365 only
   
   if (!smtpPassword || !smtpUser) {
     throw new Error('SMTP username and password must be configured.');
@@ -47,7 +47,7 @@ export async function createSMTPTransporter() {
     // Microsoft 365 specific error handling
     if (error.message.includes('Authentication unsuccessful') || 
         error.message.includes('SmtpClientAuthentication is disabled')) {
-      throw new Error(`SMTP Authentication Disabled: Your Microsoft 365 tenant has SMTP authentication disabled. Please enable it in the Microsoft 365 Admin Center under Security & Compliance > Basic Authentication policies, or contact your IT administrator.`);
+      throw new Error(`SMTP Authentication Disabled: Your organization (bayg.bh) has disabled SMTP authentication for security. Please contact your IT administrator to enable SMTP authentication in Microsoft 365 Admin Center under Security & Compliance > Basic Authentication policies.`);
     } else if (error.message.includes('Invalid login')) {
       throw new Error(`Invalid Credentials: Please verify your Microsoft 365 email address and password are correct.`);
     } else {
@@ -66,7 +66,7 @@ export async function testMicrosoft365Connection(): Promise<{ success: boolean; 
   try {
     const transporter = await createSMTPTransporter();
     const settings = await storage.getSiteSettings();
-    const provider = settings.smtpProvider || 'microsoft365';
+    const provider = 'microsoft365'; // Force Microsoft 365 only
     
     const testEmail = {
       from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || settings.smtpUser}>`,
@@ -127,7 +127,7 @@ export async function testMicrosoft365Connection(): Promise<{ success: boolean; 
 // Email validation helper for Microsoft 365
 export function validateEmailConfig(settings: any): { valid: boolean; errors: string[] } {
   const errors = [];
-  const provider = settings.smtpProvider || 'microsoft365';
+  const provider = 'microsoft365'; // Force Microsoft 365 only
   
   if (!settings.smtpFromEmail && !settings.smtpUser) {
     errors.push('SMTP From Email is required');
