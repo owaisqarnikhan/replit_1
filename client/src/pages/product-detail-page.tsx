@@ -3,11 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { format, differenceInDays } from "date-fns";
 import { 
   Star, 
   ShoppingCart, 
@@ -15,6 +18,7 @@ import {
   Tag, 
   Info, 
   Calendar,
+  Calendar as CalendarIcon,
   DollarSign,
   Minus,
   Plus,
@@ -27,6 +31,15 @@ export default function ProductDetailPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
+  
+  // Rental date state
+  const [startDate, setStartDate] = useState<Date | undefined>();
+  const [endDate, setEndDate] = useState<Date | undefined>();
+  const [dateError, setDateError] = useState("");
+  
+  // Rental period constants
+  const RENTAL_START = new Date(2025, 9, 18); // October 18, 2025
+  const RENTAL_END = new Date(2025, 9, 31); // October 31, 2025
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: [`/api/products/${id}`],
@@ -34,8 +47,18 @@ export default function ProductDetailPage() {
   });
 
   const addToCartMutation = useMutation({
-    mutationFn: async ({ productId, quantity }: { productId: string; quantity: number }) => {
-      const res = await apiRequest("/api/cart", "POST", { productId, quantity });
+    mutationFn: async ({ productId, quantity, rentalStartDate, rentalEndDate }: { 
+      productId: string; 
+      quantity: number;
+      rentalStartDate?: Date;
+      rentalEndDate?: Date;
+    }) => {
+      const res = await apiRequest("/api/cart", "POST", { 
+        productId, 
+        quantity,
+        rentalStartDate,
+        rentalEndDate
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -53,6 +76,57 @@ export default function ProductDetailPage() {
       });
     },
   });
+
+  // Date validation function
+  const validateDateRange = (start: Date, end: Date): string => {
+    if (start < RENTAL_START || start > RENTAL_END || end < RENTAL_START || end > RENTAL_END) {
+      return "Selected dates are outside the allowed rental period. Please choose dates between 18th October and 31st October 2025.";
+    }
+    if (start >= end) {
+      return "End date must be after start date.";
+    }
+    return "";
+  };
+
+  // Calculate rental days and total cost
+  const calculateRentalCost = (): { days: number; totalCost: number; dailyRate: number } => {
+    if (!startDate || !endDate || !product?.rentalPrice) {
+      return { days: 0, totalCost: 0, dailyRate: 0 };
+    }
+    
+    const days = differenceInDays(endDate, startDate) + 1; // Include both start and end dates
+    const dailyRate = parseFloat(product.rentalPrice);
+    const totalCost = days * dailyRate * quantity;
+    
+    return { days, totalCost, dailyRate };
+  };
+
+  // Handle date selection
+  const handleStartDateSelect = (date: Date | undefined) => {
+    if (!date) return;
+    
+    setStartDate(date);
+    setDateError("");
+    
+    // If we have both dates, validate them
+    if (endDate) {
+      const error = validateDateRange(date, endDate);
+      setDateError(error);
+    }
+  };
+
+  const handleEndDateSelect = (date: Date | undefined) => {
+    if (!date) return;
+    
+    setEndDate(date);
+    setDateError("");
+    
+    // If we have both dates, validate them
+    if (startDate) {
+      const error = validateDateRange(startDate, date);
+      setDateError(error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -93,9 +167,32 @@ export default function ProductDetailPage() {
   }
 
   const handleAddToCart = () => {
+    // Validate rental dates if product is rental
+    if (product.productType === "rental") {
+      if (!startDate || !endDate) {
+        toast({
+          title: "Dates Required",
+          description: "Please select start and end dates for rental period.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (dateError) {
+        toast({
+          title: "Invalid Dates",
+          description: dateError,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     addToCartMutation.mutate({
       productId: product.id,
-      quantity
+      quantity,
+      rentalStartDate: startDate,
+      rentalEndDate: endDate
     });
   };
 
@@ -211,7 +308,7 @@ export default function ProductDetailPage() {
                     <span className="text-3xl font-bold text-primary">${product.price}</span>
                   </div>
                   
-                  {product.productType === "rent" && product.rentalPrice && (
+                  {product.productType === "rental" && product.rentalPrice && (
                     <div className="flex items-center justify-between border-t pt-4">
                       <span className="text-xl font-semibold text-gray-700">Rental Price:</span>
                       <div className="text-right">
@@ -239,6 +336,113 @@ export default function ProductDetailPage() {
                 {product.description || "No description available for this product."}
               </p>
             </div>
+
+            {/* Rental Date Selection */}
+            {product.productType === "rental" && (
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-4">Select Rental Period</h3>
+                  <div className="space-y-4">
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                      <p className="text-sm text-amber-800">
+                        <Calendar className="w-4 h-4 inline mr-2" />
+                        Products rental only between 18th October and 31st October 2025.
+                        Please select your start and end dates within this period. Pricing will be automatically calculated based on the number of days selected.
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Start Date Picker */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">Start Date</label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-left font-normal"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {startDate ? format(startDate, "PPP") : "Select start date"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <CalendarComponent
+                              mode="single"
+                              selected={startDate}
+                              onSelect={handleStartDateSelect}
+                              disabled={(date) => 
+                                date < RENTAL_START || 
+                                date > RENTAL_END || 
+                                date < new Date()
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      {/* End Date Picker */}
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-700">End Date</label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-left font-normal"
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {endDate ? format(endDate, "PPP") : "Select end date"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <CalendarComponent
+                              mode="single"
+                              selected={endDate}
+                              onSelect={handleEndDateSelect}
+                              disabled={(date) => 
+                                date < RENTAL_START || 
+                                date > RENTAL_END || 
+                                date < new Date() ||
+                                (startDate && date <= startDate)
+                              }
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </div>
+                    
+                    {/* Date Error Display */}
+                    {dateError && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                        <p className="text-sm text-red-800">❗ {dateError}</p>
+                      </div>
+                    )}
+                    
+                    {/* Rental Cost Display */}
+                    {startDate && endDate && !dateError && (
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h4 className="font-semibold text-green-800 mb-2">Rental Summary</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                          <div>
+                            <span className="text-green-700">Duration:</span>
+                            <p className="font-medium text-green-900">{calculateRentalCost().days} days</p>
+                          </div>
+                          <div>
+                            <span className="text-green-700">Daily Rate:</span>
+                            <p className="font-medium text-green-900">${calculateRentalCost().dailyRate}</p>
+                          </div>
+                          <div>
+                            <span className="text-green-700">Total Cost:</span>
+                            <p className="font-bold text-green-900">${calculateRentalCost().totalCost.toFixed(2)}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Product Details */}
             <Card>
@@ -302,7 +506,12 @@ export default function ProductDetailPage() {
                     
                     <div className="flex items-center justify-between pt-4 border-t">
                       <span className="text-2xl font-semibold">
-                        Total: ${(parseFloat(product.price) * quantity).toFixed(2)}
+                        Total: ${(() => {
+                          if (product.productType === "rental" && startDate && endDate && !dateError) {
+                            return calculateRentalCost().totalCost.toFixed(2);
+                          }
+                          return (parseFloat(product.price) * quantity).toFixed(2);
+                        })()}
                       </span>
                       <Button 
                         onClick={handleAddToCart}
