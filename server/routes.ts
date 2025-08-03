@@ -328,29 +328,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Calculate pricing based on product type
       if (product.productType === "rental" && rentalStartDate && rentalEndDate) {
-        parsedStartDate = new Date(rentalStartDate);
-        parsedEndDate = new Date(rentalEndDate);
+        // Parse dates as date-only strings (YYYY-MM-DD) to avoid timezone issues
+        const startDateParts = rentalStartDate.split('-');
+        const endDateParts = rentalEndDate.split('-');
         
-        // Debug logging
-        console.log('Debug: Received dates:', { rentalStartDate, rentalEndDate });
-        console.log('Debug: Parsed dates:', { parsedStartDate, parsedEndDate });
+        if (startDateParts.length !== 3 || endDateParts.length !== 3) {
+          return res.status(400).json({ 
+            message: "Invalid date format. Please select valid dates." 
+          });
+        }
         
-        // Validate rental dates are within allowed period (Oct 18-31, 2025)
-        // Extract date components for comparison (ignoring time)
-        const startYear = parsedStartDate.getFullYear();
-        const startMonth = parsedStartDate.getMonth(); // 0-based
-        const startDay = parsedStartDate.getDate();
+        const startYear = parseInt(startDateParts[0]);
+        const startMonth = parseInt(startDateParts[1]);
+        const startDay = parseInt(startDateParts[2]);
         
-        const endYear = parsedEndDate.getFullYear();
-        const endMonth = parsedEndDate.getMonth(); // 0-based
-        const endDay = parsedEndDate.getDate();
+        const endYear = parseInt(endDateParts[0]);
+        const endMonth = parseInt(endDateParts[1]);
+        const endDay = parseInt(endDateParts[2]);
         
-        console.log('Debug: Start date components:', { startYear, startMonth, startDay });
-        console.log('Debug: End date components:', { endYear, endMonth, endDay });
+        // Create date objects in local timezone for storage
+        parsedStartDate = new Date(startYear, startMonth - 1, startDay);
+        parsedEndDate = new Date(endYear, endMonth - 1, endDay);
         
-        // Check if dates are in 2025 and October (month 9)
-        const isStartDateValid = startYear === 2025 && startMonth === 9 && startDay >= 18 && startDay <= 31;
-        const isEndDateValid = endYear === 2025 && endMonth === 9 && endDay >= 18 && endDay <= 31;
+        console.log('Debug: Received date strings:', { rentalStartDate, rentalEndDate });
+        console.log('Debug: Parsed date components:', { 
+          start: { startYear, startMonth, startDay }, 
+          end: { endYear, endMonth, endDay } 
+        });
+        
+        // Check if dates are in 2025 and October (month 10)
+        const isStartDateValid = startYear === 2025 && startMonth === 10 && startDay >= 18 && startDay <= 31;
+        const isEndDateValid = endYear === 2025 && endMonth === 10 && endDay >= 18 && endDay <= 31;
         
         console.log('Debug: Date validation:', { isStartDateValid, isEndDateValid });
         

@@ -50,8 +50,8 @@ export default function ProductDetailPage() {
     mutationFn: async ({ productId, quantity, rentalStartDate, rentalEndDate }: { 
       productId: string; 
       quantity: number;
-      rentalStartDate?: Date;
-      rentalEndDate?: Date;
+      rentalStartDate?: string;
+      rentalEndDate?: string;
     }) => {
       const res = await apiRequest("/api/cart", "POST", { 
         productId, 
@@ -199,8 +199,8 @@ export default function ProductDetailPage() {
     addToCartMutation.mutate({
       productId: product.id,
       quantity,
-      rentalStartDate: startDate,
-      rentalEndDate: endDate
+      rentalStartDate: startDate ? startDate.toISOString().split('T')[0] : undefined,
+      rentalEndDate: endDate ? endDate.toISOString().split('T')[0] : undefined
     });
   };
 
@@ -378,11 +378,12 @@ export default function ProductDetailPage() {
                               mode="single"
                               selected={startDate}
                               onSelect={handleStartDateSelect}
-                              disabled={(date) => 
-                                date < RENTAL_START || 
-                                date > RENTAL_END || 
-                                date < new Date()
-                              }
+                              disabled={(date) => {
+                                if (date < RENTAL_START || date > RENTAL_END || date < new Date()) {
+                                  return true;
+                                }
+                                return false;
+                              }}
                               initialFocus
                             />
                           </PopoverContent>
@@ -407,12 +408,15 @@ export default function ProductDetailPage() {
                               mode="single"
                               selected={endDate}
                               onSelect={handleEndDateSelect}
-                              disabled={(date) => 
-                                date < RENTAL_START || 
-                                date > RENTAL_END || 
-                                date < new Date() ||
-                                (startDate && date <= startDate)
-                              }
+                              disabled={(date) => {
+                                if (date < RENTAL_START || date > RENTAL_END || date < new Date()) {
+                                  return true;
+                                }
+                                if (startDate && date <= startDate) {
+                                  return true;
+                                }
+                                return false;
+                              }}
                               initialFocus
                             />
                           </PopoverContent>
