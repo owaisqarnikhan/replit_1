@@ -145,7 +145,7 @@ export function validateEmailConfig(settings: any): { valid: boolean; errors: st
     if (provider === 'gmail') {
       errors.push('Gmail App Password is required (not your regular password)');
     } else if (provider === 'microsoft365') {
-      errors.push('Microsoft 365 App Password is required (for MFA-enabled accounts)');
+      errors.push('Microsoft 365 Password is required (use regular password or App Password for MFA-enabled accounts)');
     } else {
       errors.push('SMTP Password is required');
     }

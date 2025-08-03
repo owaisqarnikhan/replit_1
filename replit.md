@@ -46,10 +46,11 @@ Preferred communication style: Simple, everyday language.
 - **Security**: Environment-based API key management
 
 ## Email System
-- **Multi-provider SMTP**: Microsoft 365, Gmail, and custom SMTP support
+- **Primary Provider**: Microsoft 365 SMTP with fallback Gmail support
+- **Multi-provider SMTP**: Microsoft 365 (primary), Gmail, and custom SMTP support
 - **Transactional Emails**: Order confirmations, admin notifications, approval workflows
 - **Template System**: HTML email templates with dynamic content
-- **Configuration**: Database-driven SMTP settings with validation
+- **Configuration**: Database-driven SMTP settings with validation and provider-specific setup instructions
 
 ## Order Management
 - **Approval Workflow**: Admin approval required before payment processing
@@ -96,6 +97,12 @@ Preferred communication style: Simple, everyday language.
 - **Development**: tsx for TypeScript execution, ESBuild for production builds
 - **Replit Integration**: Cartographer plugin and runtime error overlay for Replit development environment
 - **Type Safety**: Comprehensive TypeScript configuration with strict mode enabled
+
+## Recent Changes (January 2025)
+- **Email Provider Switch**: Changed primary email provider from Gmail back to Microsoft 365 SMTP
+- **Multi-Provider UI**: Enhanced admin interface with provider-specific setup instructions for both Microsoft 365 and Gmail
+- **SMTP Configuration**: Updated default settings to use smtp.office365.com:587 with proper authentication handling
+- **Error Handling**: Improved SMTP authentication error messages with provider-specific guidance
 
 ## Authentication and Security
 - **Session Management**: Express-session with connect-pg-simple for PostgreSQL session store

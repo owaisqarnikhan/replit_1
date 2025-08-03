@@ -118,8 +118,8 @@ export function SiteSettings() {
         copyrightText: settings.copyrightText || "",
         additionalFooterText: settings.additionalFooterText || "",
         // SMTP Configuration
-        smtpProvider: settings.smtpProvider || "gmail",
-        smtpHost: settings.smtpHost || "smtp.gmail.com",
+        smtpProvider: settings.smtpProvider || "microsoft365",
+        smtpHost: settings.smtpHost || "smtp.office365.com",
         smtpPort: settings.smtpPort || 587,
         smtpUser: settings.smtpUser || "",
         smtpPassword: settings.smtpPassword || "",
@@ -326,11 +326,16 @@ export function SiteSettings() {
     }
   };
 
-  // Handle SMTP provider change (only Gmail supported)
+  // Handle SMTP provider change (Microsoft 365 supported)
   const handleProviderChange = (provider: string) => {
     form.setValue("smtpProvider", provider);
-    form.setValue("smtpHost", "smtp.gmail.com");
-    form.setValue("smtpPort", 587);
+    if (provider === "microsoft365") {
+      form.setValue("smtpHost", "smtp.office365.com");
+      form.setValue("smtpPort", 587);
+    } else if (provider === "gmail") {
+      form.setValue("smtpHost", "smtp.gmail.com");
+      form.setValue("smtpPort", 587);
+    }
   };
 
   const handleTestEmail = async () => {
@@ -1164,13 +1169,14 @@ export function SiteSettings() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Email Provider</FormLabel>
-                      <Select onValueChange={handleProviderChange} value={field.value || "gmail"}>
+                      <Select onValueChange={handleProviderChange} value={field.value || "microsoft365"}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select email provider" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
+                          <SelectItem value="microsoft365">Microsoft 365</SelectItem>
                           <SelectItem value="gmail">Gmail</SelectItem>
                         </SelectContent>
                       </Select>
@@ -1182,29 +1188,54 @@ export function SiteSettings() {
                   )}
                 />
 
-                {/* Gmail setup instructions */}
-                <div className="bg-blue-50 p-4 rounded-lg border">
-                  <h3 className="text-sm font-medium text-blue-900 mb-2">📧 Gmail SMTP Setup Instructions</h3>
-                  <div className="space-y-3">
-                    <p className="text-sm text-blue-700">
-                      <strong>Step 1:</strong> Enable 2-factor authentication on your Google account
-                    </p>
-                    <p className="text-sm text-blue-700">
-                      <strong>Step 2:</strong> Go to Google Account Settings → Security → 2-Step Verification → App passwords
-                    </p>
-                    <p className="text-sm text-blue-700">
-                      <strong>Step 3:</strong> Generate an app password for "Mail" and copy the 16-character password
-                    </p>
-                    <p className="text-sm text-blue-700">
-                      <strong>Step 4:</strong> Use your full Gmail address as SMTP Username and the App Password (not your regular password) as SMTP Password
-                    </p>
-                    <div className="bg-yellow-100 p-3 rounded border-l-4 border-yellow-400">
-                      <p className="text-sm text-yellow-800">
-                        <strong>⚠️ Important:</strong> Use the 16-character App Password, NOT your regular Gmail password!
+                {/* Microsoft 365 setup instructions */}
+                {form.watch("smtpProvider") === "microsoft365" && (
+                  <div className="bg-blue-50 p-4 rounded-lg border">
+                    <h3 className="text-sm font-medium text-blue-900 mb-2">📧 Microsoft 365 SMTP Setup Instructions</h3>
+                    <div className="space-y-3">
+                      <p className="text-sm text-blue-700">
+                        <strong>Step 1:</strong> Use your full Microsoft 365 email address (e.g., user@yourcompany.com)
                       </p>
+                      <p className="text-sm text-blue-700">
+                        <strong>Step 2:</strong> Use your regular Microsoft 365 password or app password if MFA is enabled
+                      </p>
+                      <p className="text-sm text-blue-700">
+                        <strong>Step 3:</strong> Ensure SMTP authentication is enabled in your Microsoft 365 admin center
+                      </p>
+                      <div className="bg-yellow-100 p-3 rounded border-l-4 border-yellow-400">
+                        <p className="text-sm text-yellow-800">
+                          <strong>⚠️ Note:</strong> Some organizations disable SMTP authentication for security. Contact your IT admin if authentication fails.
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
+
+                {/* Gmail setup instructions */}
+                {form.watch("smtpProvider") === "gmail" && (
+                  <div className="bg-green-50 p-4 rounded-lg border">
+                    <h3 className="text-sm font-medium text-green-900 mb-2">📧 Gmail SMTP Setup Instructions</h3>
+                    <div className="space-y-3">
+                      <p className="text-sm text-green-700">
+                        <strong>Step 1:</strong> Enable 2-factor authentication on your Google account
+                      </p>
+                      <p className="text-sm text-green-700">
+                        <strong>Step 2:</strong> Go to Google Account Settings → Security → 2-Step Verification → App passwords
+                      </p>
+                      <p className="text-sm text-green-700">
+                        <strong>Step 3:</strong> Generate an app password for "Mail" and copy the 16-character password
+                      </p>
+                      <p className="text-sm text-green-700">
+                        <strong>Step 4:</strong> Use your full Gmail address as SMTP Username and the App Password (not your regular password) as SMTP Password
+                      </p>
+                      <div className="bg-yellow-100 p-3 rounded border-l-4 border-yellow-400">
+                        <p className="text-sm text-yellow-800">
+                          <strong>⚠️ Important:</strong> Use the 16-character App Password, NOT your regular Gmail password!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <FormField
                   control={form.control}
@@ -1238,7 +1269,7 @@ export function SiteSettings() {
                         <FormLabel>SMTP Host</FormLabel>
                         <FormControl>
                           <Input 
-                            placeholder="smtp.gmail.com" 
+                            placeholder="smtp.office365.com" 
                             {...field} 
                             value={field.value || ""} 
                             readOnly={true}
@@ -1278,12 +1309,12 @@ export function SiteSettings() {
                   name="smtpUser"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Gmail Address (Full Email)</FormLabel>
+                      <FormLabel>SMTP Username (Email Address)</FormLabel>
                       <FormControl>
-                        <Input placeholder="your-email@gmail.com" {...field} value={field.value || ""} />
+                        <Input placeholder="your-email@yourcompany.com" {...field} value={field.value || ""} />
                       </FormControl>
                       <p className="text-sm text-muted-foreground">
-                        Enter your complete Gmail address (e.g., user@gmail.com)
+                        Enter your complete email address (Microsoft 365 or Gmail)
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -1295,17 +1326,17 @@ export function SiteSettings() {
                   name="smtpPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Gmail App Password (16 characters)</FormLabel>
+                      <FormLabel>SMTP Password</FormLabel>
                       <FormControl>
                         <Input 
                           type="password" 
-                          placeholder="abcd efgh ijkl mnop" 
+                          placeholder="your-email-password-or-app-password" 
                           {...field} 
                           value={field.value || ""} 
                         />
                       </FormControl>
                       <p className="text-sm text-muted-foreground">
-                        Use the 16-character App Password from Google Account Settings, not your regular Gmail password
+                        Use your email password or app password (for accounts with MFA enabled)
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -1319,10 +1350,10 @@ export function SiteSettings() {
                     <FormItem>
                       <FormLabel>From Email Address</FormLabel>
                       <FormControl>
-                        <Input placeholder="noreply@gmail.com or your-email@gmail.com" {...field} value={field.value || ""} />
+                        <Input placeholder="noreply@yourcompany.com" {...field} value={field.value || ""} />
                       </FormControl>
                       <p className="text-sm text-muted-foreground">
-                        This should typically be the same as your Gmail address above
+                        This should typically be the same as your SMTP username above
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -1366,10 +1397,10 @@ export function SiteSettings() {
                 />
 
                 <div className="space-y-4 pt-6 border-t">
-                  <h3 className="text-lg font-medium">📧 Gmail SMTP Testing</h3>
+                  <h3 className="text-lg font-medium">📧 SMTP Testing</h3>
                   <div className="bg-blue-50 p-4 rounded-lg border">
                     <p className="text-sm text-blue-800 mb-3">
-                      <strong>Test your Gmail SMTP configuration:</strong> Make sure to save your settings first, then click the test button below.
+                      <strong>Test your SMTP configuration:</strong> Make sure to save your settings first, then click the test button below.
                     </p>
                     <Button
                       type="button"
@@ -1381,18 +1412,18 @@ export function SiteSettings() {
                       {isTestingEmail ? (
                         <>
                           <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Testing Gmail SMTP Connection...
+                          Testing SMTP Connection...
                         </>
                       ) : (
                         <>
                           <Mail className="h-4 w-4 mr-2" />
-                          Test Gmail SMTP Connection
+                          Test SMTP Connection
                         </>
                       )}
                     </Button>
                     <div className="mt-3 p-3 bg-white rounded border">
                       <p className="text-xs text-gray-600">
-                        <strong>What this test does:</strong> Sends a test email to your Gmail address to verify that your App Password and SMTP settings are configured correctly.
+                        <strong>What this test does:</strong> Sends a test email to verify that your SMTP settings and credentials are configured correctly.
                       </p>
                     </div>
                   </div>

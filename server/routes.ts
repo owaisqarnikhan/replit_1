@@ -692,7 +692,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const result = await testSMTP();
       res.json({
         success: true,
-        message: "Test email sent successfully! Check your inbox to confirm SMTP is working."
+        message: "Test email sent successfully! Check your inbox to confirm Microsoft 365 SMTP is working."
       });
     } catch (error: any) {
       console.error('SMTP test error:', error);
@@ -881,7 +881,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const result = await testSMTP();
       res.json({
         success: true,
-        message: "Admin SMTP test email sent successfully! Check your inbox to confirm email system is working."
+        message: "Admin Microsoft 365 SMTP test email sent successfully! Check your inbox to confirm email system is working."
       });
     } catch (error: any) {
       console.error('Admin SMTP test error:', error);
