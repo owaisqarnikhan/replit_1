@@ -120,8 +120,21 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
   };
 
   const addToCartMutation = useMutation({
-    mutationFn: async ({ productId, quantity }: { productId: string; quantity: number }) => {
-      const res = await apiRequest("/api/cart", "POST", { productId, quantity });
+    mutationFn: async ({ productId, quantity, rentalStartDate, rentalEndDate }: { 
+      productId: string; 
+      quantity: number; 
+      rentalStartDate?: Date; 
+      rentalEndDate?: Date; 
+    }) => {
+      const payload: any = { productId, quantity };
+      
+      // Add rental dates if this is a rental product
+      if (product?.productType === "rental" && rentalStartDate && rentalEndDate) {
+        payload.rentalStartDate = rentalStartDate.toISOString();
+        payload.rentalEndDate = rentalEndDate.toISOString();
+      }
+      
+      const res = await apiRequest("/api/cart", "POST", payload);
       return res.json();
     },
     onSuccess: () => {
@@ -167,7 +180,9 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
 
     addToCartMutation.mutate({
       productId: product.id,
-      quantity
+      quantity,
+      rentalStartDate: startDate,
+      rentalEndDate: endDate
     });
   };
 
@@ -388,12 +403,12 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
                               mode="single"
                               selected={endDate}
                               onSelect={handleEndDateSelect}
-                              disabled={(date) => 
-                                date < RENTAL_START || 
-                                date > RENTAL_END || 
-                                date < new Date() ||
-                                (startDate && date <= startDate)
-                              }
+                              disabled={(date) => {
+                                return date < RENTAL_START || 
+                                       date > RENTAL_END || 
+                                       date < new Date() ||
+                                       (startDate ? date <= startDate : false);
+                              }}
                               initialFocus
                             />
                           </PopoverContent>

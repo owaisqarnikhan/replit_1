@@ -103,6 +103,11 @@ export const cartItems = pgTable("cart_items", {
   userId: varchar("user_id").references(() => users.id).notNull(),
   productId: varchar("product_id").references(() => products.id).notNull(),
   quantity: integer("quantity").notNull().default(1),
+  // Rental-specific fields
+  rentalStartDate: timestamp("rental_start_date"), // For rental products
+  rentalEndDate: timestamp("rental_end_date"), // For rental products
+  unitPrice: decimal("unit_price", { precision: 10, scale: 2 }), // Calculated price per unit (daily rate for rentals)
+  totalPrice: decimal("total_price", { precision: 10, scale: 2 }), // Total calculated price for this cart item
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
@@ -133,7 +138,12 @@ export const orderItems = pgTable("order_items", {
   orderId: varchar("order_id").references(() => orders.id).notNull(),
   productId: varchar("product_id").references(() => products.id).notNull(),
   quantity: integer("quantity").notNull(),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(), // Unit price
+  totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(), // Total price for this line item
+  // Rental-specific fields
+  rentalStartDate: timestamp("rental_start_date"), // For rental products
+  rentalEndDate: timestamp("rental_end_date"), // For rental products
+  rentalDays: integer("rental_days"), // Number of rental days
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 

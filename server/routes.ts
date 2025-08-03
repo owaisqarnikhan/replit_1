@@ -313,10 +313,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const cartItemData = insertCartItemSchema.parse({
-        ...req.body,
+      const { productId, quantity, rentalStartDate, rentalEndDate } = req.body;
+      
+      // Get product to calculate pricing
+      const product = await storage.getProductById(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      let unitPrice: string;
+      let totalPrice: string;
+      let parsedStartDate: Date | null = null;
+      let parsedEndDate: Date | null = null;
+
+      // Calculate pricing based on product type
+      if (product.productType === "rental" && rentalStartDate && rentalEndDate) {
+        parsedStartDate = new Date(rentalStartDate);
+        parsedEndDate = new Date(rentalEndDate);
+        
+        // Validate rental dates are within allowed period (Oct 18-31, 2025)
+        const rentalStart = new Date(2025, 9, 18); // October 18, 2025
+        const rentalEnd = new Date(2025, 9, 31); // October 31, 2025
+        
+        if (parsedStartDate < rentalStart || parsedStartDate > rentalEnd || 
+            parsedEndDate < rentalStart || parsedEndDate > rentalEnd) {
+          return res.status(400).json({ 
+            message: "Selected dates are outside the allowed rental period. Please choose dates between 18th October and 31st October 2025." 
+          });
+        }
+
+        if (parsedStartDate >= parsedEndDate) {
+          return res.status(400).json({ 
+            message: "End date must be after start date." 
+          });
+        }
+
+        // Calculate rental days and pricing
+        const rentalDays = Math.ceil((parsedEndDate.getTime() - parsedStartDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+        const dailyRate = parseFloat(product.rentalPrice || "0");
+        unitPrice = dailyRate.toFixed(2);
+        totalPrice = (dailyRate * rentalDays * quantity).toFixed(2);
+      } else {
+        // For sale products, use regular pricing
+        unitPrice = product.price;
+        totalPrice = (parseFloat(product.price) * quantity).toFixed(2);
+      }
+
+      const cartItemData = {
         userId: req.user!.id,
-      });
+        productId,
+        quantity,
+        rentalStartDate: parsedStartDate,
+        rentalEndDate: parsedEndDate,
+        unitPrice,
+        totalPrice,
+      };
+
       const cartItem = await storage.addToCart(cartItemData);
       res.status(201).json(cartItem);
     } catch (error: any) {
@@ -429,9 +481,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Cart is empty" });
       }
 
-      // Calculate totals with 10% VAT
+      // Calculate totals with 10% VAT - use totalPrice from cart items if available, otherwise fallback to product price
       const subtotal = cartItems.reduce(
-        (sum, item) => sum + parseFloat(item.product.price) * item.quantity,
+        (sum, item) => {
+          // Use calculated totalPrice from cart if available (for rentals), otherwise use product price
+          const itemTotal = item.totalPrice ? parseFloat(item.totalPrice) : parseFloat(item.product.price) * item.quantity;
+          return sum + itemTotal;
+        },
         0
       );
       const vatPercentage = 10.00;
@@ -454,14 +510,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Create order items and update stock
       for (const cartItem of cartItems) {
+        // Calculate rental days if this is a rental item
+        let rentalDays = null;
+        if (cartItem.rentalStartDate && cartItem.rentalEndDate) {
+          const startDate = new Date(cartItem.rentalStartDate);
+          const endDate = new Date(cartItem.rentalEndDate);
+          rentalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+        }
+
         await storage.createOrderItem({
           orderId: order.id,
           productId: cartItem.productId,
           quantity: cartItem.quantity,
-          price: cartItem.product.price,
+          price: cartItem.unitPrice || cartItem.product.price, // Use calculated unit price or fallback
+          totalPrice: cartItem.totalPrice || (parseFloat(cartItem.product.price) * cartItem.quantity).toFixed(2),
+          rentalStartDate: cartItem.rentalStartDate,
+          rentalEndDate: cartItem.rentalEndDate,
+          rentalDays: rentalDays,
         });
-        
-
       }
 
       // Clear cart

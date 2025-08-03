@@ -57,7 +57,11 @@ export default function CartPage() {
   });
 
   const subtotal = cartItems?.reduce(
-    (sum, item) => sum + parseFloat(item.product.price) * item.quantity,
+    (sum, item) => {
+      // Use totalPrice from cart item if available (for rentals), otherwise calculate from product price
+      const itemTotal = item.totalPrice ? parseFloat(item.totalPrice) : parseFloat(item.product.price) * item.quantity;
+      return sum + itemTotal;
+    },
     0
   ) || 0;
 
@@ -137,45 +141,69 @@ export default function CartPage() {
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-slate-900">{item.product.name}</h3>
                   <p className="text-slate-600">{item.product.description}</p>
-                  <div className="mt-2 flex items-center space-x-4">
-                    <span className="text-primary font-semibold">${item.product.price}</span>
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-8 w-8 p-0"
-                        onClick={() => 
-                          updateQuantityMutation.mutate({
-                            productId: item.productId,
-                            quantity: Math.max(1, item.quantity - 1)
-                          })
-                        }
-                        disabled={updateQuantityMutation.isPending}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="w-12 text-center font-medium">{item.quantity}</span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-8 w-8 p-0"
-                        onClick={() => 
-                          updateQuantityMutation.mutate({
-                            productId: item.productId,
-                            quantity: item.quantity + 1
-                          })
-                        }
-                        disabled={updateQuantityMutation.isPending}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
+                  
+                  {/* Rental Information */}
+                  {item.product.productType === "rental" && item.rentalStartDate && item.rentalEndDate && (
+                    <div className="mt-2 space-y-1">
+                      <p className="text-sm text-blue-600">
+                        📅 Rental Period: {new Date(item.rentalStartDate).toLocaleDateString()} - {new Date(item.rentalEndDate).toLocaleDateString()}
+                      </p>
+                      <p className="text-sm text-green-600">
+                        💰 Daily Rate: ${item.unitPrice || item.product.rentalPrice}
+                      </p>
                     </div>
+                  )}
+                  
+                  <div className="mt-2 flex items-center space-x-4">
+                    <span className="text-primary font-semibold">
+                      {item.totalPrice ? `Total: $${parseFloat(item.totalPrice).toFixed(2)}` : `$${item.product.price}`}
+                    </span>
+                    
+                    {/* Only show quantity controls for sale products, not rentals */}
+                    {item.product.productType !== "rental" && (
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 w-8 p-0"
+                          onClick={() => 
+                            updateQuantityMutation.mutate({
+                              productId: item.productId,
+                              quantity: Math.max(1, item.quantity - 1)
+                            })
+                          }
+                          disabled={updateQuantityMutation.isPending}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="w-12 text-center font-medium">{item.quantity}</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 w-8 p-0"
+                          onClick={() => 
+                            updateQuantityMutation.mutate({
+                              productId: item.productId,
+                              quantity: item.quantity + 1
+                            })
+                          }
+                          disabled={updateQuantityMutation.isPending}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                    
+                    {/* Show quantity for rental items as read-only */}
+                    {item.product.productType === "rental" && (
+                      <span className="text-sm text-gray-600">Qty: {item.quantity}</span>
+                    )}
                   </div>
                 </div>
                 
                 <div className="flex items-center space-x-4">
                   <span className="text-lg font-bold text-slate-900">
-                    ${(parseFloat(item.product.price) * item.quantity).toFixed(2)}
+                    ${item.totalPrice ? parseFloat(item.totalPrice).toFixed(2) : (parseFloat(item.product.price) * item.quantity).toFixed(2)}
                   </span>
                   <Button
                     size="sm"

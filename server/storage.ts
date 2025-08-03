@@ -620,6 +620,10 @@ export class DatabaseStorage implements IStorage {
         userId: cartItems.userId,
         productId: cartItems.productId,
         quantity: cartItems.quantity,
+        rentalStartDate: cartItems.rentalStartDate,
+        rentalEndDate: cartItems.rentalEndDate,
+        unitPrice: cartItems.unitPrice,
+        totalPrice: cartItems.totalPrice,
         createdAt: cartItems.createdAt,
         product: products,
       })
@@ -629,27 +633,43 @@ export class DatabaseStorage implements IStorage {
   }
 
   async addToCart(item: InsertCartItem): Promise<CartItem> {
-    // Check if item already exists
-    const [existing] = await db
-      .select()
-      .from(cartItems)
-      .where(and(eq(cartItems.userId, item.userId), eq(cartItems.productId, item.productId)));
-
-    if (existing) {
-      // Update quantity
-      const [updated] = await db
-        .update(cartItems)
-        .set({ quantity: existing.quantity + (item.quantity || 1) })
-        .where(eq(cartItems.id, existing.id))
-        .returning();
-      return updated;
-    } else {
-      // Create new cart item
+    // For rental products, don't combine items - each rental period should be separate
+    if (item.rentalStartDate && item.rentalEndDate) {
+      // Create new cart item for rentals (each rental period is unique)
       const [newItem] = await db
         .insert(cartItems)
         .values(item)
         .returning();
       return newItem;
+    } else {
+      // For sale products, check if item already exists and combine quantities
+      const [existing] = await db
+        .select()
+        .from(cartItems)
+        .where(and(eq(cartItems.userId, item.userId), eq(cartItems.productId, item.productId)));
+
+      if (existing) {
+        // Update quantity and recalculate total price
+        const newQuantity = existing.quantity + (item.quantity || 1);
+        const newTotalPrice = item.unitPrice ? (parseFloat(item.unitPrice) * newQuantity).toFixed(2) : item.totalPrice;
+        
+        const [updated] = await db
+          .update(cartItems)
+          .set({ 
+            quantity: newQuantity,
+            totalPrice: newTotalPrice
+          })
+          .where(eq(cartItems.id, existing.id))
+          .returning();
+        return updated;
+      } else {
+        // Create new cart item
+        const [newItem] = await db
+          .insert(cartItems)
+          .values(item)
+          .returning();
+        return newItem;
+      }
     }
   }
 
