@@ -123,7 +123,7 @@ export default function ProductDetailPage() {
   };
 
   const handleEndDateSelect = (date: Date | undefined) => {
-    if (!date) return;
+    if (!date || isSingleDay) return; // Prevent end date selection in single day mode
     
     setEndDate(date);
     setDateError("");
@@ -139,8 +139,10 @@ export default function ProductDetailPage() {
     setIsSingleDay(checked);
     if (checked && startDate) {
       setEndDate(startDate); // Set end date to start date for single day
+      setDateError(""); // Clear any existing errors
     } else if (!checked && startDate && endDate && startDate.getTime() === endDate.getTime()) {
       setEndDate(undefined); // Clear end date if it was same as start date
+      setDateError("");
     }
   };
 
@@ -390,10 +392,15 @@ export default function ProductDetailPage() {
                       />
                       <label 
                         htmlFor="single-day" 
-                        className="text-sm font-medium text-blue-800 cursor-pointer"
+                        className="text-sm font-medium text-blue-800 cursor-pointer flex-1"
                       >
-                        Single day rental (select only start date)
+                        Single day rental (just pick one date)
                       </label>
+                      {isSingleDay && (
+                        <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                          Only start date needed
+                        </span>
+                      )}
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -434,7 +441,9 @@ export default function ProductDetailPage() {
 
                       {/* End Date Picker */}
                       <div className={`space-y-2 ${isSingleDay ? 'opacity-50 pointer-events-none' : ''}`}>
-                        <label className="text-sm font-medium text-gray-700">End Date</label>
+                        <label className="text-sm font-medium text-gray-700">
+                          End Date {isSingleDay && "(Not needed for single day)"}
+                        </label>
                         <Popover>
                           <PopoverTrigger asChild>
                             <Button

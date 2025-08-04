@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -92,6 +93,9 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
     return { days, totalCost, dailyRate };
   };
 
+  // Add single day rental state
+  const [isSingleDay, setIsSingleDay] = useState(false);
+  
   // Handle date selection
   const handleStartDateSelect = (date: Date | undefined) => {
     if (!date) return;
@@ -99,15 +103,18 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
     setStartDate(date);
     setDateError("");
     
-    // If we have both dates, validate them
-    if (endDate) {
+    // For single day rental, set end date to start date
+    if (isSingleDay) {
+      setEndDate(date);
+    } else if (endDate) {
+      // If we have both dates, validate them
       const error = validateDateRange(date, endDate);
       setDateError(error);
     }
   };
 
   const handleEndDateSelect = (date: Date | undefined) => {
-    if (!date) return;
+    if (!date || isSingleDay) return; // Prevent end date selection in single day mode
     
     setEndDate(date);
     setDateError("");
@@ -116,6 +123,17 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
     if (startDate) {
       const error = validateDateRange(startDate, date);
       setDateError(error);
+    }
+  };
+
+  const handleSingleDayToggle = (checked: boolean) => {
+    setIsSingleDay(checked);
+    if (checked && startDate) {
+      setEndDate(startDate); // Set end date to start date for single day
+      setDateError(""); // Clear any existing errors
+    } else if (!checked && startDate && endDate && startDate.getTime() === endDate.getTime()) {
+      setEndDate(undefined); // Clear end date if it was same as start date
+      setDateError("");
     }
   };
 
@@ -351,8 +369,28 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
                       <p className="text-sm text-amber-800">
                         <Calendar className="w-4 h-4 inline mr-1" />
                         Products rental only between 18th October and 31st October 2025.
-                        Please select your start and end dates within this period. Pricing will be automatically calculated based on the number of days selected.
+                        You can select dates for single day or multiple day rentals. Pricing will be automatically calculated based on the number of days selected.
                       </p>
+                    </div>
+                    
+                    {/* Single Day Option */}
+                    <div className="flex items-center space-x-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <Checkbox 
+                        id="modal-single-day" 
+                        checked={isSingleDay}
+                        onCheckedChange={handleSingleDayToggle}
+                      />
+                      <label 
+                        htmlFor="modal-single-day" 
+                        className="text-sm font-medium text-blue-800 cursor-pointer flex-1"
+                      >
+                        Single day rental (just pick one date)
+                      </label>
+                      {isSingleDay && (
+                        <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                          Only start date needed
+                        </span>
+                      )}
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -386,8 +424,10 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
                       </div>
 
                       {/* End Date Picker */}
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">End Date</label>
+                      <div className={`space-y-2 ${isSingleDay ? 'opacity-50 pointer-events-none' : ''}`}>
+                        <label className="text-sm font-medium text-gray-700">
+                          End Date {isSingleDay && "(Not needed for single day)"}
+                        </label>
                         <Popover>
                           <PopoverTrigger asChild>
                             <Button
