@@ -22,7 +22,7 @@ export const emailTemplates = {
         <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #1f2937; margin-top: 0;">Order Details</h3>
           <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
-          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> BHD ${Number(data.total).toFixed(3)}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> $${Number(data.total).toFixed(2)}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Status:</strong> Pending Admin Approval</p>
         </div>
 
@@ -48,7 +48,7 @@ Your order has been submitted successfully and is now awaiting admin approval.
 
 Order Details:
 - Order Number: #${data.orderNumber}
-- Total Amount: BHD ${Number(data.total).toFixed(3)}
+- Total Amount: $${Number(data.total).toFixed(2)}
 - Status: Pending Admin Approval
 
 What's Next: Our admin team will review your order shortly. You'll receive an email notification once it's approved and ready for payment.
@@ -80,7 +80,7 @@ ${data.siteName}`,
         <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #1f2937; margin-top: 0;">Order Details</h3>
           <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
-          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> BHD ${Number(data.total).toFixed(3)}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> $${Number(data.total).toFixed(2)}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Status:</strong> Approved - Ready for Payment</p>
         </div>
 
@@ -112,7 +112,7 @@ Great news! Your order has been approved and is ready for payment.
 
 Order Details:
 - Order Number: #${data.orderNumber}
-- Total Amount: BHD ${Number(data.total).toFixed(3)}
+- Total Amount: $${Number(data.total).toFixed(2)}
 - Status: Approved - Ready for Payment
 
 Next Steps: Please proceed with payment to complete your order. You can pay using Credimax or choose Cash on Delivery.
@@ -145,7 +145,7 @@ ${data.siteName}`,
         <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #1f2937; margin-top: 0;">Order Details</h3>
           <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
-          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> BHD ${Number(data.total).toFixed(3)}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> $${Number(data.total).toFixed(2)}</p>
           ${data.reason ? `<p style="color: #374151; margin: 5px 0;"><strong>Note:</strong> ${data.reason}</p>` : ''}
         </div>
 
@@ -171,7 +171,7 @@ We need to discuss your recent order before we can proceed.
 
 Order Details:
 - Order Number: #${data.orderNumber}
-- Total Amount: BHD ${Number(data.total).toFixed(3)}
+- Total Amount: $${Number(data.total).toFixed(2)}
 ${data.reason ? `- Note: ${data.reason}` : ''}
 
 Next Steps: Please contact our support team to discuss your order and make any necessary adjustments.
@@ -204,7 +204,7 @@ ${data.siteName}`,
         <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #1f2937; margin-top: 0;">Payment Details</h3>
           <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
-          <p style="color: #374151; margin: 5px 0;"><strong>Amount Paid:</strong> BHD ${Number(data.total).toFixed(3)}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Amount Paid:</strong> $${Number(data.total).toFixed(2)}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Payment Method:</strong> ${data.paymentMethod}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Status:</strong> Processing</p>
         </div>
@@ -237,7 +237,7 @@ Thank you! Your payment has been confirmed and your order is now being processed
 
 Payment Details:
 - Order Number: #${data.orderNumber}
-- Amount Paid: BHD ${Number(data.total).toFixed(3)}
+- Amount Paid: $${Number(data.total).toFixed(2)}
 - Payment Method: ${data.paymentMethod}
 - Status: Processing
 
@@ -274,7 +274,7 @@ ${data.siteName}`,
           <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Customer:</strong> ${data.customerName}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Email:</strong> ${data.customerEmail}</p>
-          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> BHD ${Number(data.total).toFixed(3)}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> $${Number(data.total).toFixed(2)}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Items:</strong> ${data.itemCount} item(s)</p>
         </div>
 
@@ -299,7 +299,7 @@ Order Details:
 - Order Number: #${data.orderNumber}
 - Customer: ${data.customerName}
 - Email: ${data.customerEmail}
-- Total Amount: BHD ${Number(data.total).toFixed(3)}
+- Total Amount: $${Number(data.total).toFixed(2)}
 - Items: ${data.itemCount} item(s)
 
 Action Required: Please review this order in the admin dashboard and approve or reject it.
