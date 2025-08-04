@@ -14,8 +14,7 @@ export const users = pgTable("users", {
   isAdmin: boolean("is_admin").default(false),
   isSuperAdmin: boolean("is_super_admin").default(false),
   roleId: varchar("role_id"),
-  stripeCustomerId: text("stripe_customer_id"),
-  stripeSubscriptionId: text("stripe_subscription_id"),
+  // Stripe integration removed - using only Credimax and Cash on Delivery
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
@@ -127,7 +126,7 @@ export const orders = pgTable("orders", {
   adminApprovedAt: timestamp("admin_approved_at"),
   adminRemarks: text("admin_remarks"), // Admin can add notes for approval/rejection
 
-  paymentMethod: text("payment_method"), // stripe, paypal, benefit_pay, cash_on_delivery, knet, benefit_debit
+  paymentMethod: text("payment_method"), // credimax, cash_on_delivery
   paymentIntentId: text("payment_intent_id"),
 
   createdAt: timestamp("created_at").default(sql`now()`),
@@ -210,8 +209,7 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
-  stripeCustomerId: true,
-  stripeSubscriptionId: true,
+  // Stripe fields omitted - using only Credimax and Cash on Delivery
 });
 
 export const insertCategorySchema = createInsertSchema(categories).omit({

@@ -47,7 +47,7 @@ export const PERMISSION_MODULES = [
   {
     name: "payments",
     displayName: "Payment Processing",
-    description: "Handle payments, Stripe, PayPal, Benefit Pay",
+    description: "Handle payments, Credimax, Cash on Delivery",
     icon: "CreditCard",
     sortOrder: 7
   },
@@ -160,9 +160,7 @@ export const PERMISSIONS = [
   { module: "cart", name: "cart.clear", displayName: "Clear Cart", action: "delete" },
   
   // Payment Processing
-  { module: "payments", name: "payments.stripe", displayName: "Process Stripe Payments", action: "process" },
-  { module: "payments", name: "payments.paypal", displayName: "Process PayPal Payments", action: "process" },
-  { module: "payments", name: "payments.benefit", displayName: "Process Benefit Pay", action: "process" },
+  { module: "payments", name: "payments.credimax", displayName: "Process Credimax Payments", action: "process" },
   { module: "payments", name: "payments.cod", displayName: "Cash on Delivery", action: "process" },
   { module: "payments", name: "payments.view", displayName: "View Payment History", action: "read" },
   { module: "payments", name: "payments.refund", displayName: "Process Refunds", action: "refund" },
@@ -267,10 +265,8 @@ export const ROLE_PERMISSIONS = {
     "orders.create",
     "orders.view", // Can view all orders (for order history)
     
-    // Payment Processing - All Methods
-    "payments.stripe",
-    "payments.paypal",
-    "payments.benefit",
+    // Payment Processing - Credimax and Cash on Delivery only
+    "payments.credimax",
     "payments.cod",
     "payments.view",
     

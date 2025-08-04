@@ -106,6 +106,11 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Email Functions**: Rebuilt all email functions (order confirmation, approval, rejection) with Microsoft 365
 - **Error Handling**: Updated error messages to handle Microsoft 365 authentication issues specifically
 - **Admin Interface**: Updated admin settings to show Microsoft 365 configuration status
+- **Payment Method Overhaul**: Completely removed all payment methods except Credimax and Cash on Delivery
+- **Credimax Integration**: Created new Credimax payment gateway integration for Bahrain market
+- **Payment System Cleanup**: Removed Stripe, PayPal, and Benefit Pay integrations across entire codebase
+- **Permissions Update**: Updated role permissions to only support Credimax and Cash on Delivery payments
+- **Schema Simplification**: Removed Stripe-related fields from user schema and order payment methods
 
 ## Authentication and Security
 - **Session Management**: Express-session with connect-pg-simple for PostgreSQL session store

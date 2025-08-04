@@ -9,17 +9,14 @@ import { sendOrderConfirmationEmail } from "./email";
 import { sendTestEmail, validateMicrosoft365Config } from "./smtp-config";
 // import { sendOrderSubmittedNotification, sendOrderApprovedNotification, sendOrderRejectedNotification } from "./sendgrid";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
-// import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
-import { createBenefitPayTransaction, verifyBenefitPayTransaction, handleBenefitPayWebhook } from "./benefit-pay";
+import { createCredimaxTransaction, verifyCredimaxTransaction, handleCredimaxWebhook } from "./credimax";
 import { requirePermission } from "./middleware";
-import Stripe from "stripe";
+// Removed Stripe integration - only Credimax and Cash on Delivery supported
 import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-07-30.basil",
-}) : null;
+// Stripe integration removed - using only Credimax and Cash on Delivery
 
 // Configure multer for file uploads
 const storage_config = multer.diskStorage({
@@ -73,50 +70,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ imageUrl, message: "Image uploaded successfully" });
   });
 
-  // PayPal routes (temporarily disabled)
-  // app.get("/api/paypal/setup", async (req, res) => {
-  //   await loadPaypalDefault(req, res);
-  // });
-
-  // app.post("/api/paypal/order", async (req, res) => {
-  //   await createPaypalOrder(req, res);
-  // });
-
-  // app.post("/api/paypal/order/:orderID/capture", async (req, res) => {
-  //   await capturePaypalOrder(req, res);
-  // });
-
-  // Stripe payment route (optional)
-  app.post("/api/create-payment-intent", async (req, res) => {
-    if (!stripe) {
-      return res.status(400).json({ message: "Stripe not configured" });
-    }
-    
-    try {
-      const { amount } = req.body;
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
-        currency: "usd",
-      });
-      res.json({ clientSecret: paymentIntent.client_secret });
-    } catch (error: any) {
-      res
-        .status(500)
-        .json({ message: "Error creating payment intent: " + error.message });
-    }
+  // Credimax payment routes
+  app.post("/api/credimax/create", async (req, res) => {
+    await createCredimaxTransaction(req, res);
   });
 
-  // Benefit Pay routes for Bahrain market
-  app.post("/api/benefit-pay/create", async (req, res) => {
-    await createBenefitPayTransaction(req, res);
+  app.get("/api/credimax/verify/:transactionId", async (req, res) => {
+    await verifyCredimaxTransaction(req, res);
   });
 
-  app.get("/api/benefit-pay/verify/:transactionId", async (req, res) => {
-    await verifyBenefitPayTransaction(req, res);
-  });
-
-  app.post("/api/benefit-pay/webhook", async (req, res) => {
-    await handleBenefitPayWebhook(req, res);
+  app.post("/api/credimax/webhook", async (req, res) => {
+    await handleCredimaxWebhook(req, res);
   });
 
   // Cash on Delivery route

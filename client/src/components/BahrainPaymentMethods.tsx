@@ -7,7 +7,7 @@ import { Loader2, CreditCard, Banknote, Smartphone, Building2 } from "lucide-rea
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
-export type PaymentMethod = "benefit_pay" | "cash_on_delivery" | "knet" | "benefit_debit" | "stripe";
+export type PaymentMethod = "credimax" | "cash_on_delivery";
 
 interface BahrainPaymentMethodsProps {
   total: number;
@@ -28,16 +28,16 @@ export function BahrainPaymentMethods({
   isLocked = false,
   lockReason = "Payment is locked until admin approval",
 }: BahrainPaymentMethodsProps) {
-  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("benefit_pay");
+  const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>("credimax");
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
 
   const paymentMethods = [
     {
-      id: "benefit_pay" as PaymentMethod,
-      name: "Benefit Pay",
-      description: "Pay securely using Benefit Pay - Regional payment gateway",
-      icon: <Smartphone className="h-5 w-5" />,
+      id: "credimax" as PaymentMethod,
+      name: "Credimax",
+      description: "Pay securely using Credimax - Bahrain's trusted payment gateway",
+      icon: <CreditCard className="h-5 w-5" />,
       available: true,
     },
     {
@@ -47,30 +47,16 @@ export function BahrainPaymentMethods({
       icon: <Banknote className="h-5 w-5" />,
       available: true,
     },
-    {
-      id: "knet" as PaymentMethod,
-      name: "K-Net",
-      description: "Pay using your Kuwaiti debit card (Available soon)",
-      icon: <CreditCard className="h-5 w-5" />,
-      available: false,
-    },
-    {
-      id: "benefit_debit" as PaymentMethod,
-      name: "International Cards",
-      description: "Pay using Visa, MasterCard, or other international cards via Stripe",
-      icon: <Building2 className="h-5 w-5" />,
-      available: false,
-    },
   ];
 
   const handlePayment = async () => {
     setIsProcessing(true);
 
     try {
-      if (selectedMethod === "benefit_pay") {
-        const response = await apiRequest("/api/benefit-pay/create", "POST", {
+      if (selectedMethod === "credimax") {
+        const response = await apiRequest("/api/credimax/create", "POST", {
           amount: total,
-          currency: "USD",
+          currency: "BHD",
           orderId,
           customerInfo: {
             name: `${shippingData.firstName} ${shippingData.lastName}`,
@@ -82,16 +68,16 @@ export function BahrainPaymentMethods({
         const paymentData = await response.json();
 
         if (paymentData.paymentUrl) {
-          // In a real implementation, you would redirect to Benefit Pay
+          // Redirect to Credimax payment gateway
           toast({
-            title: "Redirecting to Benefit Pay",
+            title: "Redirecting to Credimax",
             description: "You will be redirected to complete your payment",
           });
           
           // Simulate successful payment for demo
           setTimeout(() => {
             onPaymentSuccess({
-              method: "benefit_pay",
+              method: "credimax",
               transactionId: paymentData.transactionId,
               amount: total,
             });
@@ -118,12 +104,6 @@ export function BahrainPaymentMethods({
             amount: total,
           });
         }
-      } else {
-        toast({
-          title: "Payment Method Unavailable",
-          description: "This payment method is coming soon",
-          variant: "destructive",
-        });
       }
     } catch (error: any) {
       console.error("Payment error:", error);

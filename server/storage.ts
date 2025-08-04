@@ -62,7 +62,7 @@ export interface IStorage {
   updateUser(id: string, user: Partial<InsertUser>): Promise<User>;
   updateUserProfile(id: string, profile: { firstName?: string; lastName?: string; email?: string }): Promise<User>;
   deleteUser(id: string): Promise<void>;
-  updateUserStripeInfo(id: string, customerId: string, subscriptionId?: string): Promise<User>;
+  // Stripe functions removed - using only Credimax and Cash on Delivery
 
   // Category methods
   getCategories(): Promise<Category[]>;
@@ -195,17 +195,7 @@ export class DatabaseStorage implements IStorage {
     await db.delete(users).where(eq(users.id, id));
   }
 
-  async updateUserStripeInfo(id: string, customerId: string, subscriptionId?: string): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({ 
-        stripeCustomerId: customerId,
-        stripeSubscriptionId: subscriptionId 
-      })
-      .where(eq(users.id, id))
-      .returning();
-    return user;
-  }
+  // Stripe functions removed - using only Credimax and Cash on Delivery
 
   // Category methods
   async getCategories(): Promise<Category[]> {
