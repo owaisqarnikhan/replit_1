@@ -115,24 +115,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send order confirmation email
       try {
-        await emailService.initialize();
-        if (emailService.isReady()) {
-          const user = await storage.getUserById(req.user!.id);
-          if (user?.email) {
-            const template = emailTemplates.paymentConfirmation({
-              customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
-              orderNumber: order.id.slice(-8).toUpperCase(),
-              total: order.total,
-              paymentMethod: "Cash on Delivery",
-              siteName: "BAYG - Bahrain Asian Youth Games 2025"
-            });
-            await emailService.sendEmail({
-              to: user.email,
-              subject: template.subject,
-              html: template.html,
-              text: template.text
-            });
-          }
+        const { sendPaymentConfirmationEmail } = await import("./order-approval-workflow");
+        const user = await storage.getUserById(req.user!.id);
+        if (user?.email) {
+          const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
+          await sendPaymentConfirmationEmail(user.email, {
+            orderNumber: order.id.slice(-8).toUpperCase(),
+            customerName: customerName,
+            total: order.total,
+            paymentMethod: "Cash on Delivery"
+          });
         }
       } catch (emailError) {
         console.error('Failed to send payment confirmation email:', emailError);
@@ -619,12 +611,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const { sendPaymentConfirmationEmail } = await import("./order-approval-workflow");
         const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
         
-        await sendPaymentConfirmationEmail(req.user!.email, {
-          orderNumber: order.id.slice(-8).toUpperCase(),
-          customerName: customerName,
-          total: order.total,
-          paymentMethod: paymentMethod
-        });
+        if (req.user!.email) {
+          await sendPaymentConfirmationEmail(req.user!.email, {
+            orderNumber: order.id.slice(-8).toUpperCase(),
+            customerName: customerName,
+            total: order.total,
+            paymentMethod: paymentMethod
+          });
+        }
       } catch (emailError) {
         console.error('Failed to send payment confirmation email:', emailError);
       }
@@ -714,19 +708,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Send order approved email
         try {
-          await emailService.initialize();
-          if (emailService.isReady() && user.email) {
-            const template = emailTemplates.orderApproved({
-              customerName: customerName,
+          const { sendOrderApprovalEmail } = await import("./order-approval-workflow");
+          if (user.email) {
+            await sendOrderApprovalEmail(user.email, {
               orderNumber: order.id.slice(-8).toUpperCase(),
-              total: order.total,
-              siteName: "BAYG - Bahrain Asian Youth Games 2025"
-            });
-            await emailService.sendEmail({
-              to: user.email,
-              subject: template.subject,
-              html: template.html,
-              text: template.text
+              customerName: customerName,
+              total: order.total
             });
           }
         } catch (emailError) {
@@ -776,20 +763,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Send order rejected email
         try {
-          await emailService.initialize();
-          if (emailService.isReady() && user.email) {
-            const template = emailTemplates.orderRejected({
-              customerName: customerName,
+          const { sendOrderRejectionEmail } = await import("./order-approval-workflow");
+          if (user.email) {
+            await sendOrderRejectionEmail(user.email, {
               orderNumber: order.id.slice(-8).toUpperCase(),
+              customerName: customerName,
               total: order.total,
-              reason: adminRemarks,
-              siteName: "BAYG - Bahrain Asian Youth Games 2025"
-            });
-            await emailService.sendEmail({
-              to: user.email,
-              subject: template.subject,
-              html: template.html,
-              text: template.text
+              adminRemarks: adminRemarks || "No specific reason provided"
             });
           }
         } catch (emailError) {

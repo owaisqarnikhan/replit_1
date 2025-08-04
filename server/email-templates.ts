@@ -194,7 +194,7 @@ ${data.siteName}`,
         <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #1f2937; margin-top: 0;">Payment Details</h3>
           <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
-          <p style="color: #374151; margin: 5px 0;"><strong>Amount Paid:</strong> $${data.total.toFixed(2)}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Amount Paid:</strong> BHD ${Number(data.total).toFixed(3)}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Payment Method:</strong> ${data.paymentMethod}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Status:</strong> Processing</p>
         </div>
@@ -221,7 +221,7 @@ Thank you! Your payment has been confirmed and your order is now being processed
 
 Payment Details:
 - Order Number: #${data.orderNumber}
-- Amount Paid: $${data.total.toFixed(2)}
+- Amount Paid: BHD ${Number(data.total).toFixed(3)}
 - Payment Method: ${data.paymentMethod}
 - Status: Processing
 
