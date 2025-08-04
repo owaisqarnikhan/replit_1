@@ -326,7 +326,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
 
-        if (parsedStartDate >= parsedEndDate) {
+        if (parsedStartDate > parsedEndDate) {
           return res.status(400).json({ 
             message: "End date must be after start date." 
           });

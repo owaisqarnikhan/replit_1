@@ -74,8 +74,13 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
     if (start < RENTAL_START || start > RENTAL_END || end < RENTAL_START || end > RENTAL_END) {
       return "Selected dates are outside the allowed rental period. Please choose dates between 18th October and 31st October 2025.";
     }
-    if (start >= end) {
+    // For single day rentals, allow start and end to be the same
+    if (!isSingleDay && start >= end) {
       return "End date must be after start date.";
+    }
+    // For single day rentals, start and end should be the same
+    if (isSingleDay && start.getTime() !== end.getTime()) {
+      return "For single day rental, start and end dates must be the same.";
     }
     return "";
   };
