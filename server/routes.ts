@@ -878,32 +878,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // SMTP test route
+  // SMTP test route with comprehensive diagnostics
   app.post("/api/admin/test-smtp", async (req, res) => {
     if (!req.isAuthenticated() || !req.user?.isAdmin) {
       return res.sendStatus(401);
     }
 
     try {
-      const result = await sendTestEmail();
+      const { testEmailWithAlternatives } = await import("./email-test-advanced");
+      const diagnostics = await testEmailWithAlternatives();
+      
       res.json({
-        success: true,
-        message: "Admin Microsoft 365 SMTP test email sent successfully! Check your inbox to confirm email system is working."
+        success: diagnostics.successful > 0,
+        message: diagnostics.successful > 0 
+          ? `Email test completed: ${diagnostics.successful}/${diagnostics.totalTests} methods successful`
+          : "All email methods failed - SMTP authentication disabled by organization",
+        diagnostics
       });
     } catch (error: any) {
       console.error('Admin SMTP test error:', error);
       
-      // Handle Microsoft 365 authentication errors
-      if (error.message && error.message.includes('SmtpClientAuthentication is disabled')) {
-        return res.status(500).json({
-          success: false,
-          message: 'Microsoft 365 SMTP authentication is disabled for your organization. Contact your IT administrator to enable SMTP authentication, or try using an App Password instead.'
-        });
-      }
-      
       res.status(500).json({ 
         success: false, 
-        message: error.message || "SMTP test failed. Please verify your email configuration." 
+        message: error.message || "SMTP diagnostic test failed.",
+        error: error.message
+      });
+    }
+  });
+
+  // Mock email test route for UI testing
+  app.post("/api/admin/test-mock-email", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { emailType = 'admin' } = req.body;
+      const { sendMockTestEmail } = await import("./email-test-advanced");
+      const result = await sendMockTestEmail(req.user!.email, emailType);
+      
+      res.json(result);
+    } catch (error: any) {
+      console.error('Mock email test error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || "Mock email test failed."
       });
     }
   });

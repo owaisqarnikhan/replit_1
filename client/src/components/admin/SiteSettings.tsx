@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertSiteSettingsSchema, type InsertSiteSettings, type SiteSettings } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { Settings, Palette, Mail, Upload, Save, Monitor, Loader2 } from "lucide-react";
+import { Settings, Palette, Mail, Upload, Save, Monitor, Loader2, CheckCircle, ShoppingCart, Bell } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { themes, applyTheme, type ThemeName } from "@/lib/themes";
 
@@ -336,7 +336,7 @@ export function SiteSettings() {
   const handleTestEmail = async () => {
     setIsTestingEmail(true);
     try {
-      const response = await apiRequest("/api/test-smtp", "POST", {});
+      const response = await apiRequest("/api/admin/test-smtp", "POST", {});
       const result = await response.json();
       
       if (result.success) {
@@ -355,6 +355,64 @@ export function SiteSettings() {
       toast({
         title: "Test Email Failed",
         description: "Failed to send test email. Please check your SMTP configuration.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTestingEmail(false);
+    }
+  };
+
+  const handleTestMockEmail = async () => {
+    setIsTestingEmail(true);
+    try {
+      const response = await apiRequest("/api/admin/test-mock-email", "POST", { emailType: 'admin' });
+      const result = await response.json();
+      
+      if (result.success) {
+        toast({
+          title: "Mock Email Test Successful",
+          description: result.message,
+        });
+      } else {
+        toast({
+          title: "Mock Email Test Failed",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Mock Email Test Failed",
+        description: error.message || "Failed to test mock email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTestingEmail(false);
+    }
+  };
+
+  const handleTestEmailType = async (emailType: string) => {
+    setIsTestingEmail(true);
+    try {
+      const response = await apiRequest("/api/admin/test-mock-email", "POST", { emailType });
+      const result = await response.json();
+      
+      if (result.success) {
+        toast({
+          title: `${emailType.charAt(0).toUpperCase() + emailType.slice(1)} Email Test Successful`,
+          description: result.message,
+        });
+      } else {
+        toast({
+          title: `${emailType.charAt(0).toUpperCase() + emailType.slice(1)} Email Test Failed`,
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: `${emailType.charAt(0).toUpperCase() + emailType.slice(1)} Email Test Failed`,
+        description: error.message || `Failed to test ${emailType} email`,
         variant: "destructive",
       });
     } finally {
@@ -1374,33 +1432,79 @@ export function SiteSettings() {
                 />
 
                 <div className="space-y-4 pt-6 border-t">
-                  <h3 className="text-lg font-medium">📧 Microsoft 365 SMTP Testing</h3>
+                  <h3 className="text-lg font-medium">📧 Complete Email System Testing</h3>
                   <div className="bg-blue-50 p-4 rounded-lg border">
                     <p className="text-sm text-blue-800 mb-3">
-                      <strong>Test your Microsoft 365 SMTP configuration:</strong> Make sure to save your settings first, then click the test button below.
+                      <strong>Comprehensive Email Testing:</strong> Test different aspects of your email system. Save settings first, then use the buttons below.
                     </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleTestEmail}
-                      disabled={isTestingEmail}
-                      className="w-full bg-white hover:bg-blue-50"
-                    >
-                      {isTestingEmail ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Testing Microsoft 365 SMTP...
-                        </>
-                      ) : (
-                        <>
-                          <Mail className="h-4 w-4 mr-2" />
-                          Test Microsoft 365 SMTP
-                        </>
-                      )}
-                    </Button>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleTestEmail}
+                        disabled={isTestingEmail}
+                        className="bg-white hover:bg-blue-50"
+                      >
+                        {isTestingEmail ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Testing SMTP...
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="h-4 w-4 mr-2" />
+                            Test SMTP Connection
+                          </>
+                        )}
+                      </Button>
+                      
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={handleTestMockEmail}
+                        disabled={isTestingEmail}
+                        className="bg-white hover:bg-gray-50"
+                      >
+                        {isTestingEmail ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Testing UI...
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            Test Email UI
+                          </>
+                        )}
+                      </Button>
+                      
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => handleTestEmailType('order')}
+                        disabled={isTestingEmail}
+                        className="bg-white hover:bg-green-50"
+                      >
+                        <ShoppingCart className="h-4 w-4 mr-2" />
+                        Test Order Email
+                      </Button>
+                      
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => handleTestEmailType('notification')}
+                        disabled={isTestingEmail}
+                        className="bg-white hover:bg-yellow-50"
+                      >
+                        <Bell className="h-4 w-4 mr-2" />
+                        Test Notification
+                      </Button>
+                    </div>
+                    
                     <div className="mt-3 p-3 bg-white rounded border">
                       <p className="text-xs text-gray-600">
-                        <strong>What this test does:</strong> Sends a test email to verify that your Microsoft 365 SMTP settings and credentials are configured correctly.
+                        <strong>Test Options:</strong> SMTP Connection tests actual email sending, UI Test simulates emails without sending, Order/Notification tests specific email types.
                       </p>
                     </div>
                   </div>
