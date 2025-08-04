@@ -65,14 +65,8 @@ export function SiteSettings() {
       socialLinkedin: settings?.socialLinkedin || "",
       copyrightText: settings?.copyrightText || "",
       additionalFooterText: settings?.additionalFooterText || "",
-      // SMTP Configuration
-      smtpProvider: settings?.smtpProvider || "gmail",
-      smtpHost: settings?.smtpHost || "smtp.gmail.com",
-      smtpPort: settings?.smtpPort || 587,
-      smtpUser: settings?.smtpUser || "",
-      smtpPassword: settings?.smtpPassword || "",
-      smtpFromEmail: settings?.smtpFromEmail || "",
-      smtpFromName: settings?.smtpFromName || "BAYG",
+      // Email configuration - Microsoft 365 hardcoded, only fromName configurable
+      smtpFromName: settings?.smtpFromName || "BAYG - Bahrain Asian Youth Games 2025",
       emailEnabled: settings?.emailEnabled || false,
       // Login Page Settings
       loginPageLogo: settings?.loginPageLogo || "",
@@ -117,14 +111,8 @@ export function SiteSettings() {
         socialLinkedin: settings.socialLinkedin || "",
         copyrightText: settings.copyrightText || "",
         additionalFooterText: settings.additionalFooterText || "",
-        // SMTP Configuration
-        smtpProvider: settings.smtpProvider || "microsoft365",
-        smtpHost: settings.smtpHost || "smtp.office365.com",
-        smtpPort: settings.smtpPort || 587,
-        smtpUser: settings.smtpUser || "",
-        smtpPassword: settings.smtpPassword || "",
-        smtpFromEmail: settings.smtpFromEmail || "",
-        smtpFromName: settings.smtpFromName || "InnovanceOrbit",
+        // Email configuration - Microsoft 365 hardcoded, only fromName configurable
+        smtpFromName: settings.smtpFromName || "BAYG - Bahrain Asian Youth Games 2025",
         emailEnabled: settings.emailEnabled || false,
         // Login Page Settings
         loginPageLogo: settings.loginPageLogo || "",
@@ -326,12 +314,7 @@ export function SiteSettings() {
     }
   };
 
-  // Handle SMTP provider change (Microsoft 365 only)
-  const handleProviderChange = (provider: string) => {
-    form.setValue("smtpProvider", "microsoft365");
-    form.setValue("smtpHost", "smtp.office365.com");
-    form.setValue("smtpPort", 587);
-  };
+  // Microsoft 365 only - no provider switching needed
 
   const handleTestEmail = async () => {
     setIsTestingEmail(true);
@@ -1215,30 +1198,27 @@ export function SiteSettings() {
               </TabsContent>
 
               <TabsContent value="email" className="space-y-4">
-                {/* SMTP Provider Selection */}
-                <FormField
-                  control={form.control}
-                  name="smtpProvider"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Provider</FormLabel>
-                      <Select onValueChange={handleProviderChange} value="microsoft365" disabled>
-                        <FormControl>
-                          <SelectTrigger className="bg-gray-50">
-                            <SelectValue placeholder="Microsoft 365 (Only)" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="microsoft365">Microsoft 365</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <p className="text-sm text-muted-foreground">
-                        Choose your email service provider for sending notifications
-                      </p>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {/* Microsoft 365 Status */}
+                <div className="bg-blue-50 p-4 rounded-lg border">
+                  <h3 className="text-lg font-semibold text-blue-900 mb-2">📧 Microsoft 365 SMTP</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <strong>Provider:</strong> Microsoft 365 (Hardcoded)
+                    </div>
+                    <div>
+                      <strong>Host:</strong> smtp.office365.com
+                    </div>
+                    <div>
+                      <strong>Port:</strong> 587
+                    </div>
+                    <div>
+                      <strong>Email:</strong> itsupport@bayg.bh
+                    </div>
+                  </div>
+                  <p className="text-blue-700 mt-2 text-sm">
+                    All email settings are hardcoded for maximum reliability. No configuration needed.
+                  </p>
+                </div>
 
                 {/* Microsoft 365 setup instructions */}
                 <div className="bg-blue-50 p-4 rounded-lg border">
@@ -1295,136 +1275,18 @@ export function SiteSettings() {
                   )}
                 />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="smtpHost"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>SMTP Host</FormLabel>
-                        <FormControl>
-                          <Input 
-                            placeholder="smtp.office365.com" 
-                            {...field} 
-                            value={field.value || ""} 
-                            readOnly={true}
-                            className="bg-gray-50"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="smtpPort"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>SMTP Port</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            placeholder="587" 
-                            {...field} 
-                            value={field.value || 587}
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 587)}
-                            readOnly={true}
-                            className="bg-gray-50"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="smtpUser"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Microsoft 365 Email Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="your-email@yourcompany.com" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <p className="text-sm text-muted-foreground">
-                        Enter your complete Microsoft 365 email address
-                      </p>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="smtpPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Microsoft 365 Password</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="password" 
-                          placeholder="your-microsoft-365-password-or-app-password" 
-                          {...field} 
-                          value={field.value || ""} 
-                        />
-                      </FormControl>
-                      <p className="text-sm text-muted-foreground">
-                        Use your Microsoft 365 password or App Password (for MFA-enabled accounts)
-                      </p>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="smtpFromEmail"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>From Email Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="noreply@yourcompany.com" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <p className="text-sm text-muted-foreground">
-                        This should typically be the same as your Microsoft 365 email address above
-                      </p>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+                {/* Only display name configuration - all other settings are hardcoded */}
                 <FormField
                   control={form.control}
                   name="smtpFromName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>From Name</FormLabel>
+                      <FormLabel>Email From Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="InnovanceOrbit" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="orderConfirmationTemplate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Order Confirmation Email Template</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          rows={10} 
-                          placeholder="HTML email template with placeholders like {{orderNumber}}, {{customerName}}, etc." 
-                          {...field} 
-                          value={field.value || ""} 
-                        />
+                        <Input placeholder="BAYG - Bahrain Asian Youth Games 2025" {...field} value={field.value || ""} />
                       </FormControl>
                       <p className="text-sm text-muted-foreground">
-                        Available placeholders: {`{{orderNumber}}, {{customerName}}, {{totalAmount}}, {{orderDate}}, {{paymentMethod}}, {{orderItems}}, {{siteName}}`}
+                        This name will appear in outgoing emails (e.g., "BAYG System" &lt;itsupport@bayg.bh&gt;)
                       </p>
                       <FormMessage />
                     </FormItem>

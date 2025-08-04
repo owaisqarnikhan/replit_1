@@ -1,18 +1,17 @@
 import nodemailer from "nodemailer";
-import { storage } from "./storage";
 
-// Microsoft 365 SMTP Configuration - Complete Rebuild
-export async function createMicrosoft365Transporter() {
-  console.log("Setting up Microsoft 365 SMTP transporter...");
+// Microsoft 365 SMTP - Single Provider Configuration
+// Hardcoded for maximum reliability and simplicity
+export async function createSMTPTransporter() {
+  console.log("Creating Microsoft 365 SMTP transporter...");
 
-  // Use hardcoded configuration for reliability
   const config = {
     host: "smtp.office365.com",
     port: 587,
     secure: false, // STARTTLS
     auth: {
       user: "itsupport@bayg.bh",
-      pass: "yccdswrqpghkftfy",
+      pass: "yccdswrqpghkftfy", // Microsoft 365 App Password
     },
     tls: {
       ciphers: "SSLv3",
@@ -22,7 +21,7 @@ export async function createMicrosoft365Transporter() {
 
   try {
     const transporter = nodemailer.createTransport(config);
-    console.log("Microsoft 365 SMTP transporter created successfully");
+    console.log("Microsoft 365 SMTP transporter ready");
     return transporter;
   } catch (error: any) {
     console.error("Microsoft 365 SMTP Error:", error.message);
@@ -30,35 +29,36 @@ export async function createMicrosoft365Transporter() {
   }
 }
 
-// Send test email function
+// Send test email using Microsoft 365
 export async function sendTestEmail(): Promise<{
   success: boolean;
   message: string;
 }> {
   try {
-    const transporter = await createMicrosoft365Transporter();
+    const transporter = await createSMTPTransporter();
 
     const testEmail = {
       from: '"BAYG System" <itsupport@bayg.bh>',
       to: "itsupport@bayg.bh",
       subject: "Microsoft 365 SMTP Test - BAYG System",
-      text: "This is a test email to verify Microsoft 365 SMTP configuration.",
+      text: "Microsoft 365 SMTP is working correctly.",
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px;">
           <h2 style="color: #2563eb;">Microsoft 365 SMTP Test Successful!</h2>
-          <p>Your BAYG email system is working correctly with Microsoft 365.</p>
+          <p>Your BAYG email system is configured and ready.</p>
           
           <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <h3>Configuration Details:</h3>
+            <h3>Configuration:</h3>
             <ul>
+              <li><strong>Provider:</strong> Microsoft 365</li>
               <li><strong>Host:</strong> smtp.office365.com</li>
               <li><strong>Port:</strong> 587</li>
-              <li><strong>From Email:</strong> itsupport@bayg.bh</li>
+              <li><strong>From:</strong> itsupport@bayg.bh</li>
             </ul>
           </div>
           
           <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
-          <p>Your BAYG email system is ready!</p>
+          <p>System ready for order confirmations and notifications!</p>
         </div>
       `,
     };
@@ -66,7 +66,7 @@ export async function sendTestEmail(): Promise<{
     await transporter.sendMail(testEmail);
     return {
       success: true,
-      message: "Test email sent successfully using Microsoft 365 SMTP!",
+      message: "Microsoft 365 SMTP test successful!",
     };
   } catch (error: any) {
     console.error("SMTP Test Error:", error);
@@ -77,11 +77,24 @@ export async function sendTestEmail(): Promise<{
   }
 }
 
-// Simple email validation - Microsoft 365 ready
-export function validateMicrosoft365Config(): {
-  valid: boolean;
-  errors: string[];
-} {
-  // Always valid since we use hardcoded Microsoft 365 config
-  return { valid: true, errors: [] };
+// Validate Microsoft 365 configuration
+export async function validateMicrosoft365Config(): Promise<{
+  isValid: boolean;
+  message: string;
+}> {
+  try {
+    const transporter = await createSMTPTransporter();
+    await transporter.verify();
+    
+    return {
+      isValid: true,
+      message: "Microsoft 365 SMTP configuration is valid",
+    };
+  } catch (error: any) {
+    console.error("Microsoft 365 validation error:", error);
+    return {
+      isValid: false,
+      message: `Microsoft 365 SMTP configuration error: ${error.message}`,
+    };
+  }
 }

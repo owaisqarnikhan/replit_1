@@ -111,6 +111,10 @@ Preferred communication style: Simple, everyday language.
 - **Payment System Cleanup**: Removed Stripe, PayPal, and Benefit Pay integrations across entire codebase
 - **Permissions Update**: Updated role permissions to only support Credimax and Cash on Delivery payments
 - **Schema Simplification**: Removed Stripe-related fields from user schema and order payment methods
+- **SMTP System Overhaul**: Completely rebuilt email system to exclusively use Microsoft 365
+- **Simplified Email Architecture**: Removed all SMTP providers except Microsoft 365, hardcoded configuration for reliability
+- **Admin Interface Cleanup**: Simplified email settings to only show Microsoft 365 status and from name configuration
+- **Email Module Consolidation**: Created dedicated Microsoft 365 SMTP module, removed complex provider switching logic
 
 ## Authentication and Security
 - **Session Management**: Express-session with connect-pg-simple for PostgreSQL session store

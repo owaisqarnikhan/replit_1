@@ -1,10 +1,16 @@
 import { storage } from './storage';
-import { createSMTPTransporter } from './microsoft365-smtp';
+import { createSMTPTransporter, validateMicrosoft365Config } from './microsoft365-smtp';
 
-// Main email sending function - Microsoft 365 only
+// Main email sending function - now uses Microsoft 365 exclusively
 export async function sendEmail(to: string, subject: string, htmlContent: string, textContent?: string) {
   try {
-    const transporter = await createSMTPTransporter();
+    const emailValidation = validateMicrosoft365Config();
+    if (!emailValidation.valid) {
+      console.log('Email system not configured properly');
+      return;
+    }
+    
+    const transporter = await createMicrosoft365Transporter();
     
     const mailOptions = {
       from: '"BAYG System" <itsupport@bayg.bh>',
@@ -42,7 +48,7 @@ export async function sendOrderConfirmationEmail(
   }
 ): Promise<void> {
   try {
-    const transporter = await createSMTPTransporter();
+    const transporter = await createMicrosoft365Transporter();
     
     // Prepare items HTML
     const itemsHtml = orderDetails.items
@@ -71,34 +77,48 @@ export async function sendOrderConfirmationEmail(
             <p style="color: #374151; margin: 10px 0; font-size: 16px; font-weight: 600;">
               ⏱️ We will arrange your product in ${orderDetails.estimatedDeliveryDays} days
             </p>
+            <p style="color: #6b7280; margin: 10px 0;">After arrangement, you'll receive an email notification for payment processing to proceed with your order.</p>
+          </div>
+          
+          <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+            <h3 style="color: #92400e; margin-top: 0; font-size: 16px;">⚠️ Important Note</h3>
+            <p style="color: #92400e; margin: 5px 0;">Your order is currently <strong>awaiting admin approval</strong>. You will receive another email once the approval process is complete.</p>
           </div>
 
           <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #2563eb; margin-top: 0; font-size: 18px;">Order Summary</h3>
-            <p><strong>Order Number:</strong> ${orderDetails.orderNumber}</p>
-            <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod}</p>
-            
-            <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
-              <thead>
-                <tr style="background: #e5e7eb;">
-                  <th style="padding: 10px; text-align: left; border-bottom: 2px solid #d1d5db;">Item</th>
-                  <th style="padding: 10px; text-align: center; border-bottom: 2px solid #d1d5db;">Qty</th>
-                  <th style="padding: 10px; text-align: right; border-bottom: 2px solid #d1d5db;">Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${itemsHtml}
-              </tbody>
+            <h3 style="margin-top: 0; color: #374151;">Order Summary</h3>
+            <table style="width: 100%; margin-bottom: 15px;">
+              <tr><td style="color: #6b7280; padding: 5px 0;"><strong>Order Number:</strong></td><td style="text-align: right; padding: 5px 0;">${orderDetails.orderNumber}</td></tr>
+              <tr><td style="color: #6b7280; padding: 5px 0;"><strong>Order Date:</strong></td><td style="text-align: right; padding: 5px 0;">${new Date().toLocaleDateString()}</td></tr>
+              <tr><td style="color: #6b7280; padding: 5px 0;"><strong>Payment Method:</strong></td><td style="text-align: right; padding: 5px 0;">${orderDetails.paymentMethod}</td></tr>
             </table>
-            
-            <div style="border-top: 2px solid #e5e7eb; padding-top: 15px; text-align: right;">
-              <p style="margin: 5px 0; color: #6b7280;">Subtotal: $${orderDetails.subtotal}</p>
-              <p style="margin: 5px 0; color: #6b7280;">VAT (${orderDetails.vatPercentage}%): $${orderDetails.vatAmount}</p>
-              <p style="margin: 10px 0; font-size: 18px; font-weight: bold; color: #1f2937;">Total: $${orderDetails.total}</p>
-            </div>
+          </div>
+
+          <h3 style="color: #374151;">Items Ordered:</h3>
+          <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+            <thead>
+              <tr style="background: #f9fafb;">
+                <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e5e7eb; color: #374151;">Product</th>
+                <th style="padding: 12px; text-align: center; border-bottom: 2px solid #e5e7eb; color: #374151;">Qty</th>
+                <th style="padding: 12px; text-align: right; border-bottom: 2px solid #e5e7eb; color: #374151;">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${itemsHtml}
+            </tbody>
+          </table>
+
+          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <table style="width: 100%; font-size: 16px;">
+              <tr><td style="color: #6b7280; padding: 5px 0;">Subtotal:</td><td style="text-align: right; padding: 5px 0;">$${orderDetails.subtotal}</td></tr>
+              <tr><td style="color: #6b7280; padding: 5px 0;">VAT (${orderDetails.vatPercentage}%):</td><td style="text-align: right; padding: 5px 0;">$${orderDetails.vatAmount}</td></tr>
+              <tr style="border-top: 2px solid #e5e7eb;"><td style="font-weight: bold; color: #374151; padding: 10px 0; font-size: 18px;">Total:</td><td style="text-align: right; font-weight: bold; color: #2563eb; padding: 10px 0; font-size: 18px;">$${orderDetails.total}</td></tr>
+            </table>
           </div>
           
-          <p style="color: #374151; line-height: 1.6;">We'll send you another email when your order ships. Thank you for choosing BAYG!</p>
+          <p style="color: #6b7280; line-height: 1.6; font-style: italic;">
+            You will receive email notifications for order approval/rejection and payment processing instructions.
+          </p>
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <p style="color: #374151; margin: 0;">Best regards,</p>
@@ -107,23 +127,66 @@ export async function sendOrderConfirmationEmail(
         </div>
       </div>
     `;
-    
+
+    // Send to customer
     await transporter.sendMail({
       from: '"BAYG System" <itsupport@bayg.bh>',
       to: customerEmail,
       subject: `Order Confirmation - ${orderDetails.orderNumber}`,
-      html: emailTemplate,
+      html: emailTemplate
     });
 
-    console.log(`Order confirmation email sent to ${customerEmail}`);
+    // Send notification to admin
+    const adminHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #dc2626;">New Order Received - ${orderDetails.orderNumber}</h2>
+        <p>A new order has been placed on BAYG.</p>
+        
+        <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
+          <h3>Order Details:</h3>
+          <p><strong>Order Number:</strong> ${orderDetails.orderNumber}</p>
+          <p><strong>Customer:</strong> ${orderDetails.customerName}</p>
+          <p><strong>Customer Email:</strong> ${customerEmail}</p>
+          <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod}</p>
+          <p><strong>Total Amount:</strong> $${orderDetails.total}</p>
+          <p><strong>Order Date:</strong> ${new Date().toLocaleString()}</p>
+        </div>
+
+        <h3>Items Ordered:</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #f1f5f9;">
+              <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Item</th>
+              <th style="padding: 12px; text-align: center; border-bottom: 2px solid #ddd;">Quantity</th>
+              <th style="padding: 12px; text-align: right; border-bottom: 2px solid #ddd;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+
+        <p>Please process this order in the admin dashboard.</p>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: '"BAYG System" <itsupport@bayg.bh>',
+      to: 'itsupport@bayg.bh',
+      subject: `New Order Alert - ${orderDetails.orderNumber}`,
+      html: adminHtml
+    });
+
+    console.log('Order confirmation emails sent successfully');
   } catch (error) {
     console.error('Failed to send order confirmation email:', error);
+    // Don't throw error to prevent order creation failure
   }
 }
 
 export async function testEmailConnection(): Promise<boolean> {
   try {
-    const emailTransporter = await createSMTPTransporter();
+    const emailTransporter = await createMicrosoft365Transporter();
     console.log('Microsoft 365 email connection test passed');
     return true;
   } catch (error) {
@@ -144,7 +207,7 @@ export async function sendOrderApprovalEmail(
   }
 ): Promise<void> {
   try {
-    const transporter = await createSMTPTransporter();
+    const transporter = await createMicrosoft365Transporter();
 
     const emailTemplate = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
@@ -203,7 +266,7 @@ export async function sendOrderRejectionEmail(
   }
 ): Promise<void> {
   try {
-    const transporter = await createSMTPTransporter();
+    const transporter = await createMicrosoft365Transporter();
 
     const emailTemplate = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">

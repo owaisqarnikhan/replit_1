@@ -6,7 +6,7 @@ import { storage } from "./storage";
 import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema, insertUnitOfMeasureSchema, roles, permissions } from "@shared/schema";
 import { db } from "./db";
 import { sendOrderConfirmationEmail } from "./email";
-import { sendTestEmail, validateMicrosoft365Config } from "./smtp-config";
+import { sendTestEmail } from "./microsoft365-smtp";
 // import { sendOrderSubmittedNotification, sendOrderApprovedNotification, sendOrderRejectedNotification } from "./sendgrid";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
 import { createCredimaxTransaction, verifyCredimaxTransaction, handleCredimaxWebhook } from "./credimax";
