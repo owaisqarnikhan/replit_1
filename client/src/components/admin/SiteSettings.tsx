@@ -1264,7 +1264,7 @@ export function SiteSettings() {
                         <div className="space-y-0.5">
                           <FormLabel className="text-base">Use SSL/TLS</FormLabel>
                           <p className="text-sm text-muted-foreground">
-                            Enable secure connection (recommended)
+                            Turn OFF for port 587 (most providers). Turn ON only for port 465.
                           </p>
                         </div>
                         <FormControl>
@@ -1384,11 +1384,28 @@ export function SiteSettings() {
 
                   <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
                     <h4 className="font-medium text-blue-900 mb-2">Email Setup Instructions</h4>
-                    <div className="text-sm text-blue-800 space-y-1">
-                      <p><strong>Gmail:</strong> Use smtp.gmail.com, port 587, and an app password</p>
-                      <p><strong>Outlook:</strong> Use smtp-mail.outlook.com, port 587</p>
-                      <p><strong>Yahoo:</strong> Use smtp.mail.yahoo.com, port 587</p>
-                      <p className="text-xs mt-2">Enable 2FA and use app passwords for better security</p>
+                    <div className="text-sm text-blue-800 space-y-2">
+                      <div>
+                        <p><strong>Gmail:</strong> smtp.gmail.com, port 587, SSL/TLS off</p>
+                        <p className="text-xs">Use an App Password (not your regular password)</p>
+                      </div>
+                      <div>
+                        <p><strong>Outlook/Hotmail:</strong> smtp-mail.outlook.com, port 587, SSL/TLS off</p>
+                        <p className="text-xs">Regular password or App Password if 2FA is enabled</p>
+                      </div>
+                      <div>
+                        <p><strong>Yahoo:</strong> smtp.mail.yahoo.com, port 587, SSL/TLS off</p>
+                        <p className="text-xs">Must use an App Password (Yahoo requires it)</p>
+                      </div>
+                      <div className="border-t pt-2 mt-2">
+                        <p className="font-medium">Common Issues:</p>
+                        <ul className="text-xs list-disc list-inside space-y-1">
+                          <li>Use port 587 with SSL/TLS disabled for most providers</li>
+                          <li>Enable "Less secure app access" or use App Passwords</li>
+                          <li>For Gmail: Generate App Password in Google Account settings</li>
+                          <li>For Outlook: Use your Microsoft account password or App Password</li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>

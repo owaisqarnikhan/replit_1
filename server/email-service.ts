@@ -17,18 +17,56 @@ export class EmailService {
         return false;
       }
 
-      const config = {
+      // Determine the correct SSL/TLS configuration based on port and settings
+      const port = settings.smtpPort || 587;
+      const isSSLPort = port === 465;
+      const isTLSPort = port === 587 || port === 25;
+      
+      const config: any = {
         host: settings.smtpHost,
-        port: settings.smtpPort || 587,
-        secure: settings.smtpSecure || false,
+        port: port,
+        secure: isSSLPort, // Use SSL for port 465
         auth: {
           user: settings.smtpUser,
           pass: settings.smtpPassword,
         },
-        tls: {
-          rejectUnauthorized: false,
-        },
       };
+
+      // Configure TLS for non-SSL ports
+      if (!isSSLPort) {
+        config.requireTLS = true;
+        config.tls = {
+          rejectUnauthorized: false,
+          ciphers: 'SSLv3'
+        };
+      }
+
+      // Special handling for Gmail SMTP
+      if (settings.smtpHost?.includes('gmail.com')) {
+        config.service = 'gmail';
+        config.secure = false;
+        config.requireTLS = true;
+        config.tls = {
+          rejectUnauthorized: false
+        };
+      }
+
+      // Special handling for Outlook/Hotmail SMTP
+      if (settings.smtpHost?.includes('outlook.com') || settings.smtpHost?.includes('hotmail.com')) {
+        config.secure = false;
+        config.requireTLS = true;
+        config.tls = {
+          ciphers: 'SSLv3',
+          rejectUnauthorized: false
+        };
+      }
+
+      console.log("Creating SMTP transport with config:", {
+        host: config.host,
+        port: config.port,
+        secure: config.secure,
+        service: config.service || 'custom'
+      });
 
       this.transporter = nodemailer.createTransport(config);
       
