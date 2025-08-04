@@ -2,12 +2,24 @@ import { emailService } from "./email-service";
 import { emailTemplates } from "./email-templates";
 import { storage } from "./storage";
 
+export interface OrderItem {
+  productName: string;
+  quantity: number;
+  price: string;
+  totalPrice: string;
+  rentalStartDate?: string;
+  rentalEndDate?: string;
+  rentalDays?: number;
+}
+
 export interface OrderNotificationData {
   orderNumber: string;
   customerName: string;
   total: number;
   paymentMethod?: string;
   adminRemarks?: string;
+  items?: OrderItem[];
+  shippingAddress?: string;
 }
 
 export async function sendOrderSubmissionEmail(customerEmail: string, data: OrderNotificationData) {
@@ -22,7 +34,8 @@ export async function sendOrderSubmissionEmail(customerEmail: string, data: Orde
       customerName: data.customerName,
       orderNumber: data.orderNumber,
       total: data.total,
-      siteName: "BAYG - Bahrain Asian Youth Games 2025"
+      siteName: "BAYG - Bahrain Asian Youth Games 2025",
+      items: data.items
     });
 
     await emailService.sendEmail({
@@ -50,7 +63,8 @@ export async function sendOrderApprovalEmail(customerEmail: string, data: OrderN
       customerName: data.customerName,
       orderNumber: data.orderNumber,
       total: data.total,
-      siteName: "BAYG - Bahrain Asian Youth Games 2025"
+      siteName: "BAYG - Bahrain Asian Youth Games 2025",
+      items: data.items
     });
 
     await emailService.sendEmail({
@@ -79,7 +93,8 @@ export async function sendOrderRejectionEmail(customerEmail: string, data: Order
       orderNumber: data.orderNumber,
       total: data.total,
       reason: data.adminRemarks || "No specific reason provided",
-      siteName: "BAYG - Bahrain Asian Youth Games 2025"
+      siteName: "BAYG - Bahrain Asian Youth Games 2025",
+      items: data.items
     });
 
     await emailService.sendEmail({
@@ -108,7 +123,8 @@ export async function sendPaymentConfirmationEmail(customerEmail: string, data: 
       orderNumber: data.orderNumber,
       total: data.total,
       paymentMethod: data.paymentMethod || "Cash on Delivery",
-      siteName: "BAYG - Bahrain Asian Youth Games 2025"
+      siteName: "BAYG - Bahrain Asian Youth Games 2025",
+      items: data.items
     });
 
     await emailService.sendEmail({

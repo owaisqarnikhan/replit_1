@@ -5,6 +5,15 @@ export const emailTemplates = {
     orderNumber: string;
     total: number;
     siteName: string;
+    items?: Array<{
+      productName: string;
+      quantity: number;
+      price: string;
+      totalPrice: string;
+      rentalStartDate?: string;
+      rentalEndDate?: string;
+      rentalDays?: number;
+    }>;
   }) => ({
     subject: `Order Submitted #${data.orderNumber} - ${data.siteName}`,
     html: `
@@ -24,6 +33,37 @@ export const emailTemplates = {
           <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> $${Number(data.total).toFixed(2)}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Status:</strong> Pending Admin Approval</p>
+          
+          ${data.items && data.items.length > 0 ? `
+          <div style="margin-top: 20px;">
+            <h4 style="color: #1f2937; margin-bottom: 10px;">Order Items:</h4>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+              <thead>
+                <tr style="background: #e5e7eb;">
+                  <th style="padding: 8px; text-align: left; border: 1px solid #d1d5db;">Product</th>
+                  <th style="padding: 8px; text-align: center; border: 1px solid #d1d5db;">Qty</th>
+                  <th style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">Price</th>
+                  <th style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.items.map(item => `
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid #d1d5db;">
+                      ${item.productName}
+                      ${item.rentalStartDate && item.rentalEndDate ? `
+                        <br><small style="color: #6b7280;">Rental: ${item.rentalStartDate} to ${item.rentalEndDate} (${item.rentalDays} day${item.rentalDays !== 1 ? 's' : ''})</small>
+                      ` : ''}
+                    </td>
+                    <td style="padding: 8px; text-align: center; border: 1px solid #d1d5db;">${item.quantity}</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">$${Number(item.price).toFixed(2)}</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">$${Number(item.totalPrice).toFixed(2)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          ` : ''}
         </div>
 
         <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
@@ -63,6 +103,15 @@ ${data.siteName}`,
     orderNumber: string;
     total: number;
     siteName: string;
+    items?: Array<{
+      productName: string;
+      quantity: number;
+      price: string;
+      totalPrice: string;
+      rentalStartDate?: string;
+      rentalEndDate?: string;
+      rentalDays?: number;
+    }>;
   }) => ({
     subject: `Order Approved #${data.orderNumber} - ${data.siteName}`,
     html: `
@@ -82,6 +131,37 @@ ${data.siteName}`,
           <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> $${Number(data.total).toFixed(2)}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Status:</strong> Approved - Ready for Payment</p>
+          
+          ${data.items && data.items.length > 0 ? `
+          <div style="margin-top: 20px;">
+            <h4 style="color: #1f2937; margin-bottom: 10px;">Order Items:</h4>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+              <thead>
+                <tr style="background: #e5e7eb;">
+                  <th style="padding: 8px; text-align: left; border: 1px solid #d1d5db;">Product</th>
+                  <th style="padding: 8px; text-align: center; border: 1px solid #d1d5db;">Qty</th>
+                  <th style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">Price</th>
+                  <th style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.items.map(item => `
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid #d1d5db;">
+                      ${item.productName}
+                      ${item.rentalStartDate && item.rentalEndDate ? `
+                        <br><small style="color: #6b7280;">Rental: ${item.rentalStartDate} to ${item.rentalEndDate} (${item.rentalDays} day${item.rentalDays !== 1 ? 's' : ''})</small>
+                      ` : ''}
+                    </td>
+                    <td style="padding: 8px; text-align: center; border: 1px solid #d1d5db;">${item.quantity}</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">$${Number(item.price).toFixed(2)}</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">$${Number(item.totalPrice).toFixed(2)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          ` : ''}
         </div>
 
         <div style="background: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">
@@ -128,6 +208,15 @@ ${data.siteName}`,
     total: number;
     reason?: string;
     siteName: string;
+    items?: Array<{
+      productName: string;
+      quantity: number;
+      price: string;
+      totalPrice: string;
+      rentalStartDate?: string;
+      rentalEndDate?: string;
+      rentalDays?: number;
+    }>;
   }) => ({
     subject: `Order Update Required #${data.orderNumber} - ${data.siteName}`,
     html: `
@@ -147,6 +236,37 @@ ${data.siteName}`,
           <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> $${Number(data.total).toFixed(2)}</p>
           ${data.reason ? `<p style="color: #374151; margin: 5px 0;"><strong>Note:</strong> ${data.reason}</p>` : ''}
+          
+          ${data.items && data.items.length > 0 ? `
+          <div style="margin-top: 20px;">
+            <h4 style="color: #1f2937; margin-bottom: 10px;">Order Items:</h4>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+              <thead>
+                <tr style="background: #e5e7eb;">
+                  <th style="padding: 8px; text-align: left; border: 1px solid #d1d5db;">Product</th>
+                  <th style="padding: 8px; text-align: center; border: 1px solid #d1d5db;">Qty</th>
+                  <th style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">Price</th>
+                  <th style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.items.map(item => `
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid #d1d5db;">
+                      ${item.productName}
+                      ${item.rentalStartDate && item.rentalEndDate ? `
+                        <br><small style="color: #6b7280;">Rental: ${item.rentalStartDate} to ${item.rentalEndDate} (${item.rentalDays} day${item.rentalDays !== 1 ? 's' : ''})</small>
+                      ` : ''}
+                    </td>
+                    <td style="padding: 8px; text-align: center; border: 1px solid #d1d5db;">${item.quantity}</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">$${Number(item.price).toFixed(2)}</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">$${Number(item.totalPrice).toFixed(2)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          ` : ''}
         </div>
 
         <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
@@ -187,6 +307,15 @@ ${data.siteName}`,
     total: number;
     paymentMethod: string;
     siteName: string;
+    items?: Array<{
+      productName: string;
+      quantity: number;
+      price: string;
+      totalPrice: string;
+      rentalStartDate?: string;
+      rentalEndDate?: string;
+      rentalDays?: number;
+    }>;
   }) => ({
     subject: `Payment Confirmed #${data.orderNumber} - ${data.siteName}`,
     html: `
@@ -207,6 +336,37 @@ ${data.siteName}`,
           <p style="color: #374151; margin: 5px 0;"><strong>Amount Paid:</strong> $${Number(data.total).toFixed(2)}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Payment Method:</strong> ${data.paymentMethod}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Status:</strong> Processing</p>
+          
+          ${data.items && data.items.length > 0 ? `
+          <div style="margin-top: 20px;">
+            <h4 style="color: #1f2937; margin-bottom: 10px;">Order Items:</h4>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+              <thead>
+                <tr style="background: #e5e7eb;">
+                  <th style="padding: 8px; text-align: left; border: 1px solid #d1d5db;">Product</th>
+                  <th style="padding: 8px; text-align: center; border: 1px solid #d1d5db;">Qty</th>
+                  <th style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">Price</th>
+                  <th style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.items.map(item => `
+                  <tr>
+                    <td style="padding: 8px; border: 1px solid #d1d5db;">
+                      ${item.productName}
+                      ${item.rentalStartDate && item.rentalEndDate ? `
+                        <br><small style="color: #6b7280;">Rental: ${item.rentalStartDate} to ${item.rentalEndDate} (${item.rentalDays} day${item.rentalDays !== 1 ? 's' : ''})</small>
+                      ` : ''}
+                    </td>
+                    <td style="padding: 8px; text-align: center; border: 1px solid #d1d5db;">${item.quantity}</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">$${Number(item.price).toFixed(2)}</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #d1d5db;">$${Number(item.totalPrice).toFixed(2)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          ` : ''}
         </div>
 
         <div style="background: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">

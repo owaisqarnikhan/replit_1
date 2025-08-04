@@ -119,11 +119,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const user = await storage.getUserById(req.user!.id);
         if (user?.email) {
           const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
+          
+          // Get order items for detailed email
+          const orderItems = await storage.getOrderItems(orderId);
+          const emailItems = orderItems.map(item => ({
+            productName: item.product?.name || 'Unknown Product',
+            quantity: item.quantity,
+            price: item.price,
+            totalPrice: item.totalPrice,
+            rentalStartDate: item.rentalStartDate ? new Date(item.rentalStartDate).toLocaleDateString() : undefined,
+            rentalEndDate: item.rentalEndDate ? new Date(item.rentalEndDate).toLocaleDateString() : undefined,
+            rentalDays: item.rentalDays || undefined
+          }));
+          
           await sendPaymentConfirmationEmail(user.email, {
             orderNumber: order.id.slice(-8).toUpperCase(),
             customerName: customerName,
             total: order.total,
-            paymentMethod: "Cash on Delivery"
+            paymentMethod: "Cash on Delivery",
+            items: emailItems
           });
         }
       } catch (emailError) {
@@ -545,10 +559,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const { sendOrderSubmissionEmail } = await import("./order-approval-workflow");
         const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
         
+        // Format order items for email
+        const emailItems = cartItems.map(item => ({
+          productName: item.product.name,
+          quantity: item.quantity,
+          price: item.unitPrice || item.product.price,
+          totalPrice: item.totalPrice || (parseFloat(item.product.price) * item.quantity).toFixed(2),
+          rentalStartDate: item.rentalStartDate ? new Date(item.rentalStartDate).toLocaleDateString() : undefined,
+          rentalEndDate: item.rentalEndDate ? new Date(item.rentalEndDate).toLocaleDateString() : undefined,
+          rentalDays: item.rentalStartDate && item.rentalEndDate ? 
+            Math.ceil((new Date(item.rentalEndDate).getTime() - new Date(item.rentalStartDate).getTime()) / (1000 * 60 * 60 * 24)) + 1 : undefined
+        }));
+        
         await sendOrderSubmissionEmail(req.user!.email, {
           orderNumber: order.id.slice(-8).toUpperCase(),
           customerName: customerName,
-          total: order.total
+          total: order.total,
+          items: emailItems
         });
       } catch (emailError) {
         console.error('Failed to send order submission notification:', emailError);
@@ -612,11 +639,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
         
         if (req.user!.email) {
+          // Get order items for detailed email
+          const orderItems = await storage.getOrderItems(orderId);
+          const emailItems = orderItems.map(item => ({
+            productName: item.product?.name || 'Unknown Product',
+            quantity: item.quantity,
+            price: item.price,
+            totalPrice: item.totalPrice,
+            rentalStartDate: item.rentalStartDate ? new Date(item.rentalStartDate).toLocaleDateString() : undefined,
+            rentalEndDate: item.rentalEndDate ? new Date(item.rentalEndDate).toLocaleDateString() : undefined,
+            rentalDays: item.rentalDays || undefined
+          }));
+          
           await sendPaymentConfirmationEmail(req.user!.email, {
             orderNumber: order.id.slice(-8).toUpperCase(),
             customerName: customerName,
             total: order.total,
-            paymentMethod: paymentMethod
+            paymentMethod: paymentMethod,
+            items: emailItems
           });
         }
       } catch (emailError) {
@@ -706,6 +746,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user && order) {
         const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         
+        // Get order items for detailed email
+        const orderItems = await storage.getOrderItems(orderId);
+        const emailItems = orderItems.map(item => ({
+          productName: item.product?.name || 'Unknown Product',
+          quantity: item.quantity,
+          price: item.price,
+          totalPrice: item.totalPrice,
+          rentalStartDate: item.rentalStartDate ? new Date(item.rentalStartDate).toLocaleDateString() : undefined,
+          rentalEndDate: item.rentalEndDate ? new Date(item.rentalEndDate).toLocaleDateString() : undefined,
+          rentalDays: item.rentalDays || undefined
+        }));
+        
         // Send order approved email
         try {
           const { sendOrderApprovalEmail } = await import("./order-approval-workflow");
@@ -713,7 +765,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             await sendOrderApprovalEmail(user.email, {
               orderNumber: order.id.slice(-8).toUpperCase(),
               customerName: customerName,
-              total: order.total
+              total: order.total,
+              items: emailItems
             });
           }
         } catch (emailError) {
@@ -761,6 +814,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user && order) {
         const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         
+        // Get order items for detailed email
+        const orderItems = await storage.getOrderItems(orderId);
+        const emailItems = orderItems.map(item => ({
+          productName: item.product?.name || 'Unknown Product',
+          quantity: item.quantity,
+          price: item.price,
+          totalPrice: item.totalPrice,
+          rentalStartDate: item.rentalStartDate ? new Date(item.rentalStartDate).toLocaleDateString() : undefined,
+          rentalEndDate: item.rentalEndDate ? new Date(item.rentalEndDate).toLocaleDateString() : undefined,
+          rentalDays: item.rentalDays || undefined
+        }));
+        
         // Send order rejected email
         try {
           const { sendOrderRejectionEmail } = await import("./order-approval-workflow");
@@ -769,7 +834,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               orderNumber: order.id.slice(-8).toUpperCase(),
               customerName: customerName,
               total: order.total,
-              adminRemarks: adminRemarks || "No specific reason provided"
+              adminRemarks: adminRemarks || "No specific reason provided",
+              items: emailItems
             });
           }
         } catch (emailError) {
