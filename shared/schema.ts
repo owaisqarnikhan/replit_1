@@ -390,9 +390,7 @@ export const siteSettings = pgTable("site_settings", {
       <p>Best regards,<br>{{siteName}} Team</p>
     </div>
   `),
-  // Microsoft 365 SMTP Configuration - Hardcoded for Reliability
-  emailEnabled: boolean("email_enabled").default(true),
-  smtpFromName: text("smtp_from_name").default("BAYG - Bahrain Asian Youth Games 2025"),
+  // Email functionality removed per user request
   
   // Login Page Specific Settings
   loginPageLogo: text("login_page_logo"),

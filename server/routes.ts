@@ -5,8 +5,7 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema, insertUnitOfMeasureSchema, roles, permissions } from "@shared/schema";
 import { db } from "./db";
-import { sendOrderConfirmationEmail } from "./email";
-import { sendTestEmail } from "./microsoft365-smtp";
+// Email functionality removed
 // import { sendOrderSubmittedNotification, sendOrderApprovedNotification, sendOrderRejectedNotification } from "./sendgrid";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
 import { createCredimaxTransaction, verifyCredimaxTransaction, handleCredimaxWebhook } from "./credimax";
@@ -113,20 +112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: "processing", // Update status to processing for COD
       });
 
-      // Send payment confirmation email
-      try {
-        const { sendPaymentConfirmationEmail } = await import("./order-approval-workflow");
-        const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
-        
-        await sendPaymentConfirmationEmail(req.user!.email, {
-          orderNumber: order.id.slice(-8).toUpperCase(),
-          customerName: customerName,
-          total: order.total,
-          paymentMethod: "Cash on Delivery"
-        });
-      } catch (emailError) {
-        console.error('Failed to send payment confirmation email:', emailError);
-      }
+      // Email notifications removed per user request
 
       res.json({
         success: true,
@@ -824,16 +810,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const orderWithDetails = await storage.getOrderWithDetails(orderId);
       const user = await storage.getUserById(orderWithDetails.userId);
 
-      if (user && orderWithDetails) {
-        // Send completion email to customer
-        const { sendDeliveryConfirmationEmail } = await import("./order-approval-workflow");
-        await sendDeliveryConfirmationEmail(user.email, {
-          orderNumber: orderWithDetails.id.slice(-8).toUpperCase(),
-          customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
-          total: orderWithDetails.total,
-          deliveredAt: deliveredAt.toLocaleDateString()
-        });
-      }
+      // Email notifications removed per user request
 
       res.json({ success: true, message: "Order marked as delivered" });
     } catch (error: any) {
@@ -842,75 +819,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // SMTP test route with comprehensive diagnostics
-  app.post("/api/admin/test-smtp", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user?.isAdmin) {
-      return res.sendStatus(401);
-    }
-
-    try {
-      const { runEmailDiagnostics } = await import("./email-diagnostic");
-      const results = await runEmailDiagnostics();
-      
-      res.json(results);
-    } catch (error: any) {
-      console.error('Admin SMTP test error:', error);
-      
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || "SMTP diagnostic test failed.",
-        error: error.message
-      });
-    }
-  });
-
-  // Send test email to specific address
-  app.post("/api/admin/test-email-to", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user?.isAdmin) {
-      return res.sendStatus(401);
-    }
-
-    try {
-      const { email } = req.body;
-      if (!email) {
-        return res.status(400).json({ success: false, message: "Email address required" });
-      }
-
-      const { sendTestEmailToAddress } = await import("./email-diagnostic");
-      const result = await sendTestEmailToAddress(email);
-      
-      res.json(result);
-    } catch (error: any) {
-      console.error('Test email error:', error);
-      
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || "Failed to send test email.",
-        error: error.message
-      });
-    }
-  });
-
-  // Mock email test route for UI testing
-  app.post("/api/admin/test-mock-email", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user?.isAdmin) {
-      return res.sendStatus(401);
-    }
-
-    try {
-      const { emailType = 'admin' } = req.body;
-      const { sendMockTestEmail } = await import("./email-test-advanced");
-      const result = await sendMockTestEmail(req.user!.email, emailType);
-      
-      res.json(result);
-    } catch (error: any) {
-      console.error('Mock email test error:', error);
-      res.status(500).json({ 
-        success: false, 
-        message: error.message || "Mock email test failed."
-      });
-    }
-  });
+  // Email functionality removed per user request
 
   // Site settings routes
   app.get("/api/settings", async (req, res) => {
