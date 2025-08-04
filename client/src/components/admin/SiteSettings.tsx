@@ -14,12 +14,15 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Settings, Palette, Mail, Upload, Save, Monitor, Loader2, CheckCircle, ShoppingCart, Bell } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { themes, applyTheme, type ThemeName } from "@/lib/themes";
 
 export function SiteSettings() {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
-  // Email functionality removed
+  const [isTestingEmail, setIsTestingEmail] = useState(false);
+  const [testEmailAddress, setTestEmailAddress] = useState("");
+  const [smtpStatus, setSmtpStatus] = useState<any>(null);
   
 
 
@@ -65,7 +68,15 @@ export function SiteSettings() {
       socialLinkedin: settings?.socialLinkedin || "",
       copyrightText: settings?.copyrightText || "",
       additionalFooterText: settings?.additionalFooterText || "",
-      // Email functionality removed
+      // SMTP Email Configuration
+      smtpEnabled: settings?.smtpEnabled || false,
+      smtpHost: settings?.smtpHost || "",
+      smtpPort: settings?.smtpPort || 587,
+      smtpSecure: settings?.smtpSecure || false,
+      smtpUser: settings?.smtpUser || "",
+      smtpPassword: settings?.smtpPassword || "",
+      smtpFromName: settings?.smtpFromName || "BAYG - Bahrain Asian Youth Games 2025",
+      smtpFromEmail: settings?.smtpFromEmail || "",
       // Login Page Settings
       loginPageLogo: settings?.loginPageLogo || "",
       loginPageTitle: settings?.loginPageTitle || "BAYG Store",
@@ -312,7 +323,61 @@ export function SiteSettings() {
     }
   };
 
-  // Email functionality removed
+  // Email functionality
+  const handleTestEmail = async () => {
+    if (!testEmailAddress) {
+      toast({
+        title: "Email Required",
+        description: "Please enter an email address for testing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsTestingEmail(true);
+    try {
+      const response = await apiRequest("/api/admin/test-smtp", "POST", {
+        testEmail: testEmailAddress,
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        toast({
+          title: "Test Email Sent!",
+          description: result.message,
+        });
+      } else {
+        toast({
+          title: "Test Email Failed",
+          description: result.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Test Email Failed",
+        description: error.message || "Failed to send test email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTestingEmail(false);
+    }
+  };
+
+  const checkSmtpStatus = async () => {
+    try {
+      const response = await apiRequest("/api/admin/smtp-status", "POST");
+      const status = await response.json();
+      setSmtpStatus(status);
+    } catch (error) {
+      console.error("Failed to check SMTP status:", error);
+    }
+  };
+
+  // Check SMTP status on component mount
+  React.useEffect(() => {
+    checkSmtpStatus();
+  }, []);
 
   const onSubmit = (data: InsertSiteSettings) => {
     updateMutation.mutate(data);
@@ -1108,12 +1173,224 @@ export function SiteSettings() {
 
               </TabsContent>
 
-              <TabsContent value="email" className="space-y-4">
-                <div className="bg-gray-50 p-6 rounded-lg border text-center">
-                  <h3 className="text-lg font-medium text-gray-700 mb-2">Email Functionality Disabled</h3>
-                  <p className="text-gray-600">
-                    Email features have been removed from this system per user request.
-                  </p>
+              <TabsContent value="email" className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-medium">SMTP Configuration</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Configure email settings for order notifications and confirmations
+                      </p>
+                    </div>
+                    {smtpStatus && (
+                      <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        smtpStatus.configured && smtpStatus.enabled 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {smtpStatus.configured && smtpStatus.enabled ? 'Configured' : 'Not Configured'}
+                      </div>
+                    )}
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="smtpEnabled"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">Enable Email Notifications</FormLabel>
+                          <p className="text-sm text-muted-foreground">
+                            Send automated emails for order confirmations and updates
+                          </p>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="smtpHost"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SMTP Host</FormLabel>
+                          <FormControl>
+                            <Input placeholder="smtp.gmail.com" {...field} />
+                          </FormControl>
+                          <p className="text-xs text-muted-foreground">
+                            Your email provider's SMTP server
+                          </p>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="smtpPort"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SMTP Port</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              placeholder="587" 
+                              {...field}
+                              value={field.value || 587}
+                              onChange={(e) => field.onChange(parseInt(e.target.value) || 587)}
+                            />
+                          </FormControl>
+                          <p className="text-xs text-muted-foreground">
+                            Usually 587 for TLS or 465 for SSL
+                          </p>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="smtpSecure"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">Use SSL/TLS</FormLabel>
+                          <p className="text-sm text-muted-foreground">
+                            Enable secure connection (recommended)
+                          </p>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="smtpUser"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SMTP Username</FormLabel>
+                          <FormControl>
+                            <Input placeholder="your-email@gmail.com" {...field} />
+                          </FormControl>
+                          <p className="text-xs text-muted-foreground">
+                            Your email address or username
+                          </p>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="smtpPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>SMTP Password</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="password" 
+                              placeholder="App password or email password" 
+                              {...field} 
+                            />
+                          </FormControl>
+                          <p className="text-xs text-muted-foreground">
+                            Use app password for Gmail/Outlook
+                          </p>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="smtpFromName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>From Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="BAYG - Bahrain Asian Youth Games 2025" {...field} />
+                          </FormControl>
+                          <p className="text-xs text-muted-foreground">
+                            Display name for outgoing emails
+                          </p>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="smtpFromEmail"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>From Email</FormLabel>
+                          <FormControl>
+                            <Input placeholder="noreply@yourdomain.com" {...field} />
+                          </FormControl>
+                          <p className="text-xs text-muted-foreground">
+                            Email address for outgoing emails
+                          </p>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="border-t pt-4">
+                    <h4 className="text-md font-medium mb-4">Email Testing</h4>
+                    <div className="flex items-end gap-4">
+                      <div className="flex-1">
+                        <Label htmlFor="test-email">Test Email Address</Label>
+                        <Input
+                          id="test-email"
+                          type="email"
+                          placeholder="Enter email to test"
+                          value={testEmailAddress}
+                          onChange={(e) => setTestEmailAddress(e.target.value)}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleTestEmail}
+                        disabled={isTestingEmail || !testEmailAddress}
+                        className="flex items-center gap-2"
+                      >
+                        <Mail className="h-4 w-4" />
+                        {isTestingEmail ? "Sending..." : "Send Test Email"}
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      Save your SMTP settings first, then test with a real email address
+                    </p>
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                    <h4 className="font-medium text-blue-900 mb-2">Email Setup Instructions</h4>
+                    <div className="text-sm text-blue-800 space-y-1">
+                      <p><strong>Gmail:</strong> Use smtp.gmail.com, port 587, and an app password</p>
+                      <p><strong>Outlook:</strong> Use smtp-mail.outlook.com, port 587</p>
+                      <p><strong>Yahoo:</strong> Use smtp.mail.yahoo.com, port 587</p>
+                      <p className="text-xs mt-2">Enable 2FA and use app passwords for better security</p>
+                    </div>
+                  </div>
                 </div>
               </TabsContent>
 

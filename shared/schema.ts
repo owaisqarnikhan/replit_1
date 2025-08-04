@@ -390,7 +390,15 @@ export const siteSettings = pgTable("site_settings", {
       <p>Best regards,<br>{{siteName}} Team</p>
     </div>
   `),
-  // Email functionality removed per user request
+  // SMTP Email Configuration
+  smtpEnabled: boolean("smtp_enabled").default(false),
+  smtpHost: text("smtp_host"),
+  smtpPort: integer("smtp_port").default(587),
+  smtpSecure: boolean("smtp_secure").default(false),
+  smtpUser: text("smtp_user"),
+  smtpPassword: text("smtp_password"),
+  smtpFromName: text("smtp_from_name").default("BAYG - Bahrain Asian Youth Games 2025"),
+  smtpFromEmail: text("smtp_from_email"),
   
   // Login Page Specific Settings
   loginPageLogo: text("login_page_logo"),

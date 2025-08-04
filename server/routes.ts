@@ -5,7 +5,8 @@ import { setupAuth } from "./auth";
 import { storage } from "./storage";
 import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema, insertUnitOfMeasureSchema, roles, permissions } from "@shared/schema";
 import { db } from "./db";
-// Email functionality removed
+import { emailService } from "./email-service";
+import { emailTemplates } from "./email-templates";
 // import { sendOrderSubmittedNotification, sendOrderApprovedNotification, sendOrderRejectedNotification } from "./sendgrid";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
 import { createCredimaxTransaction, verifyCredimaxTransaction, handleCredimaxWebhook } from "./credimax";
@@ -112,7 +113,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         status: "processing", // Update status to processing for COD
       });
 
-      // Email notifications removed per user request
+      // Send order confirmation email
+      try {
+        await emailService.initialize();
+        if (emailService.isReady()) {
+          const user = await storage.getUserById(req.user!.id);
+          if (user?.email) {
+            const template = emailTemplates.paymentConfirmation({
+              customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
+              orderNumber: order.id.slice(-8).toUpperCase(),
+              total: order.total,
+              paymentMethod: "Cash on Delivery",
+              siteName: "BAYG - Bahrain Asian Youth Games 2025"
+            });
+            await emailService.sendEmail({
+              to: user.email,
+              subject: template.subject,
+              html: template.html,
+              text: template.text
+            });
+          }
+        }
+      } catch (emailError) {
+        console.error('Failed to send payment confirmation email:', emailError);
+      }
 
       res.json({
         success: true,
@@ -631,35 +655,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // SMTP Test route
-  app.post("/api/test-smtp", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user?.isAdmin) {
-      return res.sendStatus(401);
-    }
-
-    try {
-      const result = await sendTestEmail();
-      res.json({
-        success: true,
-        message: "Test email sent successfully! Check your inbox to confirm Microsoft 365 SMTP is working."
-      });
-    } catch (error: any) {
-      console.error('SMTP test error:', error);
-      
-      // Handle Microsoft 365 authentication errors
-      if (error.message && error.message.includes('SmtpClientAuthentication is disabled')) {
-        return res.json({
-          success: false,
-          message: 'Microsoft 365 SMTP authentication is disabled for your organization. Contact your IT administrator to enable SMTP authentication, or try using an App Password instead.'
-        });
-      }
-      
-      res.json({
-        success: false,
-        message: error.message || 'SMTP test failed. Please check your configuration.'
-      });
-    }
-  });
+  // Legacy SMTP test route - now handled by /api/admin/test-smtp
 
   // Admin approval requests route (accessible to managers and super admins)
   app.get("/api/admin/approval-requests", async (req, res) => {
@@ -716,15 +712,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user && order) {
         const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         
-        // Send approval notification using Microsoft 365
-        const { sendOrderApprovalEmail } = await import("./order-approval-workflow");
-        await sendOrderApprovalEmail(user.email, {
-          orderNumber: order.id.slice(-8).toUpperCase(),
-          customerName: customerName,
-          total: order.total,
-          paymentMethod: order.paymentMethod || "Benefit Pay",
-          adminRemarks: adminRemarks
-        });
+        // Send order approved email
+        try {
+          await emailService.initialize();
+          if (emailService.isReady() && user.email) {
+            const template = emailTemplates.orderApproved({
+              customerName: customerName,
+              orderNumber: order.id.slice(-8).toUpperCase(),
+              total: order.total,
+              siteName: "BAYG - Bahrain Asian Youth Games 2025"
+            });
+            await emailService.sendEmail({
+              to: user.email,
+              subject: template.subject,
+              html: template.html,
+              text: template.text
+            });
+          }
+        } catch (emailError) {
+          console.error('Failed to send order approved email:', emailError);
+        }
       }
 
       res.json({ message: "Order approved successfully", orderId });
@@ -767,14 +774,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (user && order) {
         const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         
-        // Send rejection notification using Microsoft 365
-        const { sendOrderRejectionEmail } = await import("./order-approval-workflow");
-        await sendOrderRejectionEmail(user.email, {
-          orderNumber: order.id.slice(-8).toUpperCase(),
-          customerName: customerName,
-          total: order.total,
-          adminRemarks: adminRemarks
-        });
+        // Send order rejected email
+        try {
+          await emailService.initialize();
+          if (emailService.isReady() && user.email) {
+            const template = emailTemplates.orderRejected({
+              customerName: customerName,
+              orderNumber: order.id.slice(-8).toUpperCase(),
+              total: order.total,
+              reason: adminRemarks,
+              siteName: "BAYG - Bahrain Asian Youth Games 2025"
+            });
+            await emailService.sendEmail({
+              to: user.email,
+              subject: template.subject,
+              html: template.html,
+              text: template.text
+            });
+          }
+        } catch (emailError) {
+          console.error('Failed to send order rejected email:', emailError);
+        }
       }
 
       res.json({ message: "Order rejected successfully", orderId });
@@ -810,7 +830,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const orderWithDetails = await storage.getOrderWithDetails(orderId);
       const user = await storage.getUserById(orderWithDetails.userId);
 
-      // Email notifications removed per user request
+      // Send delivery confirmation email
+      if (user && orderWithDetails) {
+        try {
+          await emailService.initialize();
+          if (emailService.isReady() && user.email) {
+            const template = emailTemplates.paymentConfirmation({
+              customerName: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username,
+              orderNumber: orderWithDetails.id.slice(-8).toUpperCase(),
+              total: orderWithDetails.total,
+              paymentMethod: "Delivered",
+              siteName: "BAYG - Bahrain Asian Youth Games 2025"
+            });
+            await emailService.sendEmail({
+              to: user.email,
+              subject: `Order Delivered #${orderWithDetails.id.slice(-8).toUpperCase()} - BAYG`,
+              html: template.html,
+              text: template.text
+            });
+          }
+        } catch (emailError) {
+          console.error('Failed to send delivery confirmation email:', emailError);
+        }
+      }
 
       res.json({ success: true, message: "Order marked as delivered" });
     } catch (error: any) {
@@ -819,7 +861,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Email functionality removed per user request
+  // Email testing and SMTP routes
+  app.post("/api/admin/test-smtp", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { testEmail } = req.body;
+      await emailService.initialize();
+      
+      if (!emailService.isReady()) {
+        return res.status(400).json({
+          success: false,
+          message: "SMTP not configured. Please configure SMTP settings first."
+        });
+      }
+
+      const result = await emailService.sendTestEmail(testEmail || req.user.email);
+      
+      res.json({
+        success: true,
+        message: `Test email sent successfully to ${testEmail || req.user.email}`,
+        messageId: result.messageId
+      });
+    } catch (error: any) {
+      console.error('SMTP test error:', error);
+      res.status(500).json({
+        success: false,
+        message: error.message || "Failed to send test email"
+      });
+    }
+  });
+
+  app.post("/api/admin/smtp-status", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const settings = await storage.getSiteSettings();
+      const isConfigured = settings?.smtpEnabled && settings?.smtpHost && settings?.smtpUser && settings?.smtpPassword;
+      
+      res.json({
+        configured: !!isConfigured,
+        enabled: settings?.smtpEnabled || false,
+        host: settings?.smtpHost || '',
+        port: settings?.smtpPort || 587,
+        secure: settings?.smtpSecure || false,
+        fromName: settings?.smtpFromName || '',
+        fromEmail: settings?.smtpFromEmail || ''
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
   // Site settings routes
   app.get("/api/settings", async (req, res) => {
