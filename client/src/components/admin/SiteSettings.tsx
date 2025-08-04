@@ -20,6 +20,7 @@ export function SiteSettings() {
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   const [isTestingEmail, setIsTestingEmail] = useState(false);
+  const [testEmailAddress, setTestEmailAddress] = useState("");
   
 
 
@@ -315,6 +316,46 @@ export function SiteSettings() {
   };
 
   // Microsoft 365 only - no provider switching needed
+
+  const handleSendTestEmail = async () => {
+    if (!testEmailAddress) {
+      toast({
+        title: "Email Required",
+        description: "Please enter an email address to send the test email to.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsTestingEmail(true);
+    try {
+      const response = await apiRequest("/api/admin/test-email-to", "POST", {
+        email: testEmailAddress,
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        toast({
+          title: "Test Email Sent!",
+          description: `Test email sent to ${testEmailAddress}. Check your inbox (and spam folder).`,
+        });
+      } else {
+        toast({
+          title: "Test Email Failed",
+          description: result.message || "Failed to send test email",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Test Email Failed",
+        description: error.message || "Failed to send test email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsTestingEmail(false);
+    }
+  };
 
   const handleTestEmail = async () => {
     setIsTestingEmail(true);
@@ -1294,13 +1335,29 @@ export function SiteSettings() {
                 />
 
                 <div className="space-y-4 pt-6 border-t">
-                  <h3 className="text-lg font-medium">📧 Complete Email System Testing</h3>
+                  <h3 className="text-lg font-medium">📧 Email System Testing & Diagnostics</h3>
                   <div className="bg-blue-50 p-4 rounded-lg border">
                     <p className="text-sm text-blue-800 mb-3">
-                      <strong>Comprehensive Email Testing:</strong> Test different aspects of your email system. Save settings first, then use the buttons below.
+                      <strong>Email Diagnostics:</strong> Test your Microsoft 365 SMTP configuration and send test emails.
                     </p>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                    <div className="mb-4 p-3 bg-white rounded border">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Test Email Address:
+                      </label>
+                      <input
+                        type="email"
+                        placeholder="your-email@example.com"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                        value={testEmailAddress}
+                        onChange={(e) => setTestEmailAddress(e.target.value)}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Enter your email address to receive test emails and verify delivery
+                      </p>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
                       <Button
                         type="button"
                         variant="outline"
@@ -1311,12 +1368,32 @@ export function SiteSettings() {
                         {isTestingEmail ? (
                           <>
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Testing SMTP...
+                            Running Diagnostics...
                           </>
                         ) : (
                           <>
                             <Mail className="h-4 w-4 mr-2" />
-                            Test SMTP Connection
+                            Run SMTP Diagnostics
+                          </>
+                        )}
+                      </Button>
+                      
+                      <Button
+                        type="button"
+                        variant="default"
+                        onClick={handleSendTestEmail}
+                        disabled={isTestingEmail || !testEmailAddress}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        {isTestingEmail ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            <Mail className="h-4 w-4 mr-2" />
+                            Send Test Email
                           </>
                         )}
                       </Button>

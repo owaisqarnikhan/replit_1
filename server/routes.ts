@@ -849,22 +849,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const { testEmailWithAlternatives } = await import("./email-test-advanced");
-      const diagnostics = await testEmailWithAlternatives();
+      const { runEmailDiagnostics } = await import("./email-diagnostic");
+      const results = await runEmailDiagnostics();
       
-      res.json({
-        success: diagnostics.successful > 0,
-        message: diagnostics.successful > 0 
-          ? `Email test completed: ${diagnostics.successful}/${diagnostics.totalTests} methods successful`
-          : "All email methods failed - SMTP authentication disabled by organization",
-        diagnostics
-      });
+      res.json(results);
     } catch (error: any) {
       console.error('Admin SMTP test error:', error);
       
       res.status(500).json({ 
         success: false, 
         message: error.message || "SMTP diagnostic test failed.",
+        error: error.message
+      });
+    }
+  });
+
+  // Send test email to specific address
+  app.post("/api/admin/test-email-to", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user?.isAdmin) {
+      return res.sendStatus(401);
+    }
+
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ success: false, message: "Email address required" });
+      }
+
+      const { sendTestEmailToAddress } = await import("./email-diagnostic");
+      const result = await sendTestEmailToAddress(email);
+      
+      res.json(result);
+    } catch (error: any) {
+      console.error('Test email error:', error);
+      
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || "Failed to send test email.",
         error: error.message
       });
     }

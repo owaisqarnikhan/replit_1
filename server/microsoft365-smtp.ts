@@ -13,6 +13,8 @@ export async function createSMTPTransporter() {
       user: "itsupport@bayg.bh",
       pass: "yccdswrqpghkftfy", // Microsoft 365 App Password
     },
+    debug: true, // Enable debug for troubleshooting
+    logger: true, // Enable logging
     tls: {
       ciphers: "SSLv3",
       rejectUnauthorized: false,
@@ -39,8 +41,8 @@ export async function sendTestEmail(): Promise<{
 
     const testEmail = {
       from: '"BAYG System" <itsupport@bayg.bh>',
-      to: "itsupport@bayg.bh",
-      subject: "Microsoft 365 SMTP Test - BAYG System",
+      to: ["itsupport@bayg.bh", "admin@bayg.bh"], // Send to multiple addresses for testing
+      subject: `Microsoft 365 SMTP Test - ${new Date().toISOString()}`,
       text: "Microsoft 365 SMTP is working correctly.",
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px;">
