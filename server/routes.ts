@@ -531,55 +531,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Clear cart
       await storage.clearCart(req.user!.id);
 
-      // Send admin notification email about new order
-      try {
-        const { sendAdminOrderNotification } = await import("./order-approval-workflow");
-        const user = req.user!;
-        const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
-        
-        await sendAdminOrderNotification({
-          orderNumber: order.id.slice(-8).toUpperCase(),
-          customerName: customerName,
-          customerEmail: user.email,
-          total: order.total,
-          shippingAddress: "", // Add missing required field
-          items: cartItems.map(item => ({
+      // Send email notifications asynchronously (don't block the response)
+      setImmediate(async () => {
+        try {
+          const { sendAdminOrderNotification } = await import("./order-approval-workflow");
+          const user = req.user!;
+          const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
+          
+          await sendAdminOrderNotification({
+            orderNumber: order.id.slice(-8).toUpperCase(),
+            customerName: customerName,
+            customerEmail: user.email,
+            total: order.total,
+            shippingAddress: "", // Add missing required field
+            items: cartItems.map(item => ({
+              productName: item.product.name,
+              quantity: item.quantity,
+              price: (parseFloat(item.product.price) * item.quantity).toFixed(2)
+            }))
+          });
+        } catch (emailError) {
+          console.error('Failed to send admin notification:', emailError);
+        }
+
+        try {
+          const { sendOrderSubmissionEmail } = await import("./order-approval-workflow");
+          const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
+          
+          // Format order items for email
+          const emailItems = cartItems.map(item => ({
             productName: item.product.name,
             quantity: item.quantity,
-            price: (parseFloat(item.product.price) * item.quantity).toFixed(2)
-          }))
-        });
-      } catch (emailError) {
-        console.error('Failed to send admin notification:', emailError);
-        // Don't fail the order creation if email fails
-      }
-
-      // Send order submission notification with approval workflow
-      try {
-        const { sendOrderSubmissionEmail } = await import("./order-approval-workflow");
-        const customerName = `${req.user!.firstName || ''} ${req.user!.lastName || ''}`.trim() || req.user!.username;
-        
-        // Format order items for email
-        const emailItems = cartItems.map(item => ({
-          productName: item.product.name,
-          quantity: item.quantity,
-          price: item.unitPrice || item.product.price,
-          totalPrice: item.totalPrice || (parseFloat(item.product.price) * item.quantity).toFixed(2),
-          rentalStartDate: item.rentalStartDate ? new Date(item.rentalStartDate).toLocaleDateString() : undefined,
-          rentalEndDate: item.rentalEndDate ? new Date(item.rentalEndDate).toLocaleDateString() : undefined,
-          rentalDays: item.rentalStartDate && item.rentalEndDate ? 
-            Math.ceil((new Date(item.rentalEndDate).getTime() - new Date(item.rentalStartDate).getTime()) / (1000 * 60 * 60 * 24)) + 1 : undefined
-        }));
-        
-        await sendOrderSubmissionEmail(req.user!.email, {
-          orderNumber: order.id.slice(-8).toUpperCase(),
-          customerName: customerName,
-          total: order.total,
-          items: emailItems
-        });
-      } catch (emailError) {
-        console.error('Failed to send order submission notification:', emailError);
-      }
+            price: item.unitPrice || item.product.price,
+            totalPrice: item.totalPrice || (parseFloat(item.product.price) * item.quantity).toFixed(2),
+            rentalStartDate: item.rentalStartDate ? new Date(item.rentalStartDate).toLocaleDateString() : undefined,
+            rentalEndDate: item.rentalEndDate ? new Date(item.rentalEndDate).toLocaleDateString() : undefined,
+            rentalDays: item.rentalStartDate && item.rentalEndDate ? 
+              Math.ceil((new Date(item.rentalEndDate).getTime() - new Date(item.rentalStartDate).getTime()) / (1000 * 60 * 60 * 24)) + 1 : undefined
+          }));
+          
+          await sendOrderSubmissionEmail(req.user!.email, {
+            orderNumber: order.id.slice(-8).toUpperCase(),
+            customerName: customerName,
+            total: order.total,
+            items: emailItems
+          });
+        } catch (emailError) {
+          console.error('Failed to send order submission notification:', emailError);
+        }
+      });
 
       res.status(201).json({ 
         id: order.id,
