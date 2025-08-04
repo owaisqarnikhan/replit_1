@@ -1,68 +1,70 @@
-// Email templates for different notification types
 export const emailTemplates = {
-  orderConfirmation: (data: {
+  // Order submission confirmation
+  orderSubmitted: (data: {
     customerName: string;
     orderNumber: string;
     total: number;
     siteName: string;
   }) => ({
-    subject: `Order Confirmation #${data.orderNumber} - ${data.siteName}`,
+    subject: `Order Submitted #${data.orderNumber} - ${data.siteName}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
         <div style="text-align: center; margin-bottom: 30px;">
           <h1 style="color: #2563eb; margin-bottom: 10px;">${data.siteName}</h1>
-          <h2 style="color: #1f2937;">Order Confirmation</h2>
-        </div>
-
-        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <p style="margin: 0; font-size: 16px;">Dear ${data.customerName},</p>
-          <p style="margin: 15px 0 0 0;">Thank you for your order! We've received your order and it's being processed.</p>
+          <h2 style="color: #059669;">Order Submitted Successfully!</h2>
         </div>
 
         <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
-          <h3 style="color: #065f46; margin-top: 0;">Order Details</h3>
-          <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
-          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> $${data.total.toFixed(2)}</p>
-          <p style="color: #374151; margin: 5px 0;"><strong>Status:</strong> Awaiting Admin Approval</p>
+          <p style="margin: 0; font-size: 16px;">Dear ${data.customerName},</p>
+          <p style="margin: 15px 0 0 0;">Your order has been submitted successfully and is now awaiting admin approval.</p>
         </div>
 
-        <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #1f2937; margin-top: 0;">Order Details</h3>
+          <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> BHD ${Number(data.total).toFixed(3)}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Status:</strong> Pending Admin Approval</p>
+        </div>
+
+        <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
           <p style="color: #92400e; margin: 0;">
-            <strong>Next Steps:</strong> Your order is now awaiting admin approval. You'll receive another email once it's approved and ready for payment.
+            <strong>What's Next:</strong> Our admin team will review your order shortly. You'll receive an email notification once it's approved and ready for payment.
           </p>
         </div>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
           <p style="color: #6b7280; font-size: 14px;">
-            If you have any questions, please contact our support team.<br>
-            Thank you for choosing ${data.siteName}!
+            Thank you for choosing us!<br>
+            ${data.siteName}
           </p>
         </div>
       </div>
     `,
-    text: `Order Confirmation #${data.orderNumber}
+    text: `Order Submitted #${data.orderNumber}
 
 Dear ${data.customerName},
 
-Thank you for your order! We've received your order and it's being processed.
+Your order has been submitted successfully and is now awaiting admin approval.
 
 Order Details:
 - Order Number: #${data.orderNumber}
-- Total Amount: $${data.total.toFixed(2)}
-- Status: Awaiting Admin Approval
+- Total Amount: BHD ${Number(data.total).toFixed(3)}
+- Status: Pending Admin Approval
 
-Next Steps: Your order is now awaiting admin approval. You'll receive another email once it's approved and ready for payment.
+What's Next: Our admin team will review your order shortly. You'll receive an email notification once it's approved and ready for payment.
 
-Thank you for choosing ${data.siteName}!`,
+Thank you for choosing us!
+${data.siteName}`,
   }),
 
+  // Order approved notification
   orderApproved: (data: {
     customerName: string;
     orderNumber: string;
     total: number;
     siteName: string;
   }) => ({
-    subject: `Order Approved #${data.orderNumber} - Ready for Payment`,
+    subject: `Order Approved #${data.orderNumber} - ${data.siteName}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
         <div style="text-align: center; margin-bottom: 30px;">
@@ -78,19 +80,25 @@ Thank you for choosing ${data.siteName}!`,
         <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #1f2937; margin-top: 0;">Order Details</h3>
           <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
-          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> $${data.total.toFixed(2)}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> BHD ${Number(data.total).toFixed(3)}</p>
           <p style="color: #374151; margin: 5px 0;"><strong>Status:</strong> Approved - Ready for Payment</p>
         </div>
 
         <div style="background: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">
           <p style="color: #1e40af; margin: 0;">
-            <strong>Next Steps:</strong> Please log in to your account to complete the payment. We accept Credimax and Cash on Delivery.
+            <strong>Next Steps:</strong> Please proceed with payment to complete your order. You can pay using Credimax or choose Cash on Delivery.
           </p>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="background-color: #10b981; color: white; padding: 15px 25px; border-radius: 8px; display: inline-block; font-weight: 600;">
+            ✓ Order Approved - Ready for Payment
+          </div>
         </div>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
           <p style="color: #6b7280; font-size: 14px;">
-            Thank you for your patience. We're excited to fulfill your order!<br>
+            Thank you for your business!<br>
             ${data.siteName}
           </p>
         </div>
@@ -104,15 +112,16 @@ Great news! Your order has been approved and is ready for payment.
 
 Order Details:
 - Order Number: #${data.orderNumber}
-- Total Amount: $${data.total.toFixed(2)}
+- Total Amount: BHD ${Number(data.total).toFixed(3)}
 - Status: Approved - Ready for Payment
 
-Next Steps: Please log in to your account to complete the payment. We accept Credimax and Cash on Delivery.
+Next Steps: Please proceed with payment to complete your order. You can pay using Credimax or choose Cash on Delivery.
 
-Thank you for your patience. We're excited to fulfill your order!
+Thank you for your business!
 ${data.siteName}`,
   }),
 
+  // Order rejected notification
   orderRejected: (data: {
     customerName: string;
     orderNumber: string;
@@ -120,12 +129,12 @@ ${data.siteName}`,
     reason?: string;
     siteName: string;
   }) => ({
-    subject: `Order Update #${data.orderNumber} - ${data.siteName}`,
+    subject: `Order Update Required #${data.orderNumber} - ${data.siteName}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
         <div style="text-align: center; margin-bottom: 30px;">
           <h1 style="color: #2563eb; margin-bottom: 10px;">${data.siteName}</h1>
-          <h2 style="color: #dc2626;">Order Update Required</h2>
+          <h2 style="color: #dc2626;">Order Requires Attention</h2>
         </div>
 
         <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444;">
@@ -136,7 +145,7 @@ ${data.siteName}`,
         <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
           <h3 style="color: #1f2937; margin-top: 0;">Order Details</h3>
           <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
-          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> $${data.total.toFixed(2)}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> BHD ${Number(data.total).toFixed(3)}</p>
           ${data.reason ? `<p style="color: #374151; margin: 5px 0;"><strong>Note:</strong> ${data.reason}</p>` : ''}
         </div>
 
@@ -154,7 +163,7 @@ ${data.siteName}`,
         </div>
       </div>
     `,
-    text: `Order Update #${data.orderNumber}
+    text: `Order Update Required #${data.orderNumber}
 
 Dear ${data.customerName},
 
@@ -162,7 +171,7 @@ We need to discuss your recent order before we can proceed.
 
 Order Details:
 - Order Number: #${data.orderNumber}
-- Total Amount: $${data.total.toFixed(2)}
+- Total Amount: BHD ${Number(data.total).toFixed(3)}
 ${data.reason ? `- Note: ${data.reason}` : ''}
 
 Next Steps: Please contact our support team to discuss your order and make any necessary adjustments.
@@ -171,6 +180,7 @@ We're here to help! Please don't hesitate to reach out with any questions.
 ${data.siteName}`,
   }),
 
+  // Payment confirmation
   paymentConfirmation: (data: {
     customerName: string;
     orderNumber: string;
@@ -205,6 +215,12 @@ ${data.siteName}`,
           </p>
         </div>
 
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="background-color: #10b981; color: white; padding: 15px 25px; border-radius: 8px; display: inline-block; font-weight: 600;">
+            ✓ Payment Confirmed
+          </div>
+        </div>
+
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
           <p style="color: #6b7280; font-size: 14px;">
             Thank you for your business!<br>
@@ -229,5 +245,114 @@ What's Next: We're now preparing your order for shipment. You'll receive a track
 
 Thank you for your business!
 ${data.siteName}`,
+  }),
+
+  // Admin order notification
+  adminOrderNotification: (data: {
+    customerName: string;
+    customerEmail: string;
+    orderNumber: string;
+    total: number;
+    itemCount: number;
+    siteName: string;
+  }) => ({
+    subject: `New Order Requires Approval #${data.orderNumber} - ${data.siteName}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #2563eb; margin-bottom: 10px;">${data.siteName}</h1>
+          <h2 style="color: #f59e0b;">New Order - Admin Approval Required</h2>
+        </div>
+
+        <div style="background: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+          <p style="margin: 0; font-size: 16px;"><strong>Admin Notification</strong></p>
+          <p style="margin: 15px 0 0 0;">A new order has been submitted and requires your approval.</p>
+        </div>
+
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #1f2937; margin-top: 0;">Order Details</h3>
+          <p style="color: #374151; margin: 5px 0;"><strong>Order Number:</strong> #${data.orderNumber}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Customer:</strong> ${data.customerName}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Email:</strong> ${data.customerEmail}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Total Amount:</strong> BHD ${Number(data.total).toFixed(3)}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Items:</strong> ${data.itemCount} item(s)</p>
+        </div>
+
+        <div style="background: #dbeafe; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #3b82f6;">
+          <p style="color: #1e40af; margin: 0;">
+            <strong>Action Required:</strong> Please review this order in the admin dashboard and approve or reject it.
+          </p>
+        </div>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
+          <p style="color: #6b7280; font-size: 14px;">
+            ${data.siteName} Admin Panel
+          </p>
+        </div>
+      </div>
+    `,
+    text: `New Order Requires Approval #${data.orderNumber}
+
+Admin Notification: A new order has been submitted and requires your approval.
+
+Order Details:
+- Order Number: #${data.orderNumber}
+- Customer: ${data.customerName}
+- Email: ${data.customerEmail}
+- Total Amount: BHD ${Number(data.total).toFixed(3)}
+- Items: ${data.itemCount} item(s)
+
+Action Required: Please review this order in the admin dashboard and approve or reject it.
+
+${data.siteName} Admin Panel`,
+  }),
+
+  // Test email template
+  testEmail: (recipientEmail: string) => ({
+    subject: 'SMTP Test Email - Configuration Successful',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #2563eb; margin-bottom: 10px;">SMTP Test Email</h1>
+          <h2 style="color: #059669;">Configuration Successful!</h2>
+        </div>
+
+        <div style="background: #ecfdf5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+          <p style="margin: 0; font-size: 16px;">Congratulations!</p>
+          <p style="margin: 15px 0 0 0;">Your SMTP email configuration is working correctly. This test email was sent to ${recipientEmail}.</p>
+        </div>
+
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #1f2937; margin-top: 0;">Test Details</h3>
+          <p style="color: #374151; margin: 5px 0;"><strong>Recipient:</strong> ${recipientEmail}</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Status:</strong> Email delivered successfully</p>
+          <p style="color: #374151; margin: 5px 0;"><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="background-color: #10b981; color: white; padding: 15px 25px; border-radius: 8px; display: inline-block; font-weight: 600;">
+            ✓ SMTP Configuration Working
+          </div>
+        </div>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center;">
+          <p style="color: #6b7280; font-size: 14px;">
+            Your email system is ready to send order notifications!<br>
+            BAYG - Bahrain Asian Youth Games 2025
+          </p>
+        </div>
+      </div>
+    `,
+    text: `SMTP Test Email - Configuration Successful
+
+Congratulations! Your SMTP email configuration is working correctly. This test email was sent to ${recipientEmail}.
+
+Test Details:
+- Recipient: ${recipientEmail}
+- Status: Email delivered successfully
+- Date: ${new Date().toLocaleString()}
+
+Your email system is ready to send order notifications!
+BAYG - Bahrain Asian Youth Games 2025`,
   }),
 };

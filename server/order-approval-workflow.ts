@@ -78,7 +78,7 @@ export async function sendOrderRejectionEmail(customerEmail: string, data: Order
       customerName: data.customerName,
       orderNumber: data.orderNumber,
       total: data.total,
-      adminRemarks: data.adminRemarks || "No specific reason provided",
+      reason: data.adminRemarks || "No specific reason provided",
       siteName: "BAYG - Bahrain Asian Youth Games 2025"
     });
 
