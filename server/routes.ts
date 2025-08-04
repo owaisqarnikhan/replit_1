@@ -869,27 +869,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const { testEmail } = req.body;
-      await emailService.initialize();
+      const targetEmail = testEmail || req.user.email;
       
-      if (!emailService.isReady()) {
+      // Check if SMTP is configured first
+      const settings = await storage.getSiteSettings();
+      if (!settings?.smtpEnabled || !settings?.smtpHost || !settings?.smtpUser || !settings?.smtpPassword) {
         return res.status(400).json({
           success: false,
           message: "SMTP not configured. Please configure SMTP settings first."
         });
       }
+      
+      console.log(`Testing SMTP with email: ${targetEmail}`);
+      
+      // Force reinitialize the email service  
+      await emailService.initialize();
+      
+      if (!emailService.isReady()) {
+        return res.status(400).json({
+          success: false,
+          message: "SMTP configuration failed. Please check your settings and try again."
+        });
+      }
 
-      const result = await emailService.sendTestEmail(testEmail || req.user.email);
+      const result = await emailService.sendTestEmail(targetEmail);
       
       res.json({
         success: true,
-        message: `Test email sent successfully to ${testEmail || req.user.email}`,
+        message: `Test email sent successfully to ${targetEmail}! Check your inbox to confirm SMTP is working.`,
         messageId: result.messageId
       });
     } catch (error: any) {
       console.error('SMTP test error:', error);
-      res.status(500).json({
+      
+      let errorMessage = "SMTP test failed. Please check your configuration.";
+      
+      // Provide specific error messages for common issues
+      if (error.message.includes("Authentication failed")) {
+        errorMessage = "Authentication failed. Please check your username and password. For Gmail/Yahoo, use an App Password.";
+      } else if (error.message.includes("ENOTFOUND")) {
+        errorMessage = "Cannot connect to SMTP server. Please check your host and port settings.";
+      } else if (error.message.includes("ECONNREFUSED")) {
+        errorMessage = "Connection refused. Please check your port number and try again.";
+      } else if (error.message.includes("wrong version number")) {
+        errorMessage = "SSL/TLS configuration error. For port 587, turn OFF SSL/TLS. For port 465, turn ON SSL/TLS.";
+      } else if (error.message.includes("EAUTH")) {
+        errorMessage = "Authentication error. Enable 2FA and use App Password for Gmail/Yahoo, or enable 'Less secure app access'.";
+      }
+      
+      res.status(400).json({
         success: false,
-        message: error.message || "Failed to send test email"
+        message: errorMessage
       });
     }
   });

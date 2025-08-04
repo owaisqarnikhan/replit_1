@@ -17,48 +17,38 @@ export class EmailService {
         return false;
       }
 
-      // Determine the correct SSL/TLS configuration based on port and settings
+      // Configure SMTP based on user settings and best practices
       const port = settings.smtpPort || 587;
-      const isSSLPort = port === 465;
-      const isTLSPort = port === 587 || port === 25;
       
       const config: any = {
         host: settings.smtpHost,
         port: port,
-        secure: isSSLPort, // Use SSL for port 465
+        secure: settings.smtpSecure === true && port === 465, // Only use secure=true for port 465
         auth: {
           user: settings.smtpUser,
           pass: settings.smtpPassword,
         },
       };
 
-      // Configure TLS for non-SSL ports
-      if (!isSSLPort) {
+      // For port 587 or when secure is disabled, use STARTTLS
+      if (port === 587 || !settings.smtpSecure) {
+        config.secure = false;
         config.requireTLS = true;
         config.tls = {
-          rejectUnauthorized: false,
-          ciphers: 'SSLv3'
+          rejectUnauthorized: false
         };
       }
 
-      // Special handling for Gmail SMTP
+      // Provider-specific optimizations
       if (settings.smtpHost?.includes('gmail.com')) {
         config.service = 'gmail';
         config.secure = false;
         config.requireTLS = true;
-        config.tls = {
-          rejectUnauthorized: false
-        };
       }
 
-      // Special handling for Outlook/Hotmail SMTP
       if (settings.smtpHost?.includes('outlook.com') || settings.smtpHost?.includes('hotmail.com')) {
         config.secure = false;
         config.requireTLS = true;
-        config.tls = {
-          ciphers: 'SSLv3',
-          rejectUnauthorized: false
-        };
       }
 
       console.log("Creating SMTP transport with config:", {
