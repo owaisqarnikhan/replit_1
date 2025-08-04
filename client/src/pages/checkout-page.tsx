@@ -127,7 +127,8 @@ export default function CheckoutPage() {
   const handleApprovalModalClose = () => {
     setShowApprovalModal(false);
     setCreatedOrder(null);
-    setLocation("/orders");
+    // Redirect to products page to continue shopping
+    setLocation("/products");
   };
 
   return (

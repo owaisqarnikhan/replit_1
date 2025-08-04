@@ -149,7 +149,7 @@ export function OrderApprovalModal({ isOpen, onClose, orderId, orderTotal }: Ord
 
         <DialogFooter className="flex justify-center space-x-4">
           <Button variant="outline" onClick={onClose}>
-            Close
+            Continue Shopping
           </Button>
           <Button onClick={() => window.location.href = '/orders'}>
             View My Orders
