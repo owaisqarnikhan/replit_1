@@ -56,10 +56,15 @@ export function OrderApprovalModal({ isOpen, onClose, orderId, orderTotal }: Ord
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">Order Approval Process</DialogTitle>
-          <DialogDescription className="text-center">
-            Your order #{orderId.slice(-8).toUpperCase()} is now in the approval workflow
-          </DialogDescription>
+          <div className="text-center space-y-4">
+            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+            <DialogTitle className="text-2xl font-bold text-green-800">Order Submitted Successfully!</DialogTitle>
+            <DialogDescription className="text-gray-600 text-lg">
+              Your order #{orderId.slice(-8).toUpperCase()} has been submitted and is now awaiting admin approval
+            </DialogDescription>
+          </div>
         </DialogHeader>
 
         <div className="space-y-6">
