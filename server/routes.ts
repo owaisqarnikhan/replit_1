@@ -121,7 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
           
           // Get order items for detailed email
-          const orderItems = await storage.getOrderItems(orderId);
+          const orderItems = await storage.getOrderItemsByOrderId(orderId);
           const emailItems = orderItems.map(item => ({
             productName: item.product?.name || 'Unknown Product',
             quantity: item.quantity,
@@ -640,7 +640,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (req.user!.email) {
           // Get order items for detailed email
-          const orderItems = await storage.getOrderItems(orderId);
+          const orderItems = await storage.getOrderItemsByOrderId(orderId);
           const emailItems = orderItems.map(item => ({
             productName: item.product?.name || 'Unknown Product',
             quantity: item.quantity,
@@ -747,7 +747,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         
         // Get order items for detailed email
-        const orderItems = await storage.getOrderItems(orderId);
+        const orderItems = await storage.getOrderItemsByOrderId(orderId);
         const emailItems = orderItems.map(item => ({
           productName: item.product?.name || 'Unknown Product',
           quantity: item.quantity,
@@ -815,7 +815,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const customerName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
         
         // Get order items for detailed email
-        const orderItems = await storage.getOrderItems(orderId);
+        const orderItems = await storage.getOrderItemsByOrderId(orderId);
         const emailItems = orderItems.map(item => ({
           productName: item.product?.name || 'Unknown Product',
           quantity: item.quantity,

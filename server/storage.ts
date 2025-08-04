@@ -126,6 +126,7 @@ export interface IStorage {
   getUsers(): Promise<User[]>;
   getOrders(): Promise<Order[]>;
   getOrderItems(): Promise<OrderItem[]>;
+  getOrderItemsByOrderId(orderId: string): Promise<(OrderItem & { product: Product })[]>;
   getAllCartItems(): Promise<CartItem[]>;
   clearProductsAndCategories(): Promise<void>;
   executeSQLImport(sqlContent: string): Promise<void>;
@@ -333,6 +334,26 @@ export class DatabaseStorage implements IStorage {
 
   async getOrderItems(): Promise<OrderItem[]> {
     return await db.select().from(orderItems);
+  }
+
+  async getOrderItemsByOrderId(orderId: string): Promise<(OrderItem & { product: Product })[]> {
+    return await db
+      .select({
+        id: orderItems.id,
+        orderId: orderItems.orderId,
+        productId: orderItems.productId,
+        quantity: orderItems.quantity,
+        price: orderItems.price,
+        totalPrice: orderItems.totalPrice,
+        rentalStartDate: orderItems.rentalStartDate,
+        rentalEndDate: orderItems.rentalEndDate,
+        rentalDays: orderItems.rentalDays,
+        createdAt: orderItems.createdAt,
+        product: products,
+      })
+      .from(orderItems)
+      .innerJoin(products, eq(orderItems.productId, products.id))
+      .where(eq(orderItems.orderId, orderId));
   }
 
   async getAllCartItems(): Promise<CartItem[]> {
