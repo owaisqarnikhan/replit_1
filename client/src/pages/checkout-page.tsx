@@ -57,7 +57,7 @@ export default function CheckoutPage() {
       return res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+      // Don't invalidate cart immediately - wait until modal is closed
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       
       setCreatedOrder({
@@ -75,7 +75,8 @@ export default function CheckoutPage() {
     },
   });
 
-  if (!cartItems || cartItems.length === 0) {
+  // Don't show empty cart message if we're showing the success modal
+  if ((!cartItems || cartItems.length === 0) && !showApprovalModal) {
     return (
       <div className="min-h-screen bg-slate-50">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
@@ -127,7 +128,8 @@ export default function CheckoutPage() {
   const handleApprovalModalClose = () => {
     setShowApprovalModal(false);
     setCreatedOrder(null);
-    // Redirect to products page to continue shopping
+    // Now invalidate cart query and redirect to products page
+    queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
     setLocation("/products");
   };
 
