@@ -6,7 +6,7 @@ import { storage } from "./storage";
 import { insertProductSchema, insertCategorySchema, insertCartItemSchema, insertSiteSettingsSchema, insertUserSchema, insertSliderImageSchema, insertUnitOfMeasureSchema, roles, permissions } from "@shared/schema";
 import { db } from "./db";
 import { sendOrderConfirmationEmail } from "./email";
-import { testMicrosoft365Connection } from "./smtp-config";
+import { sendTestEmail, validateMicrosoft365Config } from "./smtp-config";
 // import { sendOrderSubmittedNotification, sendOrderApprovedNotification, sendOrderRejectedNotification } from "./sendgrid";
 import { exportDatabase, saveExportToFile, importDatabase, validateImportFile } from "./database-utils";
 // import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
@@ -688,8 +688,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const { testSMTP } = await import("./test-smtp");
-      const result = await testSMTP();
+      const result = await sendTestEmail();
       res.json({
         success: true,
         message: "Test email sent successfully! Check your inbox to confirm Microsoft 365 SMTP is working."
@@ -886,8 +885,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const { testSMTP } = await import("./test-smtp");
-      const result = await testSMTP();
+      const result = await sendTestEmail();
       res.json({
         success: true,
         message: "Admin Microsoft 365 SMTP test email sent successfully! Check your inbox to confirm email system is working."

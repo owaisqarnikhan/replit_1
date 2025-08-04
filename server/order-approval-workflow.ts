@@ -1,5 +1,5 @@
 import { storage } from "./storage";
-import { createMicrosoft365Transporter, validateEmailConfig } from './smtp-config';
+import { createMicrosoft365Transporter, validateMicrosoft365Config } from './smtp-config';
 
 // Order Approval Status Types
 export type OrderApprovalStatus = 'pending' | 'approved' | 'rejected';
@@ -15,11 +15,10 @@ export async function sendOrderSubmissionEmail(
   }
 ): Promise<void> {
   try {
-    const settings = await storage.getSiteSettings();
-    const emailValidation = validateEmailConfig(settings);
+    const emailValidation = validateMicrosoft365Config();
     
-    if (!settings.emailEnabled || !emailValidation.valid) {
-      console.log('Order submission email disabled:', emailValidation.errors.join(', '));
+    if (!emailValidation.valid) {
+      console.log('Microsoft 365 email not configured');
       return;
     }
 
@@ -66,7 +65,7 @@ export async function sendOrderSubmissionEmail(
     const transporter = await createMicrosoft365Transporter();
     
     await transporter.sendMail({
-      from: `"${settings.smtpFromName || 'InnovanceOrbit'}" <${settings.smtpFromEmail || settings.smtpUser}>`,
+      from: '"BAYG System" <itsupport@bayg.bh>',
       to: customerEmail,
       subject: `Order Submitted - Awaiting Approval - ${orderDetails.orderNumber}`,
       html: emailTemplate,
@@ -95,7 +94,7 @@ export async function sendAdminOrderNotification(
 ): Promise<void> {
   try {
     const settings = await storage.getSiteSettings();
-    const emailValidation = validateEmailConfig(settings);
+    const emailValidation = validateMicrosoft365Config();
     
     if (!settings.emailEnabled || !emailValidation.valid || !settings.adminEmail) {
       console.log('Admin notification email disabled:', emailValidation.errors.join(', '));
@@ -202,7 +201,7 @@ export async function sendOrderApprovalEmail(
 ): Promise<void> {
   try {
     const settings = await storage.getSiteSettings();
-    const emailValidation = validateEmailConfig(settings);
+    const emailValidation = validateMicrosoft365Config();
     
     if (!settings.emailEnabled || !emailValidation.valid) {
       console.log('Order approval email disabled:', emailValidation.errors.join(', '));
@@ -269,7 +268,7 @@ export async function sendPaymentConfirmationEmail(
 ): Promise<void> {
   try {
     const settings = await storage.getSiteSettings();
-    const emailValidation = validateEmailConfig(settings);
+    const emailValidation = validateMicrosoft365Config();
     
     if (!settings.emailEnabled || !emailValidation.valid) {
       console.log('Payment confirmation email disabled:', emailValidation.errors.join(', '));
@@ -337,7 +336,7 @@ export async function sendOrderRejectionEmail(
 ): Promise<void> {
   try {
     const settings = await storage.getSiteSettings();
-    const emailValidation = validateEmailConfig(settings);
+    const emailValidation = validateMicrosoft365Config();
     
     if (!settings.emailEnabled || !emailValidation.valid) {
       console.log('Order rejection email disabled:', emailValidation.errors.join(', '));
@@ -416,7 +415,7 @@ export async function sendDeliveryConfirmationEmail(
 ): Promise<void> {
   try {
     const settings = await storage.getSiteSettings();
-    const emailValidation = validateEmailConfig(settings);
+    const emailValidation = validateMicrosoft365Config();
     
     if (!settings.emailEnabled || !emailValidation.valid) {
       console.log('Delivery confirmation email disabled:', emailValidation.errors.join(', '));

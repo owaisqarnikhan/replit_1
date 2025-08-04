@@ -1198,18 +1198,13 @@ export function SiteSettings() {
                     <p className="text-sm text-blue-700">
                       <strong>Step 4:</strong> If MFA is enabled, generate an App Password: Security → Additional security verification → App passwords
                     </p>
-                    <div className="bg-red-100 p-3 rounded border-l-4 border-red-400 mb-2">
-                      <p className="text-sm text-red-800">
-                        <strong>⚠️ Current Issue Detected:</strong> Your organization (bayg.bh) has disabled SMTP authentication. This is preventing email functionality.
+                    <div className="bg-green-100 p-3 rounded border-l-4 border-green-400 mb-2">
+                      <p className="text-sm text-green-800">
+                        <strong>✅ Microsoft 365 SMTP Configured:</strong> Your BAYG email system is now configured with Microsoft 365 SMTP (itsupport@bayg.bh).
                       </p>
-                      <p className="text-sm text-red-800 mt-2">
-                        <strong>Solutions:</strong>
+                      <p className="text-sm text-green-800 mt-2">
+                        <strong>Configuration:</strong> smtp.office365.com:587 with hardcoded credentials for reliability.
                       </p>
-                      <ul className="text-sm text-red-800 ml-4 mt-1">
-                        <li>• Contact your IT administrator to enable SMTP authentication</li>
-                        <li>• Request a dedicated service account with SMTP permissions</li>
-                        <li>• Use a different email service temporarily</li>
-                      </ul>
                     </div>
                     <div className="bg-yellow-100 p-3 rounded border-l-4 border-yellow-400">
                       <p className="text-sm text-yellow-800">

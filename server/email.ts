@@ -1,5 +1,33 @@
 import { storage } from './storage';
-import { createSMTPTransporter, validateEmailConfig } from './smtp-config';
+import { createMicrosoft365Transporter, validateMicrosoft365Config } from './smtp-config';
+
+// Main email sending function - now uses Microsoft 365 exclusively
+export async function sendEmail(to: string, subject: string, htmlContent: string, textContent?: string) {
+  try {
+    const emailValidation = validateMicrosoft365Config();
+    if (!emailValidation.valid) {
+      console.log('Email system not configured properly');
+      return;
+    }
+    
+    const transporter = await createMicrosoft365Transporter();
+    
+    const mailOptions = {
+      from: '"BAYG System" <itsupport@bayg.bh>',
+      to,
+      subject: `${subject} - BAYG`,
+      html: htmlContent,
+      text: textContent || htmlContent.replace(/<[^>]*>/g, '') // Strip HTML for text version
+    };
+
+    const result = await transporter.sendMail(mailOptions);
+    console.log(`Email sent successfully to ${to}:`, result.messageId);
+    
+  } catch (error: any) {
+    console.error('Failed to send email:', error.message);
+    // Don't throw error, just log it to prevent breaking the application
+  }
+}
 
 export async function sendOrderConfirmationEmail(
   customerEmail: string,
@@ -20,18 +48,9 @@ export async function sendOrderConfirmationEmail(
   }
 ): Promise<void> {
   try {
-    // Get site settings for template and admin email
-    const settings = await storage.getSiteSettings();
+    const transporter = await createMicrosoft365Transporter();
     
-    const emailValidation = validateEmailConfig(settings);
-    if (!settings.emailEnabled || !emailValidation.valid) {
-      console.log('Email notifications disabled:', emailValidation.errors.join(', '));
-      console.log('To enable emails: Configure Microsoft 365 SMTP settings in Admin Dashboard > Settings > Email');
-      console.log('Required: Microsoft 365 email address and password (or App Password for MFA accounts)');
-      return;
-    }
-    
-    // Prepare template variables
+    // Prepare items HTML
     const itemsHtml = orderDetails.items
       .map(item => `
         <tr>
@@ -42,8 +61,7 @@ export async function sendOrderConfirmationEmail(
       `)
       .join('');
 
-    // Order awaiting approval template
-    let emailTemplate = `
+    const emailTemplate = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
         <div style="background: linear-gradient(135deg, #2563eb, #1e40af); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
           <h1 style="margin: 0; font-size: 24px;">Order Received - ${orderDetails.orderNumber}</h1>
@@ -104,83 +122,60 @@ export async function sendOrderConfirmationEmail(
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <p style="color: #374151; margin: 0;">Best regards,</p>
-            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'BAYG'} Team</p>
+            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">BAYG Team</p>
           </div>
         </div>
       </div>
     `;
 
-    // Replace template variables
-    const orderItemsTable = `
-      <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-          <tr style="background: #f1f5f9;">
-            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Item</th>
-            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #ddd;">Quantity</th>
-            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #ddd;">Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${itemsHtml}
-        </tbody>
-      </table>
-    `;
-
-    const html = emailTemplate
-      .replace(/{{orderNumber}}/g, orderDetails.orderNumber)
-      .replace(/{{customerName}}/g, orderDetails.customerName)
-      .replace(/{{orderDate}}/g, new Date().toLocaleDateString())
-      .replace(/{{totalAmount}}/g, `$${orderDetails.total}`)
-      .replace(/{{paymentMethod}}/g, orderDetails.paymentMethod)
-      .replace(/{{orderItems}}/g, orderItemsTable)
-      .replace(/{{siteName}}/g, settings.siteName);
-
-    const fromEmail = settings.smtpFromEmail || settings.contactEmail || 'noreply@bayg.com';
-    const fromName = settings.smtpFromName || settings.siteName || 'BAYG';
-
-    // Use configured SMTP provider for sending emails
-    console.log('Sending emails via configured SMTP provider...');
-    const smtpTransporter = await createSMTPTransporter();
-    
     // Send to customer
-    await smtpTransporter.sendMail({
-      from: `${fromName} <${fromEmail}>`,
+    await transporter.sendMail({
+      from: '"BAYG System" <itsupport@bayg.bh>',
       to: customerEmail,
       subject: `Order Confirmation - ${orderDetails.orderNumber}`,
-      html: html
+      html: emailTemplate
     });
 
     // Send notification to admin
-    if (settings.adminEmail) {
-      const adminHtml = `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #dc2626;">New Order Received - ${orderDetails.orderNumber}</h2>
-          <p>A new order has been placed on ${settings.siteName}.</p>
-          
-          <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
-            <h3>Order Details:</h3>
-            <p><strong>Order Number:</strong> ${orderDetails.orderNumber}</p>
-            <p><strong>Customer:</strong> ${orderDetails.customerName}</p>
-            <p><strong>Customer Email:</strong> ${customerEmail}</p>
-            <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod}</p>
-            <p><strong>Total Amount:</strong> $${orderDetails.total}</p>
-            <p><strong>Order Date:</strong> ${new Date().toLocaleString()}</p>
-          </div>
-
-          <h3>Items Ordered:</h3>
-          ${orderItemsTable}
-
-          <p>Please process this order in the admin dashboard.</p>
+    const adminHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #dc2626;">New Order Received - ${orderDetails.orderNumber}</h2>
+        <p>A new order has been placed on BAYG.</p>
+        
+        <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626;">
+          <h3>Order Details:</h3>
+          <p><strong>Order Number:</strong> ${orderDetails.orderNumber}</p>
+          <p><strong>Customer:</strong> ${orderDetails.customerName}</p>
+          <p><strong>Customer Email:</strong> ${customerEmail}</p>
+          <p><strong>Payment Method:</strong> ${orderDetails.paymentMethod}</p>
+          <p><strong>Total Amount:</strong> $${orderDetails.total}</p>
+          <p><strong>Order Date:</strong> ${new Date().toLocaleString()}</p>
         </div>
-      `;
 
-      await smtpTransporter.sendMail({
-        from: `${fromName} <${fromEmail}>`,
-        to: settings.adminEmail,
-        subject: `New Order Alert - ${orderDetails.orderNumber}`,
-        html: adminHtml
-      });
-    }
+        <h3>Items Ordered:</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background: #f1f5f9;">
+              <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">Item</th>
+              <th style="padding: 12px; text-align: center; border-bottom: 2px solid #ddd;">Quantity</th>
+              <th style="padding: 12px; text-align: right; border-bottom: 2px solid #ddd;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+
+        <p>Please process this order in the admin dashboard.</p>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: '"BAYG System" <itsupport@bayg.bh>',
+      to: 'itsupport@bayg.bh',
+      subject: `New Order Alert - ${orderDetails.orderNumber}`,
+      html: adminHtml
+    });
 
     console.log('Order confirmation emails sent successfully');
   } catch (error) {
@@ -191,8 +186,8 @@ export async function sendOrderConfirmationEmail(
 
 export async function testEmailConnection(): Promise<boolean> {
   try {
-    const emailTransporter = await createSMTPTransporter();
-    await emailTransporter.verify();
+    const emailTransporter = await createMicrosoft365Transporter();
+    console.log('Microsoft 365 email connection test passed');
     return true;
   } catch (error) {
     console.error('Email connection test failed:', error);
@@ -212,12 +207,7 @@ export async function sendOrderApprovalEmail(
   }
 ): Promise<void> {
   try {
-    const settings = await storage.getSiteSettings();
-    
-    if (!settings.emailEnabled || !settings.smtpPassword) {
-      console.log('Email notifications disabled');
-      return;
-    }
+    const transporter = await createMicrosoft365Transporter();
 
     const emailTemplate = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
@@ -246,16 +236,14 @@ export async function sendOrderApprovalEmail(
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <p style="color: #374151; margin: 0;">Best regards,</p>
-            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'BAYG'} Team</p>
+            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">BAYG Team</p>
           </div>
         </div>
       </div>
     `;
-
-    const transporter = await createSMTPTransporter();
     
     await transporter.sendMail({
-      from: `"${settings.smtpFromName || 'BAYG'}" <${settings.smtpFromEmail || 'info@bayg.com'}>`,
+      from: '"BAYG System" <itsupport@bayg.bh>',
       to: customerEmail,
       subject: `Order Approved - Payment Required - ${orderDetails.orderNumber}`,
       html: emailTemplate,
@@ -278,12 +266,7 @@ export async function sendOrderRejectionEmail(
   }
 ): Promise<void> {
   try {
-    const settings = await storage.getSiteSettings();
-    
-    if (!settings.emailEnabled || !settings.smtpPassword) {
-      console.log('Email notifications disabled');
-      return;
-    }
+    const transporter = await createMicrosoft365Transporter();
 
     const emailTemplate = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
@@ -316,16 +299,14 @@ export async function sendOrderRejectionEmail(
           
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
             <p style="color: #374151; margin: 0;">Best regards,</p>
-            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'BAYG'} Team</p>
+            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">BAYG Team</p>
           </div>
         </div>
       </div>
     `;
-
-    const transporter = await createSMTPTransporter();
     
     await transporter.sendMail({
-      from: `"${settings.smtpFromName || 'BAYG'}" <${settings.smtpFromEmail || 'info@bayg.com'}>`,
+      from: '"BAYG System" <itsupport@bayg.bh>',
       to: customerEmail,
       subject: `Order Cancelled - ${orderDetails.orderNumber}`,
       html: emailTemplate,
@@ -334,73 +315,5 @@ export async function sendOrderRejectionEmail(
     console.log(`Order rejection email sent to ${customerEmail}`);
   } catch (error) {
     console.error('Failed to send order rejection email:', error);
-  }
-}
-
-// Send order completion email to customer
-export async function sendOrderCompletionEmail(
-  customerEmail: string,
-  orderDetails: {
-    orderNumber: string;
-    customerName: string;
-    total: string;
-    deliveredAt: string;
-  }
-): Promise<void> {
-  try {
-    const settings = await storage.getSiteSettings();
-    
-    if (!settings.emailEnabled || !settings.smtpPassword) {
-      console.log('Email notifications disabled');
-      return;
-    }
-
-    const emailTemplate = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-        <div style="background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
-          <h1 style="margin: 0; font-size: 24px;">Order Delivered!</h1>
-        </div>
-        
-        <div style="padding: 30px;">
-          <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">Dear ${orderDetails.customerName},</p>
-          
-          <p style="color: #374151; line-height: 1.6;">Congratulations! Your order <strong>${orderDetails.orderNumber}</strong> has been successfully delivered and completed.</p>
-          
-          <div style="background: #ede9fe; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #7c3aed;">
-            <h3 style="color: #5b21b6; margin-top: 0; font-size: 18px;">Delivery Confirmation</h3>
-            <p style="color: #5b21b6; margin: 10px 0;">Order Number: <strong>${orderDetails.orderNumber}</strong></p>
-            <p style="color: #5b21b6; margin: 10px 0;">Delivered On: <strong>${orderDetails.deliveredAt}</strong></p>
-            <p style="color: #5b21b6; margin: 10px 0;">Order Value: <strong>$${orderDetails.total}</strong></p>
-          </div>
-          
-          <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #22c55e;">
-            <h4 style="color: #166534; margin-top: 0;">Thank you for choosing us!</h4>
-            <p style="color: #166534; margin: 5px 0;">We hope you're satisfied with your purchase. Your business means the world to us.</p>
-          </div>
-          
-          <p style="color: #6b7280; line-height: 1.6;">
-            If you have any questions about your delivered order or need support, please don't hesitate to contact us.
-          </p>
-          
-          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-            <p style="color: #374151; margin: 0;">Best regards,</p>
-            <p style="color: #2563eb; font-weight: 600; margin: 5px 0;">${settings.siteName || 'BAYG'} Team</p>
-          </div>
-        </div>
-      </div>
-    `;
-
-    const transporter = await createSMTPTransporter();
-    
-    await transporter.sendMail({
-      from: `"${settings.smtpFromName || 'BAYG'}" <${settings.smtpFromEmail || 'info@bayg.com'}>`,
-      to: customerEmail,
-      subject: `Order Delivered - ${orderDetails.orderNumber}`,
-      html: emailTemplate,
-    });
-
-    console.log(`Order completion email sent to ${customerEmail}`);
-  } catch (error) {
-    console.error('Failed to send order completion email:', error);
   }
 }
