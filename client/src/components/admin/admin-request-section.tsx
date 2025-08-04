@@ -386,7 +386,14 @@ export function AdminRequestSection() {
               disabled={approveMutation.isPending}
               className="bg-green-600 hover:bg-green-700"
             >
-              {approveMutation.isPending ? "Approving..." : "Approve Order"}
+              {approveMutation.isPending ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                  Approving...
+                </>
+              ) : (
+                "Approve Order"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -422,7 +429,14 @@ export function AdminRequestSection() {
               disabled={rejectMutation.isPending || !adminRemarks.trim()}
               variant="destructive"
             >
-              {rejectMutation.isPending ? "Rejecting..." : "Reject Order"}
+              {rejectMutation.isPending ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                  Rejecting...
+                </>
+              ) : (
+                "Reject Order"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

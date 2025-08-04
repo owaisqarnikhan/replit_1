@@ -532,8 +532,17 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
                         disabled={addToCartMutation.isPending || (product.productType === "rental" && (!startDate || !endDate || !!dateError))}
                         className="flex items-center gap-2"
                       >
-                        <ShoppingCart className="w-4 h-4" />
-                        {addToCartMutation.isPending ? "Adding..." : "Add to Cart"}
+                        {addToCartMutation.isPending ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                            Adding...
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart className="w-4 h-4" />
+                            Add to Cart
+                          </>
+                        )}
                       </Button>
                     </div>
                   </div>

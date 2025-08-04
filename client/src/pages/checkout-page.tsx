@@ -208,7 +208,14 @@ export default function CheckoutPage() {
                     className="w-full mt-8"
                     disabled={createOrderMutation.isPending}
                   >
-                    {createOrderMutation.isPending ? "Submitting Order..." : "Submit Order for Approval"}
+                    {createOrderMutation.isPending ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                        Submitting Order...
+                      </>
+                    ) : (
+                      "Submit Order for Approval"
+                    )}
                   </Button>
                 </form>
               </CardContent>

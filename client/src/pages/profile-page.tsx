@@ -201,8 +201,17 @@ export default function ProfilePage() {
                     type="submit" 
                     disabled={updateProfileMutation.isPending}
                   >
-                    <Save className="h-4 w-4 mr-2" />
-                    {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+                    {updateProfileMutation.isPending ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Changes
+                      </>
+                    )}
                   </Button>
                   <Button 
                     type="button" 

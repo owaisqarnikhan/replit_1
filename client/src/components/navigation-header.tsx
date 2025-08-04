@@ -294,9 +294,19 @@ export function NavigationHeader() {
                 <DropdownMenuItem 
                   onClick={handleLogout}
                   className="text-red-600 focus:text-red-600"
+                  disabled={logoutMutation.isPending}
                 >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
+                  {logoutMutation.isPending ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-500 border-t-transparent mr-2"></div>
+                      Signing Out...
+                    </>
+                  ) : (
+                    <>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Sign Out
+                    </>
+                  )}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

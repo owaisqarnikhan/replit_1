@@ -174,7 +174,11 @@ export default function CartPage() {
                           }
                           disabled={updateQuantityMutation.isPending}
                         >
-                          <Minus className="h-4 w-4" />
+                          {updateQuantityMutation.isPending ? (
+                            <div className="animate-spin rounded-full h-3 w-3 border border-gray-400 border-t-transparent"></div>
+                          ) : (
+                            <Minus className="h-4 w-4" />
+                          )}
                         </Button>
                         <span className="w-12 text-center font-medium">{item.quantity}</span>
                         <Button
@@ -189,7 +193,11 @@ export default function CartPage() {
                           }
                           disabled={updateQuantityMutation.isPending}
                         >
-                          <Plus className="h-4 w-4" />
+                          {updateQuantityMutation.isPending ? (
+                            <div className="animate-spin rounded-full h-3 w-3 border border-gray-400 border-t-transparent"></div>
+                          ) : (
+                            <Plus className="h-4 w-4" />
+                          )}
                         </Button>
                       </div>
                     )}
@@ -212,7 +220,11 @@ export default function CartPage() {
                     onClick={() => removeItemMutation.mutate(item.productId)}
                     disabled={removeItemMutation.isPending}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    {removeItemMutation.isPending ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border border-red-400 border-t-transparent"></div>
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </div>
